@@ -1,16 +1,29 @@
 ---
-
+import Base from "../layouts/Base.astro";
+import HeroVideo from "../components/HeroVideo.astro";
+import CoveredBand from "../components/CoveredBand.astro";
+import WhyChooseVideo from "../components/WhyChooseVideo.astro";
+import ServicesGrid from "../components/ServicesGrid.astro";
+import Reviews from "../components/Reviews.astro";
+import TrustedPartners from "../components/TrustedPartners.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base title="PaintCraft MN | Professional Painting Services">
+  <HeroVideo />
+
+  <section class="relative -mt-8 z-10">
+    <div class="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-xl">
+      <p class="text-center text-xl md:text-2xl text-neutral-700">
+        Experience the transformative power of painting and fall in love with your home again.
+      </p>
+    </div>
+  </section>
+
+  <!-- REMOVE the max-w wrapper; let the grid be full-bleed -->
+  <ServicesGrid bleed />
+
+  <CoveredBand />
+  <WhyChooseVideo client:load />
+  <Reviews />
+  <TrustedPartners />
+</Base>

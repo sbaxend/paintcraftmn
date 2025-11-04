@@ -1,0 +1,103 @@
+---
+import { services } from "../config/siteConfig.js";
+
+// First two tiles are the “hero” pair; rest can stack below
+const top = services.slice(0, 2);
+const bottom = services.slice(2);
+
+// Props (optional): bleed = make the section full-bleed like Meta
+export interface Props { bleed?: boolean }
+const { bleed = true } = Astro.props;
+---
+
+<section class={`relative isolate ${bleed ? 'full-bleed' : ''}`}>
+  <style is:inline>
+    /* Make this section truly full-bleed (edge-to-edge) regardless of page container */
+    .full-bleed { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+    @media (min-width: 1921px) {
+      /* cap on ultra-wide so content doesn’t get absurdly wide */
+      .full-bleed { margin-left: auto; margin-right: auto; max-width: 1920px; }
+    }
+  </style>
+
+  <!-- OUTER padding == inner gap so edges match the middle spacing -->
+  <div class="w-full px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-16 lg:py-24">
+    <h2 class="sr-only">Our Services</h2>
+
+    <!-- TOP: two big tiles -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:gap-8 xl:gap-10">
+      {top.map((s, i) => (
+        <a
+          href={s.href || "#"}
+          class="group relative overflow-hidden rounded-[28px] shadow-[0_24px_80px_rgba(0,0,0,0.18)] focus:outline-none focus-visible:ring-4 focus-visible:ring-white/50"
+        >
+          <div class="relative w-full aspect-[4/5] sm:aspect-[3/4] md:aspect-[16/13] md:min-h-[88vh] lg:min-h-[92vh]">
+            <img
+              src={s.img}
+              alt={s.title}
+              class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+              loading="lazy"
+              decoding="async"
+            />
+            <!-- subtle gradient + inner vignette for legibility -->
+            <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.55)_0%,rgba(0,0,0,.35)_45%,rgba(0,0,0,.2)_100%)]"></div>
+            <div class="absolute inset-0 pointer-events-none shadow-[inset_0_0_200px_rgba(0,0,0,0.45)]"></div>
+
+            <div class={`absolute inset-0 p-6 sm:p-8 lg:p-12 flex ${i === 0 ? "items-end" : "items-end md:items-center"} ${i === 0 ? "justify-start" : "justify-end"}`}>
+              <div class={`max-w-xl text-white ${i === 0 ? "text-left" : "text-right"}`}>
+                {s.kicker && (
+                  <p class="uppercase tracking-wide text-sm/6 opacity-85">{s.kicker}</p>
+                )}
+                <h3 class="font-extrabold drop-shadow-[0_10px_40px_rgba(0,0,0,.4)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
+                  {s.title}
+                </h3>
+                {s.description && (
+                  <p class="mt-3 sm:mt-4 text-base sm:text-lg opacity-95 group-hover:opacity-100 transition-opacity duration-300">
+                    {s.description}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- BOTTOM: optional stacked full-width tiles -->
+    {bottom.length > 0 && (
+      <div class="mt-6 sm:mt-8 md:mt-10 lg:mt-12 grid grid-cols-1 gap-3 sm:gap-4 md:gap-6 lg:gap-8 xl:gap-10">
+        {bottom.map((s) => (
+          <a
+            href={s.href || "#"}
+            class="group relative overflow-hidden rounded-[28px] shadow-[0_20px_70px_rgba(0,0,0,0.16)]"
+          >
+            <div class="relative w-full aspect-[16/10] md:aspect-[16/8] md:min-h-[78vh]">
+              <img
+                src={s.img}
+                alt={s.title}
+                class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.5)_0%,rgba(0,0,0,.25)_45%,rgba(0,0,0,.15)_100%)]"></div>
+              <div class="absolute inset-0 pointer-events-none shadow-[inset_0_0_180px_rgba(0,0,0,0.40)]"></div>
+
+              <div class="absolute inset-0 p-6 sm:p-8 lg:p-12 flex items-center justify-center text-center">
+                <div class="max-w-2xl text-white">
+                  <h3 class="font-extrabold text-4xl sm:text-5xl md:text-6xl drop-shadow-[0_10px_40px_rgba(0,0,0,.4)]">
+                    {s.title}
+                  </h3>
+                  {s.description && (
+                    <p class="mt-4 text-base sm:text-lg opacity-95 group-hover:opacity-100 transition-opacity duration-300">
+                      {s.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</section>

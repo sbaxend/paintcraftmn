@@ -1,0 +1,35 @@
+---
+import ExteriorHero from "../components/exterior/ExteriorHero.astro";
+import ExteriorProcess from "../components/exterior/ExteriorProcess.astro";
+import Base from "../layouts/Base.astro";
+import CoveredBand from "../components/CoveredBand.astro";
+import ExteriorServices from "../components/exterior/ExteriorServices.astro"
+---
+
+<Base title="Exterior Painting | PaintCraft MN">
+  <ExteriorHero
+    title="Exterior Painting"
+    subtitle="Transform your indoor spaces with premium quality paint and expert application"
+    bg="/hero.png"
+  />
+  <section class="pt-6 -mt-3">
+    <ExteriorProcess
+      heading="We handle everything"
+      stages={[
+        { id: "prep",  title: "Prep & Protect",  desc: "We carefully protect your furniture and floors, then prep all surfaces for perfect paint adhesion.", img: "/prep.png" },
+        { id: "paint", title: "Paint & Perfect", desc: "Expert application with premium paints for smooth, even coverage and flawless results.", img: "/perfect.png" },
+        { id: "clean", title: "Clean & Inspect", desc: "Thorough clean-up and a detailed walkthrough to make sure you love every detail.", img: "/inspect.png" },
+      ]}
+    />
+  </section>
+  <ExteriorServices />
+  ]<CoveredBand />
+
+  <section class="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12">
+    <div>
+      <h2 class="text-2xl font-semibold mb-4">Protection + curb appeal</h2>
+      <p class="text-neutral-700">Durable coatings built for Minnesota weather.</p>
+    </div>
+    <div class="bg-neutral-100 aspect-video rounded-xl"></div>
+  </section>
+</Base>

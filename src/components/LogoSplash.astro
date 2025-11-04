@@ -1,0 +1,75 @@
+---
+const {
+  logoSrc = "/paintcraft_logo.webp",
+  duration = 2200, // how long the logo stays visible (from Base.astro)
+  fadeMs = 900,   // how long the page fade takes (from Base.astro)
+} = Astro.props;
+---
+
+<div id="splash" class="splash">
+  <img src={logoSrc} alt="PaintCraft" class="h-20 w-auto" />
+</div>
+
+<style is:global>
+  .splash {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #000; /* Ferrari-style black background */
+    z-index: 9999;
+    transition: opacity 0.8s ease;
+  }
+  .splash.hidden { 
+    opacity: 0; 
+    visibility: hidden; 
+  }
+  
+  body.splash-active {
+    opacity: 0; /* Keep page hidden until splash fades */
+    transition: opacity 0.8s ease;
+  }
+  body.splash-active.page-in { 
+    opacity: 1; /* Fade in after splash */
+  }
+  
+  /* Hide page content until splash fades */
+  body.splash-active main {
+    visibility: hidden;
+  }
+  body.splash-active.page-in main {
+    visibility: visible;
+  }
+</style>
+
+<script>
+  (function() {
+    const DURATION = 2200; // Hardcoded to test Ferrari-style fade
+    const FADE = 900;     // Hardcoded fade duration
+    
+    console.log('Script loaded with DURATION:', DURATION, 'FADE:', FADE);
+    
+    document.body.classList.add('splash-active');
+    
+    function hideSplash() {
+      const splash = document.getElementById('splash');
+      if (!splash) {
+        console.error('Splash element not found');
+        return;
+      }
+      splash.classList.add('hidden');
+      setTimeout(() => {
+        document.body.classList.add('page-in');
+        document.body.classList.remove('splash-active');
+        splash.remove();
+        console.log('Splash hidden after', DURATION, 'ms');
+      }, FADE);
+    }
+    
+    // Trigger fade after DURATION
+    setTimeout(hideSplash, DURATION);
+    setTimeout(hideSplash, DURATION + 2500); // Failsafe
+  })();
+</script>
+
+<noscript><style>.splash{display:none!important}</style></noscript>

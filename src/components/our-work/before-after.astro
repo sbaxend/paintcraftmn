@@ -1,0 +1,55 @@
+---
+const q = Astro.request.url.searchParams;
+const before = q.get("before") ?? "/work/ba-before.jpg";
+const after  = q.get("after")  ?? "/work/ba-after.jpg";
+---
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    *{box-sizing:border-box} html,body{height:100%;margin:0}
+    .wrap{position:relative;height:100%;width:100%;overflow:hidden;background:#111}
+    .img{position:absolute;inset:0;background-size:cover;background-position:center}
+    .after{clip-path:inset(0 0 0 50%)}
+    .handle{position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.15) inset}
+    .knob{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:9999px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  </style>
+</head>
+<body>
+  <div class="wrap" id="wrap">
+    <div class="img before" style={`background-image:url(${before})`}></div>
+    <div class="img after"  id="after" style={`background-image:url(${after})`}></div>
+    <div class="handle" id="line"></div>
+    <div class="knob"></div>
+  </div>
+  <script>
+    const wrap = document.getElementById('wrap');
+    const after = document.getElementById('after');
+    const line = document.getElementById('line');
+    let x = 0.5, dragging = false;
+
+    const set = (t) => {
+      x = Math.max(0.05, Math.min(0.95, t));
+      after.style.clipPath = `inset(0 0 0 ${x*100}%)`;
+      line.style.left = `${x*100}%`;
+    };
+    const on = (e) => { dragging = true; move(e); };
+    const off = () => dragging = false;
+    const move = (e) => {
+      if (!dragging) return;
+      const r = wrap.getBoundingClientRect();
+      const t = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+      set(t / r.width);
+    };
+
+    wrap.addEventListener('mousedown', on);
+    wrap.addEventListener('touchstart', on, {passive:true});
+    window.addEventListener('mousemove', move);
+    window.addEventListener('touchmove', move, {passive:true});
+    window.addEventListener('mouseup', off);
+    window.addEventListener('touchend', off);
+
+    set(x);
+  </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+---
+import Base from "../layouts/Base.astro";
+
+const HERO = {
+  kicker: "About PaintCraft",
+  title: "Who We Are",
+  subtitle:
+    "Minnesota-born, brother-run painters focused on clean lines, honest pricing, and a stress-free experience.",
+  photo: "/brothersInArms.webp", // your image (the van photo) — put in /public/about/owners.jpg
+};
+
+const VALUES = [
+  {
+    title: "Craftsmanship, always",
+    desc: "Prep is 80% of a great paint job. We protect, repair, and prime so finishes look great for years.",
+    icon: "🎯",
+  },
+  {
+    title: "Clear, honest communication",
+    desc: "From estimate to final walk-through, you’ll always know what’s happening and what it costs.",
+    icon: "💬",
+  },
+  {
+    title: "Respect for your home",
+    desc: "Punctual, tidy, and careful. We leave spaces cleaner than we found them—every time.",
+    icon: "🏠",
+  },
+];
+
+const TIMELINE = [
+  { year: "2021", text: "Two brothers start PaintCraft with a brush, a ladder, and a reputation for detail." },
+  { year: "2022", text: "Expanded to full-interior services and cabinet refinishing." },
+  { year: "2023", text: "Added exterior crews and a streamlined scheduling & estimate process." },
+  { year: "Today", text: "Hundreds of happy homeowners across the Twin Cities metro—and growing." },
+];
+---
+
+<Base title="About Us | PaintCraft MN">
+  <!-- Split hero -->
+  <section class="relative">
+    <div class="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-12 px-6 lg:px-8 pt-14 lg:pt-20 pb-10">
+      <div>
+        <p class="text-blue-600 text-sm font-medium tracking-wide">{HERO.kicker}</p>
+        <h1 class="mt-2 font-serif text-5xl lg:text-7xl font-semibold text-neutral-900">{HERO.title}</h1>
+        <p class="mt-6 max-w-xl text-lg text-neutral-700">{HERO.subtitle}</p>
+
+        <div class="mt-8 rounded-2xl bg-white ring-1 ring-black/10 p-6 shadow-sm">
+          <p class="text-neutral-600 leading-relaxed">
+            We grew up here, and we treat every home like it’s our own. Our promise is simple:
+            do it right, communicate clearly, and make the whole process feel easy. Most of our work
+            comes from referrals—that’s our favorite metric.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-8 lg:mt-0">
+        <div class="aspect-[4/5] lg:aspect-[4/5] w-full rounded-3xl overflow-hidden ring-1 ring-black/10 shadow-[0_24px_80px_rgba(0,0,0,.12)]">
+          <img src={HERO.photo} alt="PaintCraft owners" class="h-full w-full object-cover" loading="eager" decoding="async" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="mx-auto max-w-7xl px-6 lg:px-8 py-12 lg:py-16">
+    <h2 class="sr-only">Our values</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+      {VALUES.map(v => (
+        <div class="rounded-2xl bg-white ring-1 ring-black/10 p-6 lg:p-7 shadow-sm">
+          <div class="text-2xl">{v.icon}</div>
+          <h3 class="mt-3 font-semibold text-lg">{v.title}</h3>
+          <p class="mt-2 text-neutral-600">{v.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Story band -->
+  <section class="bg-neutral-50/70 border-y border-neutral-200/70">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8 py-12 lg:py-16">
+      <h2 class="font-serif text-3xl md:text-4xl font-semibold">Our story</h2>
+      <p class="mt-4 max-w-3xl text-neutral-700 leading-relaxed">
+        PaintCraft started as a weekend side hustle and quickly became a full-time calling.
+        We believe great painting is equal parts prep, product, and pride. That means meticulous
+        masking, proper sanding and patching, correct primers, and premium finishes that actually last.
+        We’re small by choice so we can stay close to the work and keep quality high.
+      </p>
+    </div>
+  </section>
+
+  <!-- Trust bar -->
+  <section class="mx-auto max-w-7xl px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="rounded-xl ring-1 ring-black/10 p-4 text-center">
+        <div class="text-3xl font-bold">250+</div>
+        <div class="text-sm text-neutral-600">Projects completed</div>
+      </div>
+      <div class="rounded-xl ring-1 ring-black/10 p-4 text-center">
+        <div class="text-3xl font-bold">4.9★</div>
+        <div class="text-sm text-neutral-600">Average rating</div>
+      </div>
+      <div class="rounded-xl ring-1 ring-black/10 p-4 text-center">
+        <div class="text-3xl font-bold">Lead-Safe</div>
+        <div class="text-sm text-neutral-600">EPA Certified</div>
+      </div>
+      <div class="rounded-xl ring-1 ring-black/10 p-4 text-center">
+        <div class="text-3xl font-bold">Insured</div>
+        <div class="text-sm text-neutral-600">Up to $1M</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline (simple, elegant) -->
+  <section class="mx-auto max-w-6xl px-6 lg:px-8 pb-12 lg:pb-16">
+    <h2 class="sr-only">Timeline</h2>
+    <ol class="relative border-s border-neutral-200/80 ms-4">
+      {TIMELINE.map((t, i) => (
+        <li class="mb-8 ms-6">
+          <span class="absolute -start-2.5 mt-1 h-4 w-4 rounded-full bg-neutral-900 ring-4 ring-white"></span>
+          <div class="text-sm text-neutral-500">{t.year}</div>
+          <p class="mt-1 text-neutral-800">{t.text}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- CTA -->
+  <section class="mx-auto max-w-7xl px-6 lg:px-8 pb-20">
+    <div class="rounded-3xl bg-neutral-950 text-white p-8 md:p-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <div>
+        <h3 class="text-2xl md:text-3xl font-serif font-semibold">Ready to transform your space?</h3>
+        <p class="mt-2 text-neutral-300">Get a fast, accurate estimate—no obligation.</p>
+      </div>
+      <a href="/contact" class="inline-flex items-center rounded-full bg-white text-neutral-900 px-6 py-3 font-medium shadow hover:bg-neutral-200 transition">
+        Get Free Estimate
+      </a>
+    </div>
+  </section>
+</Base>

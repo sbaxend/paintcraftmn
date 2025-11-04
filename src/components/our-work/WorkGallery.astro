@@ -1,0 +1,83 @@
+---
+export interface Item {
+  id: string;
+  type: "interior" | "exterior" | "cabinets" | "commercial";
+  title: string;
+  img: string;
+  href?: string;
+}
+export interface Props { items: Item[]; }
+const { items = [] } = Astro.props as Props;
+
+const tabs = [
+  { id: "all", label: "All" },
+  { id: "interior", label: "Interior" },
+  { id: "exterior", label: "Exterior" },
+  { id: "cabinets", label: "Cabinets" },
+  { id: "commercial", label: "Commercial" },
+];
+---
+<section class="mx-auto max-w-6xl px-6 md:px-8 pb-16 md:pb-24">
+  <!-- Tabs -->
+  <div class="flex flex-wrap gap-2 md:gap-3 mb-6 md:mb-8">
+    {tabs.map(t => (
+      <button
+        class="svc-tab rounded-full border border-neutral-200 px-4 py-2 text-sm font-medium
+               text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50
+               data-[active=true]:bg-neutral-900 data-[active=true]:text-white"
+        data-tab={t.id}
+      >{t.label}</button>
+    ))}
+  </div>
+
+  <!-- Masonry -->
+  <div id="grid" class="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:balance]">
+    {items.map(it => (
+      <figure
+        class="mb-4 break-inside-avoid rounded-2xl overflow-hidden ring-1 ring-black/10 group cursor-zoom-in"
+        data-type={it.type}
+      >
+        <img src={it.img} alt={it.title} class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-[1.02]" loading="lazy" decoding="async" />
+        <figcaption class="p-3 text-sm text-neutral-700 bg-white/80 backdrop-blur">{it.title}</figcaption>
+      </figure>
+    ))}
+  </div>
+
+  <!-- Lightbox (portal) -->
+  <div id="lb" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80">
+    <button id="lbClose" class="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 text-black text-xl">✕</button>
+    <img id="lbImg" src="" alt="" class="max-h-[88vh] max-w-[92vw] rounded-lg shadow-2xl" />
+  </div>
+
+  <script>
+    (() => {
+      const tabs = Array.from(document.querySelectorAll('.svc-tab'));
+      const grid = document.getElementById('grid');
+      const cards = Array.from(grid.querySelectorAll('figure'));
+
+      // filter
+      const setTab = (id) => {
+        tabs.forEach(b => b.dataset.active = String(b.dataset.tab === id));
+        cards.forEach(c => {
+          const ok = id === 'all' || c.dataset.type === id;
+          c.style.display = ok ? '' : 'none';
+        });
+      };
+      tabs.forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+      setTab('all');
+
+      // lightbox
+      const lb = document.getElementById('lb');
+      const lbImg = document.getElementById('lbImg');
+      const lbClose = document.getElementById('lbClose');
+      const open = (src, alt) => { lbImg.src = src; lbImg.alt = alt||''; lb.style.display='flex'; };
+      const close = () => { lb.style.display='none'; lbImg.src=''; };
+      lbClose.addEventListener('click', close);
+      lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+      cards.forEach(c => c.addEventListener('click', () => {
+        const img = c.querySelector('img'); open(img.src, img.alt);
+      }));
+    })();
+  </script>
+</section>

@@ -1,0 +1,55 @@
+---
+import Base from "../layouts/Base.astro";
+import WorkHero from "../components/our-work/WorkHero.astro";
+import WorkGallery from "../components/our-work/WorkGallery.astro";
+import WorkCTA from "../components/our-work/WorkCTA.astro";
+
+// example images (put files in /public/work/...)
+const items = [
+  // type: "interior" | "exterior" | "cabinets" | "commercial"
+  { id: "i1", type: "interior",  title: "Modern Living Room",  img: "/work/interior-1.jpg" },
+  { id: "i2", type: "interior",  title: "Warm Bedroom",        img: "/work/interior-2.jpg" },
+  { id: "e1", type: "exterior",  title: "Lake House Refresh",  img: "/work/exterior-1.jpg" },
+  { id: "e2", type: "exterior",  title: "Curb Appeal Boost",   img: "/work/exterior-2.jpg" },
+  { id: "c1", type: "cabinets",  title: "Navy Shaker Kitchen", img: "/work/cabinets-1.jpg" },
+  { id: "c2", type: "cabinets",  title: "Matte White Update",  img: "/work/cabinets-2.jpg" },
+  { id: "b1", type: "commercial",title: "Retail Interior",     img: "/work/commercial-1.jpg" },
+];
+
+// optional: one featured before/after
+const featuredBA = {
+  before: "/work/ba-before.jpg",
+  after:  "/work/ba-after.jpg",
+  caption: "Popcorn ceiling removal + full interior repaint"
+};
+---
+
+<Base title="Our Work | PaintCraft MN">
+  <WorkHero
+    kicker="Project Gallery"
+    title="Beautiful results, built to last."
+    subtitle="A small sample of interiors, exteriors, and cabinets we’ve recently completed."
+  />
+
+  <!-- Featured Before/After (optional): drop this section if you don't have assets yet -->
+  {featuredBA && (
+    <section class="mx-auto max-w-6xl px-6 md:px-8 mb-8 md:mb-12">
+      <h3 class="sr-only">Featured transformation</h3>
+      <!-- inline before/after slider -->
+      <div class="relative rounded-3xl overflow-hidden ring-1 ring-black/10 shadow-[0_24px_80px_rgba(0,0,0,.12)]">
+        <div class="aspect-[16/9] bg-neutral-100">
+          <iframe
+            src={`/our-work/before-after?before=${encodeURIComponent(featuredBA.before)}&after=${encodeURIComponent(featuredBA.after)}`}
+            class="h-full w-full"
+            loading="lazy"
+          />
+        </div>
+      </div>
+      <p class="mt-3 text-center text-sm text-neutral-600">{featuredBA.caption}</p>
+    </section>
+  )}
+
+  <WorkGallery items={items} />
+
+  <WorkCTA />
+</Base>

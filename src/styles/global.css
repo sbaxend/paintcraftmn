@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* base */
+:root { color-scheme: light; }
+html, body { height: 100%; }
+body { @apply text-neutral-900 antialiased; }
+
+/* REMOVE the old:
+   body {opacity:0}
+   body.loaded {opacity:1}
+*/
+
+/* Splash-specific page fade */
+body.splash-active {
+  opacity: 0;
+  transition: opacity var(--splash-fade, 700ms) ease;
+}
+body.splash-active.page-in { opacity: 1; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  body.splash-active { transition: none; }
+}

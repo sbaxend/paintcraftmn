@@ -1,0 +1,110 @@
+---
+export interface Partner {
+  name: string;
+  logo: string;
+  href?: string;
+  // optional visual tweaks
+  scale?: number;     // 1 = normal, 0.95 smaller, 1.08 bigger
+  y?: number;         // vertical nudge in px (positive = down)
+}
+
+export interface Props {
+  title?: string;
+  partners?: Partner[];
+  class?: string;
+}
+
+const {
+  title = "Our Trusted Partners",
+  partners = [
+    {
+      name: "Sherwin-Williams",
+      logo: "/SherwinWilliams.webp",
+      href: "https://www.sherwin-williams.com/",
+      scale: 1.00,
+      y: 1,
+    },
+    {
+      name: "Benjamin Moore",
+      logo: "/benjaminMoore.webp",
+      href: "https://www.benjaminmoore.com/",
+      scale: 1.05, // reads slightly lighter → bump a touch
+      y: 0,
+    },
+    {
+      name: "Hirshfield’s",
+      logo: "/Hirschfields.png",
+      href: "https://www.hirshfields.com/",
+      scale: 0.90, // very wide/wordy → dial down
+      y: -1,
+    },
+  ],
+  class: className = "",
+} = Astro.props;
+---
+
+<section class={`bg-neutral-50 border-t border-neutral-200 ${className}`}>
+  <div class="mx-auto max-w-7xl px-4 md:px-6 py-12 md:py-16">
+    <h2 class="text-center text-3xl md:text-4xl font-serif text-neutral-900">
+      {title}
+    </h2>
+
+    <div
+      class="mt-8 md:mt-10 flex flex-wrap items-center justify-center gap-x-14 gap-y-8"
+      aria-label="Partner logos"
+      style="--h:44px; --h-md:56px;"
+    >
+      {partners.map((p) => {
+        const style = `
+          height: calc(var(--h) * ${p.scale ?? 1});
+          transform: translateY(${p.y ?? 0}px);
+        `;
+        const styleMd = `
+          height: calc(var(--h-md) * ${p.scale ?? 1});
+          transform: translateY(${p.y ?? 0}px);
+        `;
+        return (
+          p.href ? (
+            <a href={p.href} target="_blank" rel="noopener noreferrer" class="block">
+              <img
+                src={p.logo}
+                alt={p.name}
+                class="w-auto object-contain md:hidden"
+                style={style}
+                loading="lazy" decoding="async"
+              />
+              <img
+                src={p.logo}
+                alt=""
+                class="w-auto object-contain hidden md:block"
+                style={styleMd}
+                loading="lazy" decoding="async"
+                aria-hidden="true"
+              />
+            </a>
+          ) : (
+            <>
+              <img
+                src={p.logo}
+                alt={p.name}
+                class="w-auto object-contain md:hidden"
+                style={style}
+                loading="lazy" decoding="async"
+              />
+              <img
+                src={p.logo}
+                alt=""
+                class="w-auto object-contain hidden md:block"
+                style={styleMd}
+                loading="lazy" decoding="async"
+                aria-hidden="true"
+              />
+            </>
+          )
+        );
+      })}
+    </div>
+  </div>
+
+  <div class="border-t border-neutral-200"></div>
+</section>

@@ -1,0 +1,13 @@
+---
+export interface Props {
+  kicker?: string;
+  title?: string;
+  subtitle?: string;
+}
+const { kicker = "Our Work", title = "See the difference", subtitle = "" } = Astro.props as Props;
+---
+<section class="relative mx-auto max-w-6xl px-6 md:px-8 pt-14 md:pt-20 pb-8 md:pb-10">
+  {kicker && <p class="mb-3 text-sm font-medium tracking-wide text-blue-600">{kicker}</p>}
+  <h1 class="text-4xl md:text-6xl font-serif font-semibold tracking-tight">{title}</h1>
+  {subtitle && <p class="mt-4 max-w-2xl text-neutral-600">{subtitle}</p>}
+</section>

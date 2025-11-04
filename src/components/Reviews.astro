@@ -1,0 +1,139 @@
+---
+const reviewlink =
+  "https://www.google.com/search?sca_esv=cb97f40da6f73026&sxsrf=AE3TifPz3LOwg_Ov5tXY6mNYVKA8W66-vQ:1761753571763&si=AMgyJEtREmoPL4P1I5IDCfuA8gybfVI2d5Uj7QMwYCZHKDZ-E8AjXHMpzZeMWW2sISDxyHIsR640xR8KXKlF9ShjnUc6GOTAWSUXgm1Be95iDAIlPAZjSUA2mBXFNIVb-s3Mb8oCiJ8Y&q=PaintCraft+Reviews&sa=X&ved=2ahUKEwiArM6-48mQAxVLVTABHSP6In4Q0bkNegQIIBAE&biw=1309&bih=738&dpr=2.2";
+
+const reviews = [
+  { author_name: "Deb Wingert", author_url: reviewlink, rating: 5, relative_time_description: "17 days ago", text: "Alex and the entire PaintCraft team were simply outstanding from beginning to end—organized, punctual, competent, excellent attention to detail, highly professional, polite, honest, respectful, timely. And your outstanding team packed up your materials." },
+  { author_name: "Ami Schlamp", author_url: reviewlink, rating: 5, relative_time_description: "18 days ago", text: "The entire Paint Craft Team was incredible! From start to finish, with bidding, to painting to follow up, we couldn't have asked for a better team of painters. They were also able to make a very tight timeline happen! The actual paint job was flawless. Highly recommended and will be using them in the future!" },
+  { author_name: "Anna Le", author_url: reviewlink, rating: 5, relative_time_description: "4 months ago", text: "PaintCraft did an amazing job removing the popcorn texture and painting the trim + baseboards for our future nursery. Communication was great from the beginning—we'll definitely hire them again for our next project." },
+  { author_name: "Julie Oelschlaeger", author_url: reviewlink, rating: 5, relative_time_description: "5 months ago", text: "EXCELLENT company: They were professional, clean, friendly and did an absolutely fantastic job painting our Senior to doing more business in the future! Thanks so much!" },
+  { author_name: "Sarah Johnson", author_url: reviewlink, rating: 5, relative_time_description: "3 months ago", text: "The team at PaintCraft transformed our home with a stunning paint job. Their attention to detail and friendly service made the process a breeze. Highly recommend!" },
+  { author_name: "Michael Chen", author_url: reviewlink, rating: 5, relative_time_description: "6 months ago", text: "Fast, efficient, and top-notch quality. PaintCraft exceeded our expectations on our exterior repaint. Will definitely use again!" },
+];
+
+const rating = 5.0;
+const count = 11;
+
+const summary = [
+  "Highly professional and punctual service",
+  "Exceptional attention to detail",
+  "Flawless paint jobs with tight timelines",
+  "Excellent communication and customer care",
+];
+---
+
+<section class="relative bg-white py-16 md:py-24">
+  <div class="mx-auto max-w-7xl px-4">
+    <!-- Header -->
+    <div class="mb-10 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-baseline gap-3">
+        <span class="text-3xl font-semibold text-neutral-900">{rating.toFixed(1)}</span>
+        <div class="flex">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <svg viewBox="0 0 20 20" class={`h-5 w-5 ${i < Math.round(rating) ? 'fill-yellow-400' : 'fill-neutral-300'}`} aria-hidden="true">
+              <path d="m10 15.27 5.18 3.05-1.64-5.81 4.46-3.86-5.86-.5L10 2 7.86 8.15l-5.86.5 4.46 3.86-1.64 5.81L10 15.27z"/>
+            </svg>
+          ))}
+        </div>
+        <span class="text-sm text-neutral-500">{count} reviews on Google</span>
+      </div>
+
+      <a href={reviewlink} target="_blank" rel="noopener"
+         class="inline-flex items-center rounded-full border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-800 hover:bg-neutral-50 transition">
+        Read on Google
+      </a>
+    </div>
+
+    <!-- SINGLE RAIL (no duplicate IDs, no outer mask) -->
+    <div class="relative" style="--edge:64px;">
+      <!-- soft edge fades -->
+      <div class="pointer-events-none absolute inset-y-0 left-0 w-[var(--edge)] bg-gradient-to-r from-white to-transparent"></div>
+      <div class="pointer-events-none absolute inset-y-0 right-0 w-[var(--edge)] bg-gradient-to-l from-white to-transparent"></div>
+
+      <div
+        id="reviews-rail"
+        class="relative overflow-x-auto overflow-y-visible px-[var(--edge)] [-ms-overflow-style:none] [scrollbar-width:none]"
+        style="
+          -webkit-mask-image: linear-gradient(to right, transparent var(--edge), black calc(var(--edge) + 1px), black calc(100% - var(--edge) - 1px), transparent 100%);
+                  mask-image: linear-gradient(to right, transparent var(--edge), black calc(var(--edge) + 1px), black calc(100% - var(--edge) - 1px), transparent 100%);
+          scroll-padding-inline: var(--edge);
+        "
+        aria-label="Customer reviews"
+      >
+        <style>#reviews-rail::-webkit-scrollbar{display:none}</style>
+
+        <div class="flex gap-8 pr-2">
+          <!-- Summary card first -->
+          <article class="w-80 shrink-0 rounded-2xl bg-white p-6 shadow-xl ring-1 ring-black/5">
+            <div class="mb-3 flex items-center gap-3">
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white font-bold">S</div>
+              <div class="font-medium text-neutral-900">Summary</div>
+            </div>
+            <ul class="list-disc space-y-1 pl-5 text-sm text-neutral-800">
+              {summary.map((point) => <li>{point}</li>)}
+            </ul>
+          </article>
+
+          <!-- Review cards -->
+          {reviews.map((r) => (
+            <article class="w-80 shrink-0 rounded-2xl bg-white p-6 shadow-xl ring-1 ring-black/5">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white font-bold">
+                  {r.author_name.charAt(0)}
+                </div>
+                <div class="min-w-0">
+                  <div class="truncate font-medium text-neutral-900">{r.author_name}</div>
+                  <div class="text-xs text-neutral-500">{r.relative_time_description}</div>
+                </div>
+              </div>
+
+              <div class="mt-3 flex">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <svg viewBox="0 0 20 20" class={`h-4 w-4 ${i < r.rating ? 'fill-yellow-400' : 'fill-neutral-300'}`} aria-hidden="true">
+                    <path d="m10 15.27 5.18 3.05-1.64-5.81 4.46-3.86-5.86-.5L10 2 7.86 8.15l-5.86.5 4.46 3.86-1.64 5.81L10 15.27z"/>
+                  </svg>
+                ))}
+              </div>
+
+              <p class="mt-3 text-sm leading-relaxed text-neutral-800 break-words">{r.text}</p>
+
+              <div class="mt-4">
+                <a href={r.author_url} target="_blank" rel="noopener" class="text-sm font-medium text-blue-600 hover:underline">Read more</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <p class="mt-6 text-xs text-neutral-400">Reviews and ratings are provided by Google. © Google.</p>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    const rail = document.getElementById('reviews-rail');
+    if (!rail) return;
+
+    let rafId = 0, hovering = false, velocity = 0;
+    const MAX_SPEED = 3.0, FRICTION = 0.9;
+
+    const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+    const step = () => {
+      if (!hovering || Math.abs(velocity) < 0.01) { rafId = 0; return; }
+      const max = rail.scrollWidth - rail.clientWidth;
+      rail.scrollLeft = clamp(rail.scrollLeft + velocity, 0, max);
+      velocity *= FRICTION;
+      rafId = requestAnimationFrame(step);
+    };
+
+    rail.addEventListener('mousemove', (e) => {
+      const r = rail.getBoundingClientRect();
+      const t = ((e.clientX - r.left) / r.width) * 2 - 1;  // -1..+1
+      velocity = t * MAX_SPEED;
+      if (!hovering) { hovering = true; if (!rafId) rafId = requestAnimationFrame(step); }
+    });
+    rail.addEventListener('mouseleave', () => { hovering = false; velocity = 0; if (rafId) cancelAnimationFrame(rafId); rafId = 0; });
+    rail.addEventListener('wheel',      () => { hovering = false; velocity = 0; if (rafId) cancelAnimationFrame(rafId); rafId = 0; });
+  })();
+</script>

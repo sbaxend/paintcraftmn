@@ -1,0 +1,184 @@
+---
+type Service = {
+  id: string;
+  title: string;
+  img: string;   // /public path
+  href?: string;
+};
+
+export interface Props {
+  heading?: string;
+  sub?: string;
+  services?: Service[];
+}
+
+const {
+  heading = "Our Interior Services",
+  sub = "Everything you need for a pristine, professional finish.",
+  services = [
+    { id: "walls",     title: "Walls/Ceilings",           img: "/services/walls.jpg" },
+    { id: "trim",      title: "Trim & Molding",           img: "/services/trim.jpg" },
+    { id: "cabinets",  title: "Cabinets",                 img: "/services/cabinets.jpg" },
+    { id: "staining",  title: "Staining",                 img: "/services/staining.jpg" },
+    { id: "popcorn",   title: "Popcorn Texture Removal",  img: "/services/popcorn.jpg" },
+  ],
+} = Astro.props as Props;
+
+const sectionId = "interior-services";
+---
+
+<section id={sectionId} class="relative bg-white">
+  <!-- Full-bleed wrapper -->
+<div id="svc-wrap" class="relative -mx-6 md:-mx-10" style="--svc-gutter:3.5vw;">
+    <!-- edge fades -->
+    <div class="pointer-events-none absolute left-0 top-0 h-full w-16 md:w-20 bg-gradient-to-r from-white to-transparent"></div>
+    <div class="pointer-events-none absolute right-0 top-0 h-full w-16 md:w-20 bg-gradient-to-l from-white to-transparent"></div>
+
+    <!-- HOVER ZONES (invisible) -->
+    <div id="svc-hover-left"
+        class="hidden md:block absolute left-0 top-0 z-20 h-full w-[12vw] cursor-ew-resize"></div>
+    <div id="svc-hover-right"
+        class="hidden md:block absolute right-0 top-0 z-20 h-full w-[12vw] cursor-ew-resize"></div>
+
+    <!-- TRACK -->
+    <div
+        id="svc-track"
+        class="relative flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth
+            pb-3 pt-1 px-[var(--svc-gutter)]
+            [-ms-overflow-style:none] [scrollbar-width:none]
+            [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)]"
+        aria-label="Interior services"
+    >
+        <style>#svc-track::-webkit-scrollbar{display:none}</style>
+
+        {services.map((s) => (
+        <a href={s.href || "#"}
+            class="snap-center shrink-0 relative overflow-hidden rounded-[24px] md:rounded-[26px]
+                    w-[88vw] xs:w-[78vw] sm:w-[62vw] md:w-[46vw] lg:w-[36vw] xl:w-[30vw]
+                    aspect-[16/10] ring-1 ring-black/10 bg-transparent
+                    shadow-[0_14px_50px_rgba(0,0,0,.12)]">
+            <img src={s.img} alt="" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
+            <div class="pointer-events-none absolute inset-x-0 bottom-0 h-1/2
+                        bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,.22)_45%,rgba(0,0,0,.55)_100%)]"></div>
+            <div class="absolute inset-0 grid place-items-end p-6">
+            <h3 class="text-white text-[clamp(20px,3.0vw,34px)] font-extrabold tracking-tight drop-shadow">
+                {s.title}
+            </h3>
+            </div>
+        </a>
+        ))}
+    </div>
+    </div>
+
+</section>
+
+<!-- Interactions -->
+<script is:inline>
+(() => {
+  const track = document.getElementById('svc-track');
+  if (!track) return;
+  const prev = document.getElementById('svc-prev');
+  const next = document.getElementById('svc-next');
+
+  // ------- Tunables -------
+  const BTN_PAGE_FACTOR = 0.85;   // arrow scroll
+  const EDGE_ZONE       = 110;    // px from edge for hover-glide
+  const EDGE_SPEED_MAX  = 16;     // px/frame
+  const DRAG_FRICTION   = 0.92;   // momentum decay
+  const WHEEL_MULT      = 1.0;    // vertical wheel -> horizontal
+  // ------------------------
+
+  // Wheel → horizontal
+  track.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      track.scrollLeft += e.deltaY * WHEEL_MULT;
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  // Click/drag with momentum
+  let down = false, sx = 0, sl = 0, vx = 0, raf = 0;
+  const momentum = () => {
+    if (Math.abs(vx) < 0.2) return;
+    track.scrollLeft -= vx;
+    vx *= DRAG_FRICTION;
+    raf = requestAnimationFrame(momentum);
+  };
+  track.addEventListener('pointerdown', (e) => {
+    down = true; sx = e.clientX; sl = track.scrollLeft; vx = 0;
+    cancelAnimationFrame(raf); track.setPointerCapture(e.pointerId);
+  });
+  track.addEventListener('pointermove', (e) => {
+    if (!down) return;
+    const dx = e.clientX - sx;
+    track.scrollLeft = sl - dx;
+    vx = dx - (vx || dx);
+  });
+  track.addEventListener('pointerup', (e) => {
+    if (!down) return; down = false; track.releasePointerCapture(e.pointerId); momentum();
+  });
+  track.addEventListener('pointerleave', () => { down = false; });
+
+  // Arrows
+  const page = (dir) => track.scrollBy({ left: dir * track.clientWidth * BTN_PAGE_FACTOR, behavior: 'smooth' });
+  prev?.addEventListener('click', () => page(-1));
+  next?.addEventListener('click', () => page(+1));
+
+  // Keyboard
+  track.setAttribute('tabindex', '0');
+  track.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { page(+1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft')  { page(-1); e.preventDefault(); }
+  });
+
+  // Edge hover glide (desktop pointers)
+  if (matchMedia('(pointer:fine)').matches) {
+    let hoverRAF = 0;
+    const onMove = (e) => {
+      const rect = track.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      let speed = 0;
+      if (x < EDGE_ZONE)                     speed = -EDGE_SPEED_MAX * (1 - x / EDGE_ZONE);
+      else if (x > rect.width - EDGE_ZONE)   speed =  EDGE_SPEED_MAX * ((x - (rect.width - EDGE_ZONE)) / EDGE_ZONE);
+      cancelAnimationFrame(hoverRAF);
+      const step = () => { track.scrollLeft += speed; hoverRAF = requestAnimationFrame(step); };
+      hoverRAF = requestAnimationFrame(step);
+    };
+    const stop = () => cancelAnimationFrame(hoverRAF);
+    track.addEventListener('mousemove', onMove);
+    track.addEventListener('mouseleave', stop);
+  }
+
+  // Center-snap after wheel stop
+  let snapTO;
+  const snapCenter = () => {
+    const cards = [...track.querySelectorAll('.svc-card')];
+    if (!cards.length) return;
+    const mid = track.scrollLeft + track.clientWidth / 2;
+    const nearest = cards.reduce((best, el) => {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + window.scrollX + rect.width / 2;
+      const d = Math.abs(cx - mid - window.scrollX);
+      return d < best.d ? { el, d } : best;
+    }, { el: cards[0], d: Infinity }).el;
+    nearest?.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
+  };
+  track.addEventListener('wheel', () => { clearTimeout(snapTO); snapTO = setTimeout(snapCenter, 140); }, { passive: true });
+
+  // Parallax hover
+  const cards = track.querySelectorAll('.svc-card');
+  cards.forEach((card) => {
+    const lift = card.querySelector('.card-lift');
+    if (!lift) return;
+    card.addEventListener('mousemove', (e) => {
+      const r = (card as HTMLElement).getBoundingClientRect();
+      const rx = (e.clientX - r.left) / r.width - 0.5;
+      const ry = (e.clientY - r.top) / r.height - 0.5;
+      (lift as HTMLElement).style.transform = `translate3d(${rx * 8}px, ${ry * 8}px, 0) scale(1.02)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      (lift as HTMLElement).style.transform = 'translate3d(0,0,0) scale(1)';
+    });
+  });
+})();
+</script>

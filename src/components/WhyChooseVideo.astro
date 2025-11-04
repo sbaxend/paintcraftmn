@@ -1,0 +1,160 @@
+---
+const {
+  title = "Why Choose PaintCraft?",
+  body = `Our team combines exceptional craftsmanship with clear communication and reliable service,
+allowing you to focus on what truly matters—enjoying your beautifully refreshed environment.
+We’re committed to professionalism, intentionality, and peace of mind at every step.`,
+  videoSrc = "/why-video-placeholder.mp4",
+  poster   = "/why-video-poster.jpg"
+} = Astro.props;
+---
+
+<section id="why-hero" class="relative w-full h-[80vh] md:h-[90vh] overflow-hidden bg-white">
+  <!-- Background video -->
+  <video
+    class="absolute inset-0 h-full w-full object-cover"
+    src={videoSrc}
+    poster={poster}
+    autoplay
+    muted
+    loop
+    playsinline
+  ></video>
+
+  <!-- Fade into/out of white for seamless transition -->
+  <div class="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
+  <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+
+  <!-- Contrast overlay -->
+  <div class="absolute inset-0 bg-gradient-to-b from-black/25 via-black/45 to-black/70"></div>
+
+  <!-- Text overlay -->
+  <div class="relative z-10 flex h-full items-center justify-center">
+    <div class="px-6 text-center max-w-4xl">
+      <h2
+        id="why-title"
+        class="font-serif font-semibold text-white drop-shadow-2xl
+               text-4xl md:text-6xl leading-tight"
+        data-split="chars"
+      >
+        {title}
+      </h2>
+
+      <p
+        id="why-body"
+        class="mt-6 text-neutral-100/95 drop-shadow
+               text-lg md:text-xl leading-relaxed whitespace-pre-line"
+        data-split="words"
+      >
+        {body}
+      </p>
+
+      <a href="/contact"
+         class="mt-8 inline-flex items-center justify-center rounded-full
+                bg-white/90 text-neutral-900 font-medium px-6 py-3
+                hover:bg-white transition shadow-lg backdrop-blur">
+        Get a Free Estimate
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- Animation core --- */
+  .reveal-char,
+  .reveal-word {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    filter: blur(6px);
+    animation: var(--anim, rise) 680ms var(--ease, cubic-bezier(.2,.7,.2,1)) forwards;
+    animation-delay: var(--d, 0ms);
+    will-change: transform, opacity, filter;
+    display: inline-block;
+  }
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+
+  /* subtle shimmer underline for the title once revealed */
+  .underline-after {
+    position: relative;
+  }
+  .underline-after::after {
+    content: "";
+    position: absolute;
+    left: 50%; bottom: -0.3em;
+    width: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #fff, transparent);
+    transform: translateX(-50%);
+    animation: underline 900ms 300ms cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  @keyframes underline { to { width: 70%; } }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-char, .reveal-word {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+    }
+    .underline-after::after { display: none; }
+  }
+</style>
+
+<!-- Split + observe (runs client-side only) -->
+<script is:inline>
+  (() => {
+    const root = document.getElementById("why-hero");
+    if (!root) return;
+
+    // Split text nodes into spans (chars or words)
+    function split(el, mode = "chars") {
+      if (!el) return [];
+      const text = el.textContent ?? "";
+      el.textContent = "";
+
+      const tokens = mode === "words"
+        ? text.split(/(\s+)/)            // keep spaces
+        : [...text];                     // individual characters
+
+      const nodes = [];
+      let idx = 0;
+
+      for (const t of tokens) {
+        // Keep spaces as-is so line breaks behave naturally
+        if (mode === "words" && /^\s+$/.test(t)) {
+          el.appendChild(document.createTextNode(t));
+          continue;
+        }
+        const span = document.createElement("span");
+        span.textContent = t;
+        span.className = mode === "words" ? "reveal-word" : "reveal-char";
+        // Stagger curve: tighter at start, looser later
+        const base = mode === "words" ? 22 : 14;
+        span.style.setProperty("--d", `${Math.round(idx ** 0.9 * base)}ms`);
+        el.appendChild(span);
+        nodes.push(span);
+        idx++;
+      }
+      return nodes;
+    }
+
+    const title = document.getElementById("why-title");
+    const body  = document.getElementById("why-body");
+
+    // Prepare splits immediately (hidden until observed)
+    const titleSpans = split(title, title?.dataset.split || "chars");
+    const bodySpans  = split(body,  body?.dataset.split  || "words");
+
+    // IntersectionObserver to trigger animation once
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        title?.classList.add("underline-after");
+        io.disconnect();
+      });
+    }, { threshold: 0.35 });
+    io.observe(root);
+  })();
+</script>
