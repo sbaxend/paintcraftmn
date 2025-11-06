@@ -1,75 +1,188 @@
 ---
 const {
   logoSrc = "/paintcraft_logo.webp",
-  duration = 2200, // how long the logo stays visible (from Base.astro)
-  fadeMs = 900,   // how long the page fade takes (from Base.astro)
 } = Astro.props;
 ---
 
-<div id="splash" class="splash">
-  <img src={logoSrc} alt="PaintCraft" class="h-20 w-auto" />
+<div id="splash-screen" class="splash-screen">
+  <div class="splash-logo-container">
+    <img src={logoSrc} alt="PaintCraft" class="splash-logo" />
+  </div>
 </div>
 
 <style is:global>
-  .splash {
+  /* Splash overlay - pure black */
+  .splash-screen {
     position: fixed;
     inset: 0;
-    display: grid;
-    place-items: center;
-    background: #000; /* Ferrari-style black background */
-    z-index: 9999;
-    transition: opacity 0.8s ease;
+    z-index: 99999;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  .splash.hidden { 
-    opacity: 0; 
-    visibility: hidden; 
+
+  /* Hide immediately on load, then control with JS */
+  .splash-screen.hidden {
+    display: none;
   }
-  
-  body.splash-active {
-    opacity: 0; /* Keep page hidden until splash fades */
-    transition: opacity 0.8s ease;
+
+  /* Logo container */
+  .splash-logo-container {
+    position: relative;
   }
-  body.splash-active.page-in { 
-    opacity: 1; /* Fade in after splash */
+
+  /* Logo styling */
+  .splash-logo {
+    width: auto;
+    height: 70px;
+    opacity: 0;
+    transform: scale(0.92);
+    filter: brightness(1) drop-shadow(0 0 30px rgba(196, 131, 86, 0.35));
   }
-  
-  /* Hide page content until splash fades */
-  body.splash-active main {
+
+  /* Logo fade in */
+  .splash-logo.animate-in {
+    animation: logoIn 1000ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  /* Logo fade out */
+  .splash-logo.animate-out {
+    animation: logoOut 800ms cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+  }
+
+  @keyframes logoIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes logoOut {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.08);
+    }
+  }
+
+  /* Background fade out */
+  .splash-screen.fade-bg {
+    animation: bgFadeOut 900ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes bgFadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* Page content control */
+  body.splash-loading {
+    overflow: hidden;
+  }
+
+  body.splash-loading main,
+  body.splash-loading header,
+  body.splash-loading footer {
     visibility: hidden;
   }
-  body.splash-active.page-in main {
-    visibility: visible;
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .splash-logo.animate-in,
+    .splash-logo.animate-out {
+      animation-duration: 200ms;
+    }
+    .splash-screen.fade-bg {
+      animation-duration: 300ms;
+    }
   }
 </style>
 
 <script>
   (function() {
-    const DURATION = 2200; // Hardcoded to test Ferrari-style fade
-    const FADE = 900;     // Hardcoded fade duration
+    'use strict';
     
-    console.log('Script loaded with DURATION:', DURATION, 'FADE:', FADE);
+    const splash = document.getElementById('splash-screen');
+    const logo = splash?.querySelector('.splash-logo');
     
-    document.body.classList.add('splash-active');
-    
-    function hideSplash() {
-      const splash = document.getElementById('splash');
-      if (!splash) {
-        console.error('Splash element not found');
-        return;
-      }
+    if (!splash || !logo) return;
+
+    // Lock body scroll
+    document.body.classList.add('splash-loading');
+
+    // Ferrari timing (in milliseconds)
+    const LOGO_FADE_IN = 1000;   // Logo fade in duration
+    const LOGO_HOLD = 800;       // How long logo stays visible
+    const LOGO_FADE_OUT = 800;   // Logo fade out duration  
+    const BG_FADE = 900;         // Background fade duration (starts after logo gone)
+    const CLEANUP_DELAY = 100;   // Small buffer before cleanup
+
+    let timeline = 0;
+
+    // Step 1: Fade in logo (black background stays solid)
+    setTimeout(() => {
+      logo.classList.add('animate-in');
+    }, 50);
+
+    timeline += LOGO_FADE_IN;
+
+    // Step 2: Hold logo at full opacity (black still solid)
+    timeline += LOGO_HOLD;
+
+    // Step 3: Fade out logo (black STILL solid)
+    setTimeout(() => {
+      logo.classList.remove('animate-in');
+      logo.classList.add('animate-out');
+    }, timeline);
+
+    timeline += LOGO_FADE_OUT;
+
+    // Step 4: NOW fade out black background (revealing page)
+    setTimeout(() => {
+      splash.classList.add('fade-bg');
+    }, timeline);
+
+    timeline += BG_FADE;
+
+    // Step 5: Clean up and show page
+    setTimeout(() => {
+      document.body.classList.remove('splash-loading');
       splash.classList.add('hidden');
-      setTimeout(() => {
-        document.body.classList.add('page-in');
-        document.body.classList.remove('splash-active');
-        splash.remove();
-        console.log('Splash hidden after', DURATION, 'ms');
-      }, FADE);
-    }
-    
-    // Trigger fade after DURATION
-    setTimeout(hideSplash, DURATION);
-    setTimeout(hideSplash, DURATION + 2500); // Failsafe
+      splash.remove();
+    }, timeline + CLEANUP_DELAY);
+
+    // Failsafe - force cleanup after 5 seconds
+    setTimeout(() => {
+      if (document.body.classList.contains('splash-loading')) {
+        document.body.classList.remove('splash-loading');
+        if (splash.parentNode) {
+          splash.classList.add('hidden');
+          splash.remove();
+        }
+      }
+    }, 5000);
+
   })();
 </script>
 
-<noscript><style>.splash{display:none!important}</style></noscript>
+<noscript>
+  <style>
+    .splash-screen { display: none !important; }
+    body.splash-loading { overflow: auto !important; }
+    body.splash-loading main,
+    body.splash-loading header,
+    body.splash-loading footer { visibility: visible !important; }
+  </style>
+</noscript>

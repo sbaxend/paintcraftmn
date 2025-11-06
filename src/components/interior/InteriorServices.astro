@@ -2,183 +2,320 @@
 type Service = {
   id: string;
   title: string;
-  img: string;   // /public path
+  img: string;
   href?: string;
 };
 
 export interface Props {
   heading?: string;
   sub?: string;
-  services?: Service[];
+  services: Service[];
+  minHeight?: string;
 }
 
 const {
   heading = "Our Interior Services",
   sub = "Everything you need for a pristine, professional finish.",
-  services = [
-    { id: "walls",     title: "Walls/Ceilings",           img: "/services/walls.jpg" },
-    { id: "trim",      title: "Trim & Molding",           img: "/services/trim.jpg" },
-    { id: "cabinets",  title: "Cabinets",                 img: "/services/cabinets.jpg" },
-    { id: "staining",  title: "Staining",                 img: "/services/staining.jpg" },
-    { id: "popcorn",   title: "Popcorn Texture Removal",  img: "/services/popcorn.jpg" },
-  ],
+  services = [],
+  minHeight = "min-h-[80vh]"
 } = Astro.props as Props;
 
-const sectionId = "interior-services";
+const items = services.map(s => ({
+  ...s,
+  href: s.href ?? `/interior/${s.id}`,
+}));
 ---
 
-<section id={sectionId} class="relative bg-white">
-  <!-- Full-bleed wrapper -->
-<div id="svc-wrap" class="relative -mx-6 md:-mx-10" style="--svc-gutter:3.5vw;">
-    <!-- edge fades -->
-    <div class="pointer-events-none absolute left-0 top-0 h-full w-16 md:w-20 bg-gradient-to-r from-white to-transparent"></div>
-    <div class="pointer-events-none absolute right-0 top-0 h-full w-16 md:w-20 bg-gradient-to-l from-white to-transparent"></div>
-
-    <!-- HOVER ZONES (invisible) -->
-    <div id="svc-hover-left"
-        class="hidden md:block absolute left-0 top-0 z-20 h-full w-[12vw] cursor-ew-resize"></div>
-    <div id="svc-hover-right"
-        class="hidden md:block absolute right-0 top-0 z-20 h-full w-[12vw] cursor-ew-resize"></div>
-
-    <!-- TRACK -->
+<section class="relative bg-neutral-50">
+  <div id="svc-wrap" class="relative w-full overflow-hidden">
     <div
-        id="svc-track"
-        class="relative flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth
-            pb-3 pt-1 px-[var(--svc-gutter)]
-            [-ms-overflow-style:none] [scrollbar-width:none]
-            [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)]"
-        aria-label="Interior services"
+      id="svc-track"
+      class={`flex transition-transform duration-700 ease-out ${minHeight}`}
+      style="will-change: transform;"
     >
-        <style>#svc-track::-webkit-scrollbar{display:none}</style>
+      {items.map((s, i) => (
+        <article class={`slide ${i === 0 ? 'is-active' : ''} relative shrink-0 w-full ${minHeight}`}>
+          <!-- Full bleed image -->
+          <img 
+            src={s.img} 
+            alt={s.title}
+            class="absolute inset-0 h-full w-full object-cover"
+            loading="lazy" 
+            decoding="async" 
+          />
+          
+          <!-- Gradient overlay -->
+          <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
 
-        {services.map((s) => (
-        <a href={s.href || "#"}
-            class="snap-center shrink-0 relative overflow-hidden rounded-[24px] md:rounded-[26px]
-                    w-[88vw] xs:w-[78vw] sm:w-[62vw] md:w-[46vw] lg:w-[36vw] xl:w-[30vw]
-                    aspect-[16/10] ring-1 ring-black/10 bg-transparent
-                    shadow-[0_14px_50px_rgba(0,0,0,.12)]">
-            <img src={s.img} alt="" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
-            <div class="pointer-events-none absolute inset-x-0 bottom-0 h-1/2
-                        bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,.22)_45%,rgba(0,0,0,.55)_100%)]"></div>
-            <div class="absolute inset-0 grid place-items-end p-6">
-            <h3 class="text-white text-[clamp(20px,3.0vw,34px)] font-extrabold tracking-tight drop-shadow">
-                {s.title}
-            </h3>
+          <!-- Content container -->
+          <div class="relative z-10 h-full w-full flex items-end md:items-center">
+            <div class="w-full px-6 md:px-12 py-12 md:py-16 max-w-7xl mx-auto">
+              <div class="slide-content max-w-2xl">
+                <!-- Overline text -->
+                <p class="stagger text-white/90 text-xs md:text-sm font-semibold tracking-widest uppercase mb-2 md:mb-4">
+                  {heading}
+                </p>
+                
+                <!-- Large bold title -->
+                <h2 class="stagger text-white text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.9] mb-4 md:mb-6">
+                  {s.title}
+                </h2>
+                
+                <!-- Subtitle -->
+                <p class="stagger text-white/90 text-sm md:text-lg max-w-xl mb-6 md:mb-8 leading-relaxed">
+                  {sub}
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="stagger flex gap-3 flex-wrap">
+                  <a 
+                    href={s.href}
+                    class="inline-flex items-center justify-center rounded-full bg-white px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-semibold text-neutral-900 hover:bg-neutral-100 transition-all hover:scale-105 shadow-lg"
+                  >
+                    Learn More
+                  </a>
+                  <a 
+                    href="/contact"
+                    class="inline-flex items-center justify-center rounded-full border-2 border-white bg-transparent px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-semibold text-white hover:bg-white hover:text-neutral-900 transition-all"
+                  >
+                    Schedule Now
+                  </a>
+                </div>
+              </div>
             </div>
-        </a>
-        ))}
-    </div>
+          </div>
+        </article>
+      ))}
     </div>
 
+    <!-- Navigation arrows -->
+    <button 
+      id="svc-prev"
+      class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-30 shadow-xl"
+      aria-label="Previous slide"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+
+    <button 
+      id="svc-next"
+      class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-30 shadow-xl"
+      aria-label="Next slide"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </button>
+
+    <!-- Dots indicator -->
+    <div id="svc-dots" class="absolute bottom-6 md:bottom-8 left-6 md:left-12 flex gap-2 md:gap-3 z-30">
+      {items.map((_, i) => (
+        <button 
+          class="h-2 w-2 md:h-3 md:w-3 rounded-full bg-white/40 hover:bg-white/70 transition-all aria-[current=true]:bg-white aria-[current=true]:w-6 md:aria-[current=true]:w-8"
+          aria-current={i === 0 ? "true" : "false"} 
+          aria-label={`Go to slide ${i + 1}`}
+        ></button>
+      ))}
+    </div>
+
+    <!-- Pause/Play button -->
+    <button 
+      id="svc-auto"
+      class="absolute bottom-6 md:bottom-8 right-6 md:right-12 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/30 transition-all z-30"
+      aria-label="Pause autoplay" 
+      data-state="playing" 
+      title="Pause/Play"
+    >
+      <svg class="icon-pause h-4 w-4 md:h-5 md:w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+      </svg>
+      <svg class="icon-play h-4 w-4 md:h-5 md:w-5 text-white hidden" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+    </button>
+  </div>
 </section>
 
-<!-- Interactions -->
 <script is:inline>
 (() => {
+  const wrap = document.getElementById('svc-wrap');
   const track = document.getElementById('svc-track');
-  if (!track) return;
   const prev = document.getElementById('svc-prev');
   const next = document.getElementById('svc-next');
+  const dots = Array.from(document.querySelectorAll('#svc-dots > button'));
+  const autoBtn = document.getElementById('svc-auto');
+  
+  if (!track || !prev || !next || !autoBtn) return;
 
-  // ------- Tunables -------
-  const BTN_PAGE_FACTOR = 0.85;   // arrow scroll
-  const EDGE_ZONE       = 110;    // px from edge for hover-glide
-  const EDGE_SPEED_MAX  = 16;     // px/frame
-  const DRAG_FRICTION   = 0.92;   // momentum decay
-  const WHEEL_MULT      = 1.0;    // vertical wheel -> horizontal
-  // ------------------------
+  const slides = Array.from(track.children);
+  const count = slides.length;
+  const AUTO_MS = 5000;
 
-  // Wheel → horizontal
-  track.addEventListener('wheel', (e) => {
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      track.scrollLeft += e.deltaY * WHEEL_MULT;
-      e.preventDefault();
+  let index = 0;
+  let autoTimer = null;
+  let pausedByUser = false;
+
+  const setActive = (i) => {
+    slides.forEach((slide, j) => slide.classList.toggle('is-active', j === i));
+    dots.forEach((d, j) => d.setAttribute('aria-current', String(j === i)));
+  };
+
+  const go = (i) => {
+    index = (i % count + count) % count;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    setActive(index);
+  };
+
+  const startAuto = () => {
+    if (pausedByUser) return;
+    stopAuto();
+    autoTimer = setInterval(() => go(index + 1), AUTO_MS);
+  };
+
+  const stopAuto = () => {
+    if (autoTimer) clearInterval(autoTimer);
+  };
+
+  // Initialize
+  setActive(0);
+  startAuto();
+
+  // Navigation
+  prev.addEventListener('click', () => {
+    go(index - 1);
+    startAuto();
+  });
+
+  next.addEventListener('click', () => {
+    go(index + 1);
+    startAuto();
+  });
+
+  dots.forEach((d, i) => d.addEventListener('click', () => {
+    go(i);
+    startAuto();
+  }));
+
+  // Keyboard navigation
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') {
+      go(index + 1);
+      startAuto();
     }
-  }, { passive: false });
+    if (e.key === 'ArrowLeft') {
+      go(index - 1);
+      startAuto();
+    }
+  });
 
-  // Click/drag with momentum
-  let down = false, sx = 0, sl = 0, vx = 0, raf = 0;
-  const momentum = () => {
-    if (Math.abs(vx) < 0.2) return;
-    track.scrollLeft -= vx;
-    vx *= DRAG_FRICTION;
-    raf = requestAnimationFrame(momentum);
+  // Touch swipe
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  track.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  track.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }, { passive: true });
+
+  const handleSwipe = () => {
+    if (touchEndX < touchStartX - 50) {
+      go(index + 1);
+      startAuto();
+    }
+    if (touchEndX > touchStartX + 50) {
+      go(index - 1);
+      startAuto();
+    }
   };
-  track.addEventListener('pointerdown', (e) => {
-    down = true; sx = e.clientX; sl = track.scrollLeft; vx = 0;
-    cancelAnimationFrame(raf); track.setPointerCapture(e.pointerId);
-  });
-  track.addEventListener('pointermove', (e) => {
-    if (!down) return;
-    const dx = e.clientX - sx;
-    track.scrollLeft = sl - dx;
-    vx = dx - (vx || dx);
-  });
-  track.addEventListener('pointerup', (e) => {
-    if (!down) return; down = false; track.releasePointerCapture(e.pointerId); momentum();
-  });
-  track.addEventListener('pointerleave', () => { down = false; });
 
-  // Arrows
-  const page = (dir) => track.scrollBy({ left: dir * track.clientWidth * BTN_PAGE_FACTOR, behavior: 'smooth' });
-  prev?.addEventListener('click', () => page(-1));
-  next?.addEventListener('click', () => page(+1));
+  // Pause on hover
+  wrap.addEventListener('mouseenter', stopAuto);
+  wrap.addEventListener('mouseleave', startAuto);
 
-  // Keyboard
-  track.setAttribute('tabindex', '0');
-  track.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') { page(+1); e.preventDefault(); }
-    if (e.key === 'ArrowLeft')  { page(-1); e.preventDefault(); }
-  });
-
-  // Edge hover glide (desktop pointers)
-  if (matchMedia('(pointer:fine)').matches) {
-    let hoverRAF = 0;
-    const onMove = (e) => {
-      const rect = track.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      let speed = 0;
-      if (x < EDGE_ZONE)                     speed = -EDGE_SPEED_MAX * (1 - x / EDGE_ZONE);
-      else if (x > rect.width - EDGE_ZONE)   speed =  EDGE_SPEED_MAX * ((x - (rect.width - EDGE_ZONE)) / EDGE_ZONE);
-      cancelAnimationFrame(hoverRAF);
-      const step = () => { track.scrollLeft += speed; hoverRAF = requestAnimationFrame(step); };
-      hoverRAF = requestAnimationFrame(step);
-    };
-    const stop = () => cancelAnimationFrame(hoverRAF);
-    track.addEventListener('mousemove', onMove);
-    track.addEventListener('mouseleave', stop);
-  }
-
-  // Center-snap after wheel stop
-  let snapTO;
-  const snapCenter = () => {
-    const cards = [...track.querySelectorAll('.svc-card')];
-    if (!cards.length) return;
-    const mid = track.scrollLeft + track.clientWidth / 2;
-    const nearest = cards.reduce((best, el) => {
-      const rect = el.getBoundingClientRect();
-      const cx = rect.left + window.scrollX + rect.width / 2;
-      const d = Math.abs(cx - mid - window.scrollX);
-      return d < best.d ? { el, d } : best;
-    }, { el: cards[0], d: Infinity }).el;
-    nearest?.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
-  };
-  track.addEventListener('wheel', () => { clearTimeout(snapTO); snapTO = setTimeout(snapCenter, 140); }, { passive: true });
-
-  // Parallax hover
-  const cards = track.querySelectorAll('.svc-card');
-  cards.forEach((card) => {
-    const lift = card.querySelector('.card-lift');
-    if (!lift) return;
-    card.addEventListener('mousemove', (e) => {
-      const r = (card as HTMLElement).getBoundingClientRect();
-      const rx = (e.clientX - r.left) / r.width - 0.5;
-      const ry = (e.clientY - r.top) / r.height - 0.5;
-      (lift as HTMLElement).style.transform = `translate3d(${rx * 8}px, ${ry * 8}px, 0) scale(1.02)`;
-    });
-    card.addEventListener('mouseleave', () => {
-      (lift as HTMLElement).style.transform = 'translate3d(0,0,0) scale(1)';
-    });
+  // Play/Pause toggle
+  autoBtn.addEventListener('click', () => {
+    pausedByUser = !pausedByUser;
+    autoBtn.dataset.state = pausedByUser ? 'paused' : 'playing';
+    autoBtn.querySelector('.icon-play')?.classList.toggle('hidden', !pausedByUser);
+    autoBtn.querySelector('.icon-pause')?.classList.toggle('hidden', pausedByUser);
+    
+    if (pausedByUser) {
+      stopAuto();
+    } else {
+      startAuto();
+    }
   });
 })();
 </script>
+
+<style>
+  /* Ensure slides fill width */
+  #svc-track > article { 
+    width: 100%;
+  }
+
+  /* Text entrance animations */
+  .slide .slide-content {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  
+  .slide .slide-content .stagger {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .slide.is-active .slide-content {
+    animation: slideContentIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.2s;
+  }
+
+  .slide.is-active .slide-content .stagger:nth-child(1) { 
+    animation: staggerIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.3s;
+  }
+  
+  .slide.is-active .slide-content .stagger:nth-child(2) { 
+    animation: staggerIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.5s;
+  }
+  
+  .slide.is-active .slide-content .stagger:nth-child(3) { 
+    animation: staggerIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.7s;
+  }
+  
+  .slide.is-active .slide-content .stagger:nth-child(4) { 
+    animation: staggerIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.9s;
+  }
+
+  @keyframes slideContentIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes staggerIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slide .slide-content,
+    .slide .slide-content .stagger {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>

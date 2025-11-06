@@ -5,11 +5,6 @@
 html, body { height: 100%; }
 body { @apply text-neutral-900 antialiased; }
 
-/* REMOVE the old:
-   body {opacity:0}
-   body.loaded {opacity:1}
-*/
-
 /* Splash-specific page fade */
 body.splash-active {
   opacity: 0;
@@ -20,4 +15,46 @@ body.splash-active.page-in { opacity: 1; }
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   body.splash-active { transition: none; }
+}
+
+/* ===== Slider text entrance animation ===== */
+.slide .slide-content,
+.slide .slide-content .stagger {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity .55s cubic-bezier(.2,.8,.2,1),
+    transform .55s cubic-bezier(.2,.8,.2,1);
+}
+.slide.is-active .slide-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: .08s;
+}
+.slide.is-active .slide-content .stagger:nth-child(1) { transition-delay: .18s; }
+.slide.is-active .slide-content .stagger:nth-child(2) { transition-delay: .26s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .slide .slide-content,
+  .slide .slide-content .stagger {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ===== NAVBAR DROPDOWN STYLES ===== */
+[role="menu"]::before {
+  content: "";
+  position: absolute;
+  top: -0.5rem;              /* -top-2 */
+  left: 50%;                 /* left-1/2 */
+  transform: translateX(-50%) rotate(45deg); /* -translate-x-1/2 + rotate-45 */
+  width: 1rem;               /* w-4 */
+  height: 1rem;              /* h-4 */
+  background: #ffffff;       /* bg-white */
+  border: 1px solid rgba(229,229,229,0.7);   /* ring-neutral-200/70 */
+  /* optional subtle lift to match Tailwind ring look */
+  box-shadow: 0 0 0 0 rgba(0,0,0,0.0);
+  pointer-events: none;
 }

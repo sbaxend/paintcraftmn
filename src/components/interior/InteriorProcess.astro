@@ -13,7 +13,6 @@ export interface Props {
 }
 
 const {
-  heading = "We handle everything",
   stages = [
     {
       id: "prep",
@@ -43,8 +42,6 @@ const stageIds = stages.map((s) => s.id);
 <section id={sectionId} class="relative bg-white">
   <!-- Tight heading so the effect starts sooner -->
   <div class="mx-auto max-w-7xl px-6 pt-6 pb-3">
-    <h2 class="text-center font-serif text-3xl md:text-5xl font-semibold text-neutral-900">
-      {heading}
     </h2>
   </div>
 

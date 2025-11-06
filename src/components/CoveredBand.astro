@@ -1,9 +1,9 @@
 ---
 /**
  * CoveredBand — premium features strip
- * - Large, uniform icons
+ * - Large, uniform icons in brand copper color
  * - Even card heights, smooth hover, keyboard focus
- * - Works with PNG/WEBP icons (auto-forced to black)
+ * - Works with PNG/WEBP icons (colored via CSS filters)
  * - Optional bgImage for photo variant
  */
 
@@ -20,13 +20,13 @@ export interface Props {
 }
 
 const {
-  heading = "We’ve got you covered",
+  heading = "We've got you covered",
   items = [
     { img: "/craftmanship.webp", title: "Guaranteed Craftsmanship", desc: "Worry-free results with a 3-year paint warranty" },
     { img: "/exellence.webp",   title: "Excellence at Every Stage", desc: "Professional coordination from start to finish" },
     { img: "/quality.webp",     title: "Highest Quality Standards", desc: "Premium paints & tested methods for unmatched results" },
   ],
-  bgImage, // if provided, we’ll render a dark overlay variant
+  bgImage, // if provided, we'll render a dark overlay variant
 } = Astro.props as Props;
 ---
 
@@ -51,24 +51,24 @@ const {
       {items.map((item) => (
         <article
           class={`group relative overflow-hidden rounded-[24px]
-                  ${bgImage ? 'bg-white/10 ring-1 ring-white/15' : 'bg-white ring-1 ring-neutral-200/70'}
+                  ${bgImage ? 'bg-white/10 ring-1 ring-white/15' : 'bg-white ring-1 ring-[#C48356]/20'}
                   shadow-sm transition-all duration-300
-                  hover:-translate-y-1 hover:shadow-lg
+                  hover:-translate-y-1 hover:shadow-xl hover:ring-[#C48356]/40
                   focus-within:-translate-y-1`}
           style="min-height: 320px"
         >
-          <!-- subtle top shine like Behr/Meta cards -->
-          <div class="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <!-- subtle top shine with copper tint -->
+          <div class="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[#C48356]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
           <div class="flex h-full flex-col items-center justify-start px-6 md:px-8 py-8 text-center">
-            <!-- ICON: uniform box + forced black; scales nicely -->
-            <div class="mb-8 flex h-48 w-48 items-center justify-center rounded-full bg-neutral-100/70 ring-1 ring-neutral-200/70 group-hover:bg-neutral-100 transition-colors duration-300">
+            <!-- ICON: copper background with icon colored to match -->
+            <div class="mb-8 flex h-48 w-48 items-center justify-center rounded-full bg-[#C48356]/10 ring-2 ring-[#C48356]/30 group-hover:bg-[#C48356]/15 group-hover:ring-[#C48356]/50 transition-all duration-300">
 
               <img
                 src={item.img}
                 alt=""
                 role="presentation"
-                class="h-4/5 w-4/5 object-contain brightness-0 is-photo:invert is-photo:brightness-100"
+                class="h-4/5 w-4/5 object-contain icon-copper"
                 loading="lazy"
                 decoding="async"
               />
@@ -84,16 +84,35 @@ const {
 
             <!-- focus ring for keyboard users -->
             <span class="absolute inset-0 rounded-[24px] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
-                         focus-visible:ring-neutral-900/20 focus-visible:ring-offset-white" tabindex="-1"></span>
+                         focus-visible:ring-[#C48356] focus-visible:ring-offset-white" tabindex="-1"></span>
           </div>
         </article>
       ))}
     </div>
   </div>
-
-  <style is:inline>
-    /* When photo background is used, switch some tokens */
-    .is-photo .ring-neutral-200\/70 { --tw-ring-color: rgba(255,255,255,0.2) }
-    .is-photo .text-neutral-900 { color: white }
-  </style>
 </section>
+
+<style>
+  /* Color icons to match #C48356 (copper/terracotta) */
+  .icon-copper {
+    filter: brightness(0) saturate(100%) 
+            invert(54%) sepia(27%) saturate(1089%) 
+            hue-rotate(335deg) brightness(92%) contrast(88%);
+  }
+  
+  /* For photo variant, make icons white */
+  .is-photo .icon-copper {
+    filter: brightness(0) invert(1);
+  }
+
+  /* Update ring colors for photo variant */
+  .is-photo .ring-\[\#C48356\]\/20,
+  .is-photo .ring-\[\#C48356\]\/30,
+  .is-photo .ring-\[\#C48356\]\/50 {
+    --tw-ring-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .is-photo .text-neutral-900 { 
+    color: white;
+  }
+</style>
