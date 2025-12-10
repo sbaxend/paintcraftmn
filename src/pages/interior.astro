@@ -5,6 +5,12 @@ import InteriorHero from "../components/interior/InteriorHero.astro";
 import InteriorProcess from "../components/interior/InteriorProcess.astro";
 import InteriorServices from "../components/interior/InteriorServices.astro";
 import CoveredBand from "../components/CoveredBand.astro";
+import FAQinterior from "../components/interior/FAQinterior.astro";
+import InteriorProcessBubble from "../components/interior/InteriorProcessBubble.astro"
+import InteriorProcessBubbleSlide from "../components/interior/InteriorProcessBubbleSlide.astro"
+import InteriorServicesBubbleFlow from "../components/interior/InteriorServicesBubbleFlow.astro";
+import InteriorBlurb from "../components/interior/InteriorBlurb.astro";
+import InteriorProcessBubbleClick from "../components/interior/InteriorProcessBubbleClick.astro";
 
 const interiorService = [
   { id: "walls",    title: "Walls & Ceilings",        img: "/walls_serviceTile.png" },
@@ -18,53 +24,31 @@ const interiorService = [
 <Base title="Interior Painting | PaintCraft MN">
   <InteriorHero
     title="Interior Painting"
-    bg="/hero.png"
+    bg="/interior-home-tile.png"
   />
 
-  <!-- Floating text bubble positioned on the seam -->
-  <section class="relative -mt-28 z-10 px-6">
-    <div class="mx-auto max-w-4xl rounded-3xl bg-gradient-to-br from-white to-neutral-50 px-8 py-8 shadow-2xl ring-1 ring-[#C48356]/30 backdrop-blur-sm">
-      <!-- Decorative accent line -->
-      <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 h-1 w-24 bg-gradient-to-r from-transparent via-[#C48356] to-transparent rounded-full"></div>
       
-      <p class="text-center text-lg md:text-xl lg:text-2xl text-neutral-800 font-medium leading-relaxed">
-        Experience the transformative power of painting and fall in love with your home again.
-      </p>
-
-      <!-- Decorative corner accents -->
-      <div class="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-[#C48356]/40 rounded-tl-lg"></div>
-      <div class="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-[#C48356]/40 rounded-br-lg"></div>
-    </div>
-  </section>
+  <InteriorBlurb />
 
   <!-- Services section -->
   <section class="-mt-10">
-    <InteriorServices
+    <InteriorServicesBubbleFlow
       heading="Interior Services"
       services={interiorService}
-      sub="Everything you need for a pristine, professional finish."
       minHeight="min-h-[78vh]"
     />
   </section>
     
-  <InteriorProcess
-    heading="Elevate Your Home with PaintCraft's Premier Interior Painting Services"
+  <InteriorProcessBubbleClick
+    heading="A Fresh Interior From Start To Finish"
     stages={[
-      { id: "prep",  title: "Prep & Protect",  desc: "We carefully protect your furniture and floors, then prep all surfaces for perfect paint adhesion.", img: "/prep.png" },
-      { id: "paint", title: "Paint & Perfect", desc: "Expert application with premium paints for smooth, even coverage and flawless results.", img: "/perfect.png" },
-      { id: "clean", title: "Clean & Inspect", desc: "Thorough clean-up and a detailed walkthrough to make sure you love every detail.", img: "/inspect.png" },
+      { id: "prep",  title: "Prep & Protect",  desc: "We carefully protect your furniture and floors, then prep all surfaces for perfect paint adhesion.", img: "/prep-two.png" },
+      { id: "paint", title: "Paint & Perfect", desc: "Expert application with premium paints for smooth, even coverage and flawless results.", img: "/perfect-two.png" },
+      { id: "clean", title: "Clean & Inspect", desc: "Thorough clean-up and a detailed walkthrough to make sure you love every detail.", img: "/inspect-two.png" },
     ]}
   />
 
   <CoveredBand />
 
-  <section class="mx-auto max-w-7xl px-6 py-20">
-    <h2 class="text-3xl md:text-4xl font-semibold">Ready to start?</h2>
-    <p class="mt-4 text-neutral-700 max-w-2xl">
-      Tell us about your project and we'll provide a fast, accurate estimate.
-    </p>
-    <a href="/contact" class="mt-8 inline-flex items-center rounded-full bg-[#C48356] px-6 py-3 font-medium text-white shadow hover:bg-[#B47347] transition">
-      Get Free Estimate
-    </a>
-  </section>
+  <FAQinterior />
 </Base>

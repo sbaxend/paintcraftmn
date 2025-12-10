@@ -1,83 +1,588 @@
 ---
-export interface Item {
-  id: string;
-  type: "interior" | "exterior" | "cabinets" | "commercial";
-  title: string;
-  img: string;
-  href?: string;
-}
-export interface Props { items: Item[]; }
-const { items = [] } = Astro.props as Props;
+import WorkCard from "./WorkCard.astro";
+import type { WorkItem } from "./WorkCard.astro";
 
-const tabs = [
-  { id: "all", label: "All" },
-  { id: "interior", label: "Interior" },
-  { id: "exterior", label: "Exterior" },
-  { id: "cabinets", label: "Cabinets" },
-  { id: "commercial", label: "Commercial" },
+const { items = [] } = Astro.props as { items: WorkItem[] };
+
+const totalCount = items.length;
+
+const typeLabels: Record<WorkItem["type"], string> = {
+  interior: "Interior",
+  exterior: "Exterior",
+  cabinets: "Cabinets",
+  commercial: "Commercial",
+};
+
+const typeCounts = {
+  interior: items.filter((p: WorkItem) => p.type === "interior").length,
+  exterior: items.filter((p: WorkItem) => p.type === "exterior").length,
+  cabinets: items.filter((p: WorkItem) => p.type === "cabinets").length,
+  commercial: items.filter((p: WorkItem) => p.type === "commercial").length,
+};
+
+const filters = [
+  { id: "all", label: "All projects", count: totalCount },
+  ...Object.entries(typeLabels)
+    .filter(([type]) => typeCounts[type as keyof typeof typeCounts] > 0)
+    .map(([type, label]) => ({
+      id: type,
+      label,
+      count: typeCounts[type as keyof typeof typeCounts],
+    })),
 ];
 ---
-<section class="mx-auto max-w-6xl px-6 md:px-8 pb-16 md:pb-24">
-  <!-- Tabs -->
-  <div class="flex flex-wrap gap-2 md:gap-3 mb-6 md:mb-8">
-    {tabs.map(t => (
-      <button
-        class="svc-tab rounded-full border border-neutral-200 px-4 py-2 text-sm font-medium
-               text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50
-               data-[active=true]:bg-neutral-900 data-[active=true]:text-white"
-        data-tab={t.id}
-      >{t.label}</button>
-    ))}
-  </div>
 
-  <!-- Masonry -->
-  <div id="grid" class="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:balance]">
-    {items.map(it => (
-      <figure
-        class="mb-4 break-inside-avoid rounded-2xl overflow-hidden ring-1 ring-black/10 group cursor-zoom-in"
-        data-type={it.type}
+<section
+  id="work-gallery-root"
+  class="bg-gradient-to-b from-neutral-50 to-white py-14 md:py-20 lg:py-28"
+>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-8 md:mb-12">
+      <h2
+        class="font-sans font-semibold tracking-tight text-3xl sm:text-4xl md:text-5xl text-neutral-900 mb-3 md:mb-4"
       >
-        <img src={it.img} alt={it.title} class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-[1.02]" loading="lazy" decoding="async" />
-        <figcaption class="p-3 text-sm text-neutral-700 bg-white/80 backdrop-blur">{it.title}</figcaption>
-      </figure>
-    ))}
+        Transformations
+      </h2>
+      <p class="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto">
+        Browse interiors, exteriors, cabinets, and commercial work.
+      </p>
+    </div>
+
+    <!-- MOBILE FILTER: Select -->
+    <div class="mb-6 md:hidden">
+      <label
+        for="work-filter-select"
+        class="block text-xs font-semibold tracking-[0.16em] uppercase text-neutral-500 mb-2"
+      >
+        Filter by project type
+      </label>
+      <div class="relative">
+        <select
+          id="work-filter-select"
+          class="w-full rounded-full border border-neutral-300 bg-white px-4 py-2.5 pr-9 text-sm font-medium text-neutral-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#C48356]/40 focus:border-[#C48356]"
+        >
+          {filters.map((f) => (
+            <option value={f.id}>
+              {f.label} ({f.count})
+            </option>
+          ))}
+        </select>
+        <span
+          class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-neutral-400"
+        >
+          <svg
+            class="h-4 w-4"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M6 8l4 4 4-4" />
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- DESKTOP / TABLET FILTER: Pills -->
+    <div class="hidden md:flex flex-wrap justify-center gap-3 mb-10">
+      {filters.map((filter, idx) => (
+        <button
+          type="button"
+          class={`work-filter-btn group relative px-6 py-2.5 rounded-full text-sm md:text-base font-semibold transition-all duration-300 ${
+            idx === 0 ? "is-active" : ""
+          }`}
+          data-filter={filter.id}
+        >
+          <span class="relative z-10">{filter.label}</span>
+          <span class="ml-2 text-xs md:text-sm opacity-70">
+            {filter.count}
+          </span>
+        </button>
+      ))}
+    </div>
+
+    <!-- Gallery Grid -->
+    <div
+      id="work-gallery-grid"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8"
+    >
+      {items.map((project) => (
+        <WorkCard
+          project={project}
+          typeLabel={typeLabels[project.type] ?? project.type}
+        />
+      ))}
+    </div>
+
+    <!-- Show more button -->
+    <div class="mt-8 md:mt-10 flex justify-center">
+      <button
+        id="work-show-more"
+        type="button"
+        class="hidden px-6 py-3 rounded-full border border-neutral-300 bg-white text-sm font-semibold text-neutral-800 shadow-sm hover:border-[#C48356] hover:text-[#C48356] hover:shadow-md transition-all"
+      >
+        Show more projects
+      </button>
+    </div>
+
+    <!-- Empty state -->
+    <div id="work-empty-state" class="hidden text-center py-16 md:py-20">
+      <div
+        class="inline-flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-full bg-neutral-100 mb-4"
+      >
+        <svg
+          class="h-7 w-7 md:h-8 md:w-8 text-neutral-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <p class="text-neutral-600 text-base md:text-lg max-w-sm mx-auto">
+        No projects found in this category yet.
+      </p>
+    </div>
   </div>
 
-  <!-- Lightbox (portal) -->
-  <div id="lb" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80">
-    <button id="lbClose" class="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 text-black text-xl">✕</button>
-    <img id="lbImg" src="" alt="" class="max-h-[88vh] max-w-[92vw] rounded-lg shadow-2xl" />
+  <!-- Lightbox Modal -->
+  <div
+    id="work-lightbox"
+    class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/75 px-3 sm:px-4 md:px-6"
+  >
+    <button
+      type="button"
+      id="work-lightbox-backdrop"
+      class="absolute inset-0"
+      aria-label="Close"
+    ></button>
+
+    <div
+      class="relative w-full max-w-lg md:max-w-5xl max-h-[90vh] mx-auto rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-[0_28px_90px_rgba(0,0,0,0.75)]"
+    >
+      <!-- Close button -->
+      <button
+        type="button"
+        id="work-lightbox-close"
+        class="absolute top-3 right-3 md:top-4 md:right-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 hover:bg-black/80 transition"
+        aria-label="Close"
+      >
+        <svg
+          class="h-4 w-4"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          fill="none"
+        >
+          <path d="M18 6L6 18" />
+          <path d="M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Image -->
+      <div class="relative aspect-[4/5] sm:aspect-[3/4] md:aspect-[16/9] bg-neutral-900">
+        <img
+          id="work-lightbox-img"
+          src=""
+          alt=""
+          class="h-full w-full object-cover"
+        />
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"
+        ></div>
+
+        <!-- Prev / Next -->
+        <button
+          type="button"
+          id="work-lightbox-prev"
+          class="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 hover:bg-black/80 transition"
+          aria-label="Previous project"
+        >
+          <svg
+            class="h-5 w-5"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            fill="none"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          id="work-lightbox-next"
+          class="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 hover:bg-black/80 transition"
+          aria-label="Next project"
+        >
+          <svg
+            class="h-5 w-5"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            fill="none"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Details -->
+      <div class="px-5 sm:px-6 md:px-8 py-5 md:py-7 flex flex-col gap-2">
+        <p
+          id="work-lightbox-type"
+          class="text-[11px] sm:text-xs font-semibold tracking-[0.18em] uppercase text-white/60"
+        ></p>
+        <h3
+          id="work-lightbox-title"
+          class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight"
+        ></h3>
+        <p
+          id="work-lightbox-desc"
+          class="text-sm md:text-base text-neutral-300"
+        ></p>
+        <p
+          id="work-lightbox-location"
+          class="text-xs md:text-sm text-neutral-400 mt-1"
+        ></p>
+      </div>
+    </div>
   </div>
 
-  <script>
+  <!-- Mobile filter → trigger same JS as pills -->
+  <script is:inline>
     (() => {
-      const tabs = Array.from(document.querySelectorAll('.svc-tab'));
-      const grid = document.getElementById('grid');
-      const cards = Array.from(grid.querySelectorAll('figure'));
+      const select = document.getElementById("work-filter-select");
+      if (!select) return;
 
-      // filter
-      const setTab = (id) => {
-        tabs.forEach(b => b.dataset.active = String(b.dataset.tab === id));
-        cards.forEach(c => {
-          const ok = id === 'all' || c.dataset.type === id;
-          c.style.display = ok ? '' : 'none';
-        });
-      };
-      tabs.forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
-      setTab('all');
+      const buttons = Array.from(
+        document.querySelectorAll<HTMLButtonElement>(".work-filter-btn")
+      );
 
-      // lightbox
-      const lb = document.getElementById('lb');
-      const lbImg = document.getElementById('lbImg');
-      const lbClose = document.getElementById('lbClose');
-      const open = (src, alt) => { lbImg.src = src; lbImg.alt = alt||''; lb.style.display='flex'; };
-      const close = () => { lb.style.display='none'; lbImg.src=''; };
-      lbClose.addEventListener('click', close);
-      lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-      cards.forEach(c => c.addEventListener('click', () => {
-        const img = c.querySelector('img'); open(img.src, img.alt);
-      }));
+      select.addEventListener("change", () => {
+  const value = select.value; // plain JS, no TypeScript
+  const target = buttons.find(
+    (btn) => btn.getAttribute("data-filter") === value
+  );
+  if (target) {
+    target.click(); // uses your existing filter logic
+  }
+      });
     })();
   </script>
+</section>
+
+<style>
+  /* hide mobile scrollbar but keep scrollability */
+  #work-gallery-root .filters-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  #work-gallery-root .filters-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* pill styling (keeps your JS .is-active toggle working) */
+  .work-filter-btn {
+    background: #ffffff;
+    color: #111827;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+    white-space: nowrap;
+  }
+
+  .work-filter-btn:hover {
+    border-color: rgba(196, 131, 86, 0.7);
+    color: #c48356;
+  }
+
+  .work-filter-btn.is-active {
+    background: #c48356;
+    color: #ffffff;
+    border-color: #c48356;
+    box-shadow: 0 16px 40px rgba(196, 131, 86, 0.65);
+  }
+  
+</style>
+
+  <script is:inline>
+    window.addEventListener("DOMContentLoaded", () => {
+      const root = document.getElementById("work-gallery-root");
+      if (!root) return;
+
+      const PAGE_SIZE = 6;
+
+      const filterButtons = Array.from(root.querySelectorAll("[data-filter]"));
+      const cards = Array.from(root.querySelectorAll(".work-card"));
+      const emptyState = document.getElementById("work-empty-state");
+      const showMoreBtn = document.getElementById("work-show-more");
+
+      let activeFilter = "all";
+      let visibleLimit = PAGE_SIZE;
+      let filteredCards = [];
+      let visibleCards = [];
+      let currentIndex = 0;
+
+      const computeFilteredCards = () => {
+        filteredCards = cards.filter((card) => {
+          const type = card.getAttribute("data-type");
+          return activeFilter === "all" || type === activeFilter;
+        });
+      };
+
+      const layoutCards = () => {
+        computeFilteredCards();
+
+        // hide all first
+        cards.forEach((card) => {
+          card.classList.add("hidden");
+        });
+
+        let visibleCount = 0;
+
+        // show up to visibleLimit
+        filteredCards.forEach((card, idx) => {
+          const show = idx < visibleLimit;
+          if (show) {
+            card.classList.remove("hidden");
+            visibleCount++;
+          }
+        });
+
+        // empty state
+        if (emptyState) {
+          emptyState.classList.toggle("hidden", visibleCount !== 0);
+        }
+
+        // update visibleCards for lightbox (only what's currently shown)
+        visibleCards = filteredCards.filter((_, idx) => idx < visibleLimit);
+
+        if (currentIndex >= visibleCards.length) currentIndex = 0;
+
+        // handle show more / show less button visibility + label
+        if (!showMoreBtn) return;
+
+        const total = filteredCards.length;
+
+        if (total <= PAGE_SIZE) {
+          // nothing to paginate
+          showMoreBtn.classList.add("hidden");
+          return;
+        }
+
+        showMoreBtn.classList.remove("hidden");
+
+        if (visibleLimit >= total) {
+          // all visible -> offer "show less"
+          showMoreBtn.textContent = "Show less";
+        } else {
+          showMoreBtn.textContent = "Show more projects";
+        }
+      };
+
+      const applyFilter = (filterId) => {
+        activeFilter = filterId;
+        visibleLimit = PAGE_SIZE;
+
+        // button visual state
+        filterButtons.forEach((btn) => {
+          const isActive = btn.getAttribute("data-filter") === filterId;
+          btn.classList.toggle("is-active", isActive);
+        });
+
+        layoutCards();
+      };
+
+      filterButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const filterId = btn.getAttribute("data-filter") || "all";
+          applyFilter(filterId);
+        });
+      });
+
+      if (showMoreBtn) {
+        showMoreBtn.addEventListener("click", () => {
+          computeFilteredCards();
+          const total = filteredCards.length;
+
+          if (visibleLimit >= total) {
+            // currently showing all -> collapse back to first page
+            visibleLimit = PAGE_SIZE;
+            // optional: scroll back up to grid
+            document
+              .getElementById("work-gallery-grid")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          } else {
+            // reveal one more page
+            visibleLimit += PAGE_SIZE;
+          }
+
+          layoutCards();
+        });
+      }
+
+      // initial state
+      applyFilter("all");
+
+      // ------- Lightbox logic --------
+      const lightbox = document.getElementById("work-lightbox");
+      const backdrop = document.getElementById("work-lightbox-backdrop");
+      const closeBtn = document.getElementById("work-lightbox-close");
+      const imgEl = document.getElementById("work-lightbox-img");
+      const titleEl = document.getElementById("work-lightbox-title");
+      const typeEl = document.getElementById("work-lightbox-type");
+      const descEl = document.getElementById("work-lightbox-desc");
+      const locEl = document.getElementById("work-lightbox-location");
+      const prevBtn = document.getElementById("work-lightbox-prev");
+      const nextBtn = document.getElementById("work-lightbox-next");
+
+      if (
+        !lightbox ||
+        !backdrop ||
+        !closeBtn ||
+        !imgEl ||
+        !titleEl ||
+        !typeEl ||
+        !descEl ||
+        !locEl ||
+        !prevBtn ||
+        !nextBtn
+      ) {
+        console.warn("[WorkGallery] Missing lightbox elements; lightbox disabled");
+        return;
+      }
+
+      const typeLabelMap = {
+        interior: "Interior",
+        exterior: "Exterior",
+        cabinets: "Cabinets",
+        commercial: "Commercial",
+      };
+
+      const renderFromCard = (card) => {
+        if (!card) return;
+        const dataset = card.dataset;
+
+        imgEl.src = dataset.img || "";
+        imgEl.alt = dataset.title || "";
+
+        titleEl.textContent = dataset.title || "";
+        typeEl.textContent = typeLabelMap[dataset.type] || dataset.type || "";
+
+        if (dataset.description) {
+          descEl.textContent = dataset.description;
+          descEl.classList.remove("hidden");
+        } else {
+          descEl.textContent = "";
+          descEl.classList.add("hidden");
+        }
+
+        if (dataset.location) {
+          locEl.textContent = dataset.location;
+          locEl.classList.remove("hidden");
+        } else {
+          locEl.textContent = "";
+          locEl.classList.add("hidden");
+        }
+      };
+
+      const openLightboxFromCard = (card) => {
+        if (!card) return;
+
+        // ensure visibleCards is up to date with current filter + page
+        layoutCards();
+        currentIndex = visibleCards.indexOf(card);
+        if (currentIndex < 0) currentIndex = 0;
+
+        renderFromCard(visibleCards[currentIndex]);
+
+        lightbox.classList.remove("hidden");
+        lightbox.classList.add("flex");
+        document.body.style.overflow = "hidden";
+      };
+
+      const closeLightbox = () => {
+        lightbox.classList.add("hidden");
+        lightbox.classList.remove("flex");
+        document.body.style.overflow = "";
+      };
+
+      const goPrev = () => {
+        if (!visibleCards.length) return;
+        currentIndex =
+          (currentIndex - 1 + visibleCards.length) % visibleCards.length;
+        renderFromCard(visibleCards[currentIndex]);
+      };
+
+      const goNext = () => {
+        if (!visibleCards.length) return;
+        currentIndex = (currentIndex + 1) % visibleCards.length;
+        renderFromCard(visibleCards[currentIndex]);
+      };
+
+      cards.forEach((card) => {
+        card.addEventListener("click", () => {
+          openLightboxFromCard(card);
+        });
+      });
+
+      backdrop.addEventListener("click", closeLightbox);
+      closeBtn.addEventListener("click", closeLightbox);
+
+      prevBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        goPrev();
+      });
+
+      nextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        goNext();
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if (lightbox.classList.contains("hidden")) return;
+        if (e.key === "Escape") closeLightbox();
+        if (e.key === "ArrowRight") goNext();
+        if (e.key === "ArrowLeft") goPrev();
+      });
+    });
+  </script>
+
+  <style>
+    .work-filter-btn {
+      background: #ffffff;
+      color: #111827;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+    }
+
+    .work-filter-btn.is-active {
+      background: #c48356;
+      color: #ffffff;
+      box-shadow: 0 20px 50px rgba(196, 131, 86, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .work-card {
+      transition: opacity 220ms ease-out, transform 220ms ease-out;
+    }
+
+    .work-card.hidden {
+      display: none;
+      pointer-events: none;
+    }
+  </style>
 </section>

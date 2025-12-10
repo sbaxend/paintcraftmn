@@ -1,6 +1,14 @@
 // src/config/serviceThemes.ts
 export type ServiceKey =
-  | "siding" | "trim" | "deck" | "garage" | "stucco" | "doors";
+  | "trim" | "deck" | "garage" | "stucco" | "doors";
+
+export type SubFeature = {
+  id: string;
+  label: string;      // e.g. "Windows"
+  modalTitle: string; // title in the big bubble
+  modalBody: string;  // detailed copy in the bubble
+  img?: string;       // optional image for this feature
+};
 
 export type ServiceTheme = {
   title: string;
@@ -8,82 +16,36 @@ export type ServiceTheme = {
   slug: ServiceKey;
 
   color: {
-    /** Page background (solid Behr-style) */
-    surface: string;          // main page color (solid)
-    /** Optional soft gradient overlay for hero edges */
-    surfaceGradient?: string; // e.g., "linear-gradient(180deg,#0B1A1F00 0%,#00000033 100%)"
-    /** UI / accents */
+    surface: string;
+    surfaceGradient?: string;
     primary: string;
     primaryDark: string;
     accent: string;
-    onSurface: string;        // text color over surface
-    onPrimary: string;        // text on buttons
+    onSurface: string;
+    onPrimary: string;
   };
 
   heroImage: string;
-  /** 900x1200-ish portrait shots look great mixed with 3:2 landscapes */
-  photos: string[];          // additional images for the offset grid
+  photos: string[];
 
-  process: string[];         // step-by-step bullets
-  benefits: string[];        // value bullets (“why it helps your home”)
+  process: string[];
+  benefits: string[];
 
   texture?: "paper" | "linen" | "noise" | "none";
   swatches?: { name: string; hex: string }[];
   faq?: { q: string; a: string }[];
+
+  /** Apple-style detail cards for this service */
+  subFeatures?: SubFeature[];
 };
 
 export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
-  siding: {
-    title: "Siding Refinishing & Painting",
-    subtitle: "Durable, weather-ready protection with a clean, modern finish.",
-    slug: "siding",
-    color: {
-      surface: "#516a66",                  // smokey jade-ish solid
-      surfaceGradient: "linear-gradient(180deg,#0000 0%,#0003 100%)",
-      primary: "#0E7490",
-      primaryDark: "#0B5E74",
-      accent: "#F59E0B",
-      onSurface: "#F7FAFC",
-      onPrimary: "#FFFFFF",
-    },
-    heroImage: "/services/exterior/siding-hero.jpg",
-    photos: [
-      "/services/exterior/siding-1.jpg",
-      "/services/exterior/siding-2.jpg",
-      "/services/exterior/siding-3.jpg"
-    ],
-    process: [
-      "Wash & degloss; scrape and sand failing areas",
-      "Spot prime bare wood; seal joints with elastomeric caulk",
-      "Spray apply premium exterior coating; back-roll for adhesion",
-      "Detail trim & fixtures; final walk-through and touch-ups"
-    ],
-    benefits: [
-      "Seals siding against moisture and freeze–thaw cycles",
-      "Elevates curb appeal with modern, uniform color",
-      "Extends material lifespan; delays costly replacement",
-      "Manufacturer-rated products for Minnesota weather"
-    ],
-    texture: "noise",
-    swatches: [
-      { name: "Glacier", hex: "#E8EEF1" },
-      { name: "Urban Slate", hex: "#324049" },
-      { name: "Cedar Brown", hex: "#6B4A3E" },
-    ],
-    faq: [
-      { q: "How long will it last?",
-        a: "On properly prepped siding, 7–10 years is typical with our premium systems." },
-      { q: "Spray or brush/roll?",
-        a: "We spray for uniform coverage and back-roll high-wear areas for maximum bite." }
-    ]
-  },
-
   trim: {
     title: "Exterior Trim & Molding",
     subtitle: "Crisp lines. Weather-sealed details.",
     slug: "trim",
     color: {
-      surface: "#364148",
+      surface: "#34424A",
       surfaceGradient: "linear-gradient(180deg,#0000 0%,#0004 100%)",
       primary: "#334155",
       primaryDark: "#1F2937",
@@ -115,6 +77,17 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
       { name: "Stone", hex: "#D3D5D8" },
       { name: "Charcoal", hex: "#2B2F33" },
     ],
+    subFeatures: [
+      {
+        id: "trim-detail",
+        label: "Detailed Trim Work",
+
+        modalTitle: "Trim: The Finishing Lines of Your Exterior",
+        modalBody:
+          "We sand and spot-prime worn areas, tighten joints, and use high-build coatings to smooth imperfections. The result is trim that looks crisp from the street and stands up to sun, snow, and storms.",
+        img: "/trim_serviceTile.png",
+      },
+    ],
   },
 
   deck: {
@@ -122,7 +95,7 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
     subtitle: "Weatherproof stains that look great all season.",
     slug: "deck",
     color: {
-      surface: "#2b2b29",
+      surface: "#AEBDBB",
       primary: "#92400E",
       primaryDark: "#7C2D12",
       accent: "#22C55E",
@@ -130,7 +103,10 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
       onPrimary: "#FFFFFF",
     },
     heroImage: "/services/exterior/deck-hero.jpg",
-    photos: ["/services/exterior/deck-1.jpg","/services/exterior/deck-2.jpg"],
+    photos: [
+      "/services/exterior/deck-1.jpg",
+      "/services/exterior/deck-2.jpg"
+    ],
     process: [
       "Wash, brighten, and neutralize wood",
       "Sand traffic zones; replace failed boards",
@@ -143,6 +119,27 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
       "Safer surface underfoot",
       "Easy maintenance re-coats"
     ],
+    subFeatures: [
+  {
+    id: "deck-boards",
+    label: "Decks",
+    modalTitle: "A smooth, restored deck with lasting protection.",
+    modalBody: `
+We begin sanding the surfaces to remove weathered wood and create a smooth, even base, detailing spindles and railings. The deck is then cleaned and brightened to open the grain and ensure the stain bonds properly. Once prepped, we apply a premium stain for rich color and long-lasting protection.`,
+    img: "/minnesota-deck.png",
+  },
+
+  {
+    id: "fence-staining",
+    label: "Fences",
+    modalTitle: "Fence Staining & Restoration",
+    modalBody: `
+We remove surface buildup, restore wood tone, and apply long-lasting stain for consistent color, weather resistance, and a clean finished look.
+    `,
+    img: "/minneapolis-fence.png",
+  },
+]
+
   },
 
   garage: {
@@ -158,7 +155,10 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
       onPrimary: "#FFFFFF",
     },
     heroImage: "/services/exterior/garage-hero.jpg",
-    photos: ["/services/exterior/garage-1.jpg","/services/exterior/garage-2.jpg"],
+    photos: [
+      "/services/exterior/garage-1.jpg",
+      "/services/exterior/garage-2.jpg"
+    ],
     process: [
       "Degrease & degloss factory finish",
       "Prime for adhesion where required",
@@ -171,10 +171,11 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
       "Matches trim/front door for a cohesive look",
       "Cost-effective alternative to replacement"
     ],
+    // no subFeatures yet – easy to add later
   },
 
   stucco: {
-    title: "Stucco & Masonry",
+    title: "Siding",
     subtitle: "Breathable, long-lasting mineral finishes.",
     slug: "stucco",
     color: {
@@ -186,7 +187,9 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
       onPrimary: "#FFFFFF",
     },
     heroImage: "/services/exterior/stucco-hero.jpg",
-    photos: ["/services/exterior/stucco-1.jpg"],
+    photos: [
+      "/services/exterior/stucco-1.jpg"
+    ],
     process: [
       "Crack repair & elastomeric caulk at control joints",
       "Alkaline-tolerant primer",
@@ -199,6 +202,29 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
       "Breathable coating reduces blistering",
       "Modernizes tone without losing texture"
     ],
+    subFeatures: [
+  {
+    id: "siding-full",
+    label: "Siding",
+    modalTitle: "Exterior Siding",
+    modalBody: `
+We prep and paint all major siding surfaces including stucco, cedar, LP SmartSide, Hardie Board, vinyl, and even masonry accents. Surfaces are washed, repaired, and coated with premium exterior paint that resists fading, cracking, and Minnesota’s extreme weather.
+    `,
+    img: "/exterior-siding-minnesota.png",
+  },
+
+  {
+    id: "trim-detail",
+    label: "Trim",
+    modalTitle: "Trim Painting & Protection",
+    modalBody: `
+We sand rough spots, tighten joints, spot-prime problem areas, and apply high-quality trim coatings for a smooth, durable finish that stays clean and sharp through every season.
+    `,
+    img: "/exterior-trim-minnesota.png",
+  },
+]
+
+
   },
 
   doors: {
@@ -206,7 +232,7 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
     subtitle: "Clean lines and precise masking for a sharp look.",
     slug: "doors",
     color: {
-      surface: "#0e1112",
+      surface: "#4F5152",
       primary: "#0F766E",
       primaryDark: "#115E59",
       accent: "#F97316",
@@ -214,7 +240,10 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
       onPrimary: "#FFFFFF",
     },
     heroImage: "/services/exterior/doors-hero.jpg",
-    photos: ["/services/exterior/doors-1.jpg","/services/exterior/doors-2.jpg"],
+    photos: [
+      "/services/exterior/doors-1.jpg",
+      "/services/exterior/doors-2.jpg"
+    ],
     process: [
       "Remove hardware where possible; mask glass",
       "Sand & prime for bite",
@@ -227,10 +256,41 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
       "Better weather seal extends door life",
       "Ties together trim and garage hues"
     ],
+    subFeatures: [
+  {
+    id: "doors",
+    label: "Doors",
+    modalTitle: "Doors: Bold, Smooth, Long-Lasting",
+    modalBody: `
+Our exterior door painting process begins by protecting nearby surfaces, then cleaning, sanding, and making necessary repairs to the door for a smooth, even base. We prime any bare or weathered areas and apply two coats of exterior grade paint for a durable, long-lasting finish. Once cured, we reinstall hardware, inspect every detail, and complete any final touch-ups leaving your door refreshed and protected.`,
+    img: "/exterior-door.png",
+  },
+
+  {
+    id: "windows",
+    label: "Windows",
+    modalTitle: "Windows: Clean lines, Protected, Weather-Ready",
+    modalBody: `
+Our exterior window painting process begins by protecting surrounding siding and trim, then scraping any loose paint, sanding, and repairing the window surfaces for a smooth, even base. We prime any bare or weathered areas and apply two coats of exterior grade paint for a durable, long-lasting finish. Once cured, we remove masking, inspect every detail, and complete any final touch-ups leaving your windows sharp, refreshed, and protected from the elements.`,
+    img: "/exterior-window.png",
+  },
+
+  {
+    id: "garage",
+    label: "Garage",
+    modalTitle: "Garage Doors: Beautifully Painted to Blend Seamlessly With Your Home’s Style",
+    modalBody: `
+We start by pressure washing the garage door to remove dirt, dust, and buildup so the paint can bond properly. Once clean, we sand the surface lightly to ensure better adhesion. From there, we mask surrounding areas, siding, trim, concrete, and any hardware to protect your home from overspray and keep the job site clean. Once prep is complete, we apply two coats of paint for a smooth, factory-level finish. After the final coat dries, we remove all masking, inspect the finish, and make any necessary touch-ups. The result is a clean, consistent, long-lasting garage door finish that elevates your curb appeal.`,
+    img: "/garage-door.png", // replace with your real asset
+  },
+]
+
   },
 };
 
-export const EXTERIOR_SLUGS: ServiceKey[] = ["siding","trim","deck","garage","stucco","doors"];
+export const EXTERIOR_SLUGS: ServiceKey[] = [
+  "trim","deck","garage","stucco","doors"
+];
 
 export function getServiceTheme(slug: string) {
   return serviceThemes[slug as ServiceKey] ?? null;

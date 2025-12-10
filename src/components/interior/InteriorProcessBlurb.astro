@@ -1,0 +1,55 @@
+<section id="meta-bridge" class="relative bg-gradient-to-b from-white to-neutral-50 py-24 md:py-32 text-center overflow-hidden">
+  <!-- subtle depth vignette -->
+  <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.04)_0%,transparent_70%)]"></div>
+
+  <div class="relative z-10 px-6">
+    <p
+      class="mx-auto max-w-5xl text-[clamp(2.2rem,4.2vw,3.25rem)] md:leading-[1.25] leading-tight font-semibold tracking-tight text-neutral-800 reveal-up"
+    >
+      A fresh interior from start to finish
+    </p>
+  </div>
+
+  <style>
+    /* scroll-in animation (applies when .is-visible gets added) */
+    .reveal-up {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity .7s ease-out, transform .7s ease-out;
+    }
+    .reveal-up.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* accessibility: honor reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal-up, .reveal-up.is-visible {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+
+  <script is:inline>
+    // IntersectionObserver to animate on first scroll into view
+    (() => {
+      const el = document.querySelector('#meta-bridge .reveal-up');
+      if (!el) return;
+      const onIntersect = (entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            el.classList.add('is-visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      };
+      const io = new IntersectionObserver(onIntersect, {
+        root: null,
+        rootMargin: '0px 0px -15% 0px', // trigger a touch before center
+        threshold: 0.1
+      });
+      io.observe(el);
+    })();
+  </script>
+</section>

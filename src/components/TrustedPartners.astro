@@ -3,108 +3,167 @@ export interface Partner {
   name: string;
   logo: string;
   href?: string;
-  // optional visual tweaks
-  scale?: number;     // 1 = normal, 0.95 smaller, 1.08 bigger
-  y?: number;         // vertical nudge in px (positive = down)
+  description?: string;
 }
 
 export interface Props {
   title?: string;
+  subtitle?: string;
   partners?: Partner[];
   class?: string;
 }
 
 const {
   title = "Our Trusted Partners",
+  subtitle = "Find your perfect color--with tools trusted by the pros",
   partners = [
     {
       name: "Sherwin-Williams",
       logo: "/SherwinWilliams.webp",
-      href: "https://www.sherwin-williams.com/",
-      scale: 1.00,
-      y: 1,
+      href: "https://www.sherwin-williams.com/en-us/color/color-tools/color-visualizer ",
+      description: "Premium paints & coatings",
     },
     {
       name: "Benjamin Moore",
       logo: "/benjaminMoore.webp",
-      href: "https://www.benjaminmoore.com/",
-      scale: 1.05, // reads slightly lighter → bump a touch
-      y: 0,
+      href: "https://www.benjaminmoore.com/en-us/paint-colors?_gl=1*1obv1zu*_up*MQ..*_gs*MQ..&gclid= Cj0KCQiAubrJBhCbARIsAHIdxD86UD1OKCz0x69bDSxTCskIXBmc0jjMWy1J8XRyz36HoS6yC eXOkVMaAuNgEALw_wcB&gclsrc=aw.ds&gbraid=0AAAAADPqh0_UtTqrkwEGwZr1d_zpjH5YY ",
+      description: "Luxury color solutions",
     },
     {
-      name: "Hirshfield’s",
+      name: "Hirshfield's",
       logo: "/Hirschfields.png",
-      href: "https://www.hirshfields.com/",
-      scale: 0.90, // very wide/wordy → dial down
-      y: -1,
+      href: "https://hirshfieldpaint.chameleonpower.com/#",
+      description: "Local expertise since 1894",
     },
   ],
   class: className = "",
-} = Astro.props;
+} = Astro.props as Props;
 ---
 
-<section class={`bg-neutral-50 border-t border-neutral-200 ${className}`}>
-  <div class="mx-auto max-w-7xl px-4 md:px-6 py-12 md:py-16">
-    <h2 class="text-center text-3xl md:text-4xl font-serif text-neutral-900">
-      {title}
-    </h2>
+<section
+  class={`relative bg-gradient-to-b from-white to-neutral-50 pt-10 md:pt-14 pb-16 md:pb-24 ${className}`}
+>
+  <div class="mx-auto max-w-7xl px-6">
+    {/* Header */}
+    <div class="mb-10 text-center">
+      <div class="mb-5 inline-flex items-center gap-2 rounded-full bg-[#C48356]/10 px-4 py-2">
+        <svg class="h-5 w-5 text-[#C48356]" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+        </svg>
+        <span class="text-sm font-semibold uppercase tracking-wider text-[#C48356]">
+          Partnerships
+        </span>
+      </div>
 
-    <div
-      class="mt-8 md:mt-10 flex flex-wrap items-center justify-center gap-x-14 gap-y-8"
-      aria-label="Partner logos"
-      style="--h:44px; --h-md:56px;"
-    >
-      {partners.map((p) => {
-        const style = `
-          height: calc(var(--h) * ${p.scale ?? 1});
-          transform: translateY(${p.y ?? 0}px);
-        `;
-        const styleMd = `
-          height: calc(var(--h-md) * ${p.scale ?? 1});
-          transform: translateY(${p.y ?? 0}px);
-        `;
-        return (
-          p.href ? (
-            <a href={p.href} target="_blank" rel="noopener noreferrer" class="block">
-              <img
-                src={p.logo}
-                alt={p.name}
-                class="w-auto object-contain md:hidden"
-                style={style}
-                loading="lazy" decoding="async"
+      <h2 class="mb-3 text-4xl font-bold text-neutral-900 md:text-5xl">
+        {title}
+      </h2>
+
+      {subtitle && (
+        <p class="mx-auto max-w-3xl text-xl text-neutral-600 mt-4">
+  {subtitle}
+</p>
+    )}
+    </div>
+
+    {/* Partner Cards Grid */}
+    <div class="grid gap-8 md:grid-cols-3 lg:gap-12">
+      {partners.map((partner, index) => (
+        <a
+          href={partner.href ?? "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group relative rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-[#C48356]/30 hover:shadow-xl md:p-10"
+          style={`animation-delay: ${index * 100}ms;`}
+        >
+          {/* Logo Container */}
+          <div class="mb-6 flex h-32 items-center justify-center">
+            <img
+              src={partner.logo}
+              alt={partner.name}
+              class="max-h-full w-auto max-w-full scale-100 object-contain opacity-80 transition-all duration-500 group-hover:scale-110 group-hover:opacity-100"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          {/* Partner Info */}
+          <div class="text-center">
+            <h3 class="mb-2 text-lg font-semibold text-neutral-900">
+              {partner.name}
+            </h3>
+
+            {partner.description && (
+              <p class="text-sm text-neutral-600">
+                {partner.description}
+              </p>
+            )}
+          </div>
+
+          {/* Hover Arrow */}
+          <div class="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#C48356]/0 opacity-0 transition-all duration-500 group-hover:bg-[#C48356]/10 group-hover:opacity-100">
+            <svg
+              class="h-4 w-4 text-[#C48356]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
               />
-              <img
-                src={p.logo}
-                alt=""
-                class="w-auto object-contain hidden md:block"
-                style={styleMd}
-                loading="lazy" decoding="async"
-                aria-hidden="true"
-              />
-            </a>
-          ) : (
-            <>
-              <img
-                src={p.logo}
-                alt={p.name}
-                class="w-auto object-contain md:hidden"
-                style={style}
-                loading="lazy" decoding="async"
-              />
-              <img
-                src={p.logo}
-                alt=""
-                class="w-auto object-contain hidden md:block"
-                style={styleMd}
-                loading="lazy" decoding="async"
-                aria-hidden="true"
-              />
-            </>
-          )
-        );
-      })}
+            </svg>
+          </div>
+
+          {/* Bottom accent line */}
+          <div class="absolute bottom-0 left-0 right-0 h-1 origin-left scale-x-0 rounded-b-2xl bg-gradient-to-r from-[#C48356] to-[#B47347] transition-transform duration-500 group-hover:scale-x-100" />
+        </a>
+      ))}
+    </div>
+
+    {/* Trust Statement */}
+    <div class="mt-16 text-center">
+      <p class="mx-auto max-w-3xl leading-relaxed text-neutral-600">
+        Our partnerships with these industry leaders ensure you receive{" "}
+        <span class="font-semibold text-[#C48356]">premium materials</span>,{" "}
+        <span class="font-semibold text-[#C48356]">expert support</span>, and{" "}
+        <span class="font-semibold text-[#C48356]">guaranteed quality</span> on
+        every project.
+      </p>
     </div>
   </div>
-
-  <div class="border-t border-neutral-200"></div>
 </section>
+
+<style>
+  /* Staggered fade-in animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  a[style*="animation-delay"] {
+    opacity: 0;
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  /* Ensure logos don't get too large on very big screens */
+  @media (min-width: 1536px) {
+    img {
+      max-height: 140px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .grid {
+      gap: 1.5rem;
+    }
+  }
+</style>

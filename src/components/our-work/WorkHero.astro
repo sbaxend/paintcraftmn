@@ -4,10 +4,54 @@ export interface Props {
   title?: string;
   subtitle?: string;
 }
-const { kicker = "Our Work", title = "See the difference", subtitle = "" } = Astro.props as Props;
+
+const {
+  kicker = "Our Work",
+  title = "Beautiful results, painted to last.",
+  subtitle = "A curated look at interiors, exteriors, cabinets, and commercial spaces we've recently completed."
+} = Astro.props as Props;
 ---
-<section class="relative mx-auto max-w-6xl px-6 md:px-8 pt-14 md:pt-20 pb-8 md:pb-10">
-  {kicker && <p class="mb-3 text-sm font-medium tracking-wide text-blue-600">{kicker}</p>}
-  <h1 class="text-4xl md:text-6xl font-serif font-semibold tracking-tight">{title}</h1>
-  {subtitle && <p class="mt-4 max-w-2xl text-neutral-600">{subtitle}</p>}
+
+<section
+  class="relative overflow-hidden 
+         bg-gradient-to-br from-[#F4ECE5] via-[#F8F3EF] to-[#F0E6DE]
+         pt-20 md:pt-28 pb-20"
+>
+  <div class="relative mx-auto max-w-6xl px-6 md:px-8">
+    
+    {kicker && (
+      <p class="inline-flex items-center gap-2 rounded-full bg-[#EAD4C2] text-[#8B5934]
+                px-4 py-1 text-xs md:text-sm font-semibold tracking-[0.18em] uppercase mb-5">
+        {kicker}
+      </p>
+    )}
+
+    <h1
+      class="text-neutral-900 font-sans font-semibold font-extrabold tracking-tight leading-[1.15]
+             text-[clamp(2.2rem,5vw,3.8rem)] max-w-3xl"
+    >
+      {title}
+    </h1>
+
+    {subtitle && (
+      <p class="mt-5 max-w-xl text-base md:text-lg text-neutral-700 leading-relaxed">
+        {subtitle}
+      </p>
+    )}
+
+    <a
+      href="/contact"
+      class="mt-10 inline-flex items-center justify-center rounded-full 
+             px-8 py-3 text-[1rem] font-semibold
+             border-2 border-[#C48356]
+             text-[#C48356]
+             bg-white/80
+             shadow-[0_10px_35px_rgba(196,131,86,0.25)]
+             transition-all duration-300
+             hover:bg-[#C48356] hover:text-white hover:scale-[1.04]"
+    >
+      Get a Free Estimate
+    </a>
+
+  </div>
 </section>

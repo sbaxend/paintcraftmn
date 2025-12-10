@@ -11,23 +11,25 @@ export interface Props {
   sub?: string;
   services: Service[];
   minHeight?: string;
+  /** NEW: lets us reuse this component on /exterior too */
+  basePath?: string;
 }
 
 const {
   heading = "Our Interior Services",
-  sub = "Everything you need for a pristine, professional finish.",
   services = [],
-  minHeight = "min-h-[80vh]"
+  minHeight = "min-h-[80vh]",
+  basePath = "/interior", // NEW default; Interior unchanged
 } = Astro.props as Props;
 
 const items = services.map(s => ({
   ...s,
-  href: s.href ?? `/interior/${s.id}`,
+  href: s.href ?? `interior/${s.id}`, // NEW: use basePath instead of hardcoding
 }));
 ---
 
 <section class="relative bg-neutral-50">
-  <div id="svc-wrap" class="relative w-full overflow-hidden">
+  <div id="svc-wrap" class="relative w-full overflow-hidden ">
     <div
       id="svc-track"
       class={`flex transition-transform duration-700 ease-out ${minHeight}`}
@@ -61,10 +63,10 @@ const items = services.map(s => ({
                   {s.title}
                 </h2>
                 
-                <!-- Subtitle -->
+                {/* <!-- Subtitle -->
                 <p class="stagger text-white/90 text-sm md:text-lg max-w-xl mb-6 md:mb-8 leading-relaxed">
                   {sub}
-                </p>
+                </p> */}
 
                 <!-- CTA Buttons -->
                 <div class="stagger flex gap-3 flex-wrap">

@@ -4,32 +4,62 @@ import ExteriorProcess from "../components/exterior/ExteriorProcess.astro";
 import Base from "../layouts/Base.astro";
 import CoveredBand from "../components/CoveredBand.astro";
 import ExteriorServices from "../components/exterior/ExteriorServices.astro"
+
+
+// Re-use the same nice services slider used on Interior
+import InteriorServices from "../components/interior/InteriorServices.astro";
+
+// New (or soon) process slider for exterior – structure mirrors interior
+// import ExteriorProcessBubbleSlide from "../components/exterior/ExteriorProcessBubbleSlide.astro";
+
+
+// (Optional) When you create it:
+import FAQExterior from "../components/exterior/FAQExterior.astro";
+import ExteriorBlurb from "../components/exterior/ExteriorBlurb.astro";
+import InteriorServicesBubbleFlow from "../components/interior/InteriorServicesBubbleFlow.astro";
+
+const exteriorServices = [
+  // { id: "siding",  title: "Siding",             img: "/siding.png" },
+  // { id: "trim",    title: "Trim",               img: "/exteriorTrim.png" },
+  { id: "stucco",  title: "Siding",     img: "/stucco.png" },
+  { id: "doors",   title: "Doors & Windows",    img: "/doorsAndWindows.png" },
+  { id: "deck",    title: "Deck & Fence",       img: "/staining.png" },
+  // { id: "garage",  title: "Garage Doors",       img: "/garage.png" },
+];
 ---
 
 <Base title="Exterior Painting | PaintCraft MN">
+  <!-- Hero (matches Interior style) -->
   <ExteriorHero
     title="Exterior Painting"
-    subtitle="Transform your indoor spaces with premium quality paint and expert application"
-    bg="/hero.png"
+    bg="/exterior-home-tile.png"
   />
-  <section class="pt-6 -mt-3">
-    <ExteriorProcess
-      heading="We handle everything"
-      stages={[
-        { id: "prep",  title: "Prep & Protect",  desc: "We carefully protect your furniture and floors, then prep all surfaces for perfect paint adhesion.", img: "/prep.png" },
-        { id: "paint", title: "Paint & Perfect", desc: "Expert application with premium paints for smooth, even coverage and flawless results.", img: "/perfect.png" },
-        { id: "clean", title: "Clean & Inspect", desc: "Thorough clean-up and a detailed walkthrough to make sure you love every detail.", img: "/inspect.png" },
-      ]}
+
+ <ExteriorBlurb />
+
+  <!-- Services (reuse InteriorServices component for the same layout) -->
+  <section class="-mt-10">
+    <InteriorServicesBubbleFlow
+      heading="Exterior Services"
+      services={exteriorServices}
+      minHeight="min-h-[78vh]"
+      basePath="/exterior"
     />
   </section>
-  <ExteriorServices />
-  ]<CoveredBand />
 
-  <!-- <section class="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12">
-    <div>
-      <h2 class="text-2xl font-semibold mb-4">Protection + curb appeal</h2>
-      <p class="text-neutral-700">Durable coatings built for Minnesota weather.</p>
-    </div>
-    <div class="bg-neutral-100 aspect-video rounded-xl"></div>
-  </section> -->
+  <!-- Exterior process – same bubble slide format as interior -->
+  <ExteriorProcess
+    heading="A Better Exterior, Step by Step"
+    stages={[
+      { id: "wash",  title: "Wash & Prep",  desc: "Thorough pressure washing and surface preparation to ensure optimal paint adhesion and longevity.", img: "/wash-two.png" },
+      { id: "coat",  title: "Paint & Perfect",     desc: "Professional application of weather-resistant paints and sealants designed for Minnesota's climate.", img: "/seal-two.png" },
+      { id: "detail",title: "Clean & Inspect",    desc: "Final touches and comprehensive quality inspection to ensure lasting beauty and protection.", img: "/exterior-detail-two.png" },
+    ]}
+  />
+
+  <CoveredBand />
+
+
+  <FAQExterior />
+ 
 </Base>

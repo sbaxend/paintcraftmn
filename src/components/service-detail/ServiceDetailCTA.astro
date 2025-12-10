@@ -1,0 +1,84 @@
+---
+/**
+ * ServiceDetailCTA.astro
+ *
+ * Unified bottom CTA used on interior/exterior sub-service pages.
+ * Uses theme CSS variables inherited from the parent (<div style={vars}>)
+ */
+
+export interface Props {
+  title?: string;
+  description?: string;
+  backHref?: string;
+  backLabel?: string;
+  bbbLink?: string;
+}
+
+const {
+  title = "Ready to get started?",
+  description = "Schedule a quick walk-through and same-day estimate.",
+  backHref = "/",
+  backLabel = "Back to Services",
+  bbbLink ="https://www.bbb.org/us/mn/hopkins/profile/painting-contractors/paintcraft-llc-0704-1000075280/#sealclick"
+} = Astro.props as Props;
+---
+
+<section
+  class="relative py-16 md:py-20 text-center"
+  style="background: var(--surface);"
+>
+  <div class="mx-auto max-w-5xl px-6 md:px-10">
+    <h2
+      class="text-2xl md:text-3xl font-semibold"
+      style="color: var(--on-surface);"
+    >
+      {title}
+    </h2>
+
+    <p class="mt-3 text-base md:text-lg" style="color: color-mix(in oklab, var(--on-surface) 85%, transparent);">
+      {description}
+    </p>
+
+    <!-- Buttons -->
+    <div class="mt-8 flex flex-wrap justify-center gap-4">
+      <a
+        href="/contact"
+        class="inline-flex items-center rounded-full px-7 py-3 text-base font-semibold transition"
+        style="background: var(--primary); color: var(--on-primary);"
+      >
+        Get a Free Estimate
+      </a>
+
+      <a
+        href={backHref}
+        class="inline-flex items-center rounded-full px-7 py-3 border text-base font-semibold transition"
+        style={`color: var(--on-surface); border-color: color-mix(in oklab, var(--on-surface) 28%, transparent);`}
+      >
+        {backLabel}
+      </a>
+    </div>
+
+    <!-- BBB Badge -->
+    <div class="mt-10 flex justify-center">
+      <a
+        href={bbbLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-3 opacity-90 hover:opacity-100 transition"
+      >
+        <img
+          src="https://seal-minnesota.bbb.org/seals/blue-seal-293-61-bbb-1000075280.png"
+          alt="BBB Accredited Business"
+          class="h-12 w-auto object-contain"
+          loading="lazy"
+        />
+        <span
+          class="text-sm font-medium"
+          style="color: var(--on-surface);"
+        >
+          Rated & Accredited by the Better Business Bureau
+        </span>
+      </a>
+    </div>
+  </div>
+</section>

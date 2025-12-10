@@ -1,118 +1,359 @@
 ---
 /**
- * CoveredBand — premium features strip
- * - Large, uniform icons in brand copper color
- * - Even card heights, smooth hover, keyboard focus
- * - Works with PNG/WEBP icons (colored via CSS filters)
- * - Optional bgImage for photo variant
+ * CoveredBand — premium features strip with click-to-expand bubbles
  */
 
-type Item = {
-  img: string;        // /public path (e.g., "/craftmanship.webp")
+type IconKey = "shield" | "hand" | "roller" | "medal" | "sparkle" | "compass" | "ribbon";
+
+type BaseItem = {
   title: string;
   desc: string;
+  modalBody?: string; // optional expanded copy for the bubble
 };
+
+type IconItem = BaseItem & { icon: IconKey; img?: never };
+type ImgItem = BaseItem & { img: string; icon?: never };
+type Item = IconItem | ImgItem;
 
 export interface Props {
   heading?: string;
   items?: Item[];
-  bgImage?: string;   // optional: /public path for a photo background
+  bgImage?: string; // optional /public path for a photo background
 }
 
 const {
-  heading = "We've got you covered",
+  heading = "Why Choose Us",
   items = [
-    { img: "/craftmanship.webp", title: "Guaranteed Craftsmanship", desc: "Worry-free results with a 3-year paint warranty" },
-    { img: "/exellence.webp",   title: "Excellence at Every Stage", desc: "Professional coordination from start to finish" },
-    { img: "/quality.webp",     title: "Highest Quality Standards", desc: "Premium paints & tested methods for unmatched results" },
+    {
+      icon: "shield",
+      title: "Guaranteed Craftsmanship",
+      desc: "Worry-free results with a 3-year paint warranty.",
+      modalBody:
+        "We stand behind the work we do, which is why every PaintCraft project comes with a 3-year paint warranty that covers any issues caused by faulty products or materials. If something fails due to a manufacturer defect, we’ll take care of it, no hassle, no excuses. Our guarantee reflects our confidence in our workmanship and our commitment to delivering results you can rely on for years to come."
+    },
+    {
+      icon: "compass",
+      title: "Excellence at Every Stage",
+      desc: "Professional coordination from start to finish.",
+      modalBody:
+        "From the first walkthrough to the final cleanup, we follow a proven process that ensures a smooth and organized experience. Every step, prep, protection, painting, and inspection, is handled with intention and attention to detail. You’ll always know what’s happening, why it’s happening, and what to expect next."
+    },
+    {
+      icon: "ribbon",
+      title: "Highest Quality Standards",
+      desc: "Premium paints & tested methods for unmatched results.",
+      modalBody:
+        "We use top-tier products, precise techniques, and professional-grade preparation to deliver finishes that truly last. Our team is trained in-house to follow strict quality controls, ensuring clean lines, smooth surfaces, and consistent results across every project. Quality isn’t a goal, it’s our baseline."
+    }
   ],
-  bgImage, // if provided, we'll render a dark overlay variant
+  bgImage,
 } = Astro.props as Props;
 ---
 
-<section class={`relative ${bgImage ? 'is-photo' : ''}`}>
-  <!-- optional photo background -->
+<section class={`relative covered-band ${bgImage ? "is-photo" : ""}`}>
   {bgImage && (
     <>
-      <img src={bgImage} alt="" aria-hidden="true"
-           class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
+      <img
+        src={bgImage}
+        alt=""
+        aria-hidden="true"
+        class="absolute inset-0 h-full w-full object-cover"
+        loading="lazy"
+        decoding="async"
+      />
       <div class="absolute inset-0 bg-neutral-900/50"></div>
     </>
   )}
 
-  <div class={`relative mx-auto max-w-7xl px-4 md:px-6 ${bgImage ? 'py-20 md:py-28' : 'py-16 md:py-24'}`}>
-    <h2 class={`text-center font-serif font-semibold tracking-tight
-                ${bgImage ? 'text-white' : 'text-neutral-900'}
-                text-4xl md:text-6xl`}>
-      {heading}
-    </h2>
+  <div
+    class={`relative mx-auto max-w-7xl px-4 md:px-6 ${
+      bgImage ? "py-20 md:py-28" : "py-16 md:py-24"
+    }`}
+  >
+    <h2
+  class={`mx-auto max-w-5xl text-[clamp(2.2rem,4.2vw,3.25rem)] leading-[1.1]
+          font-semibold tracking-tight text-center ${
+            bgImage ? "text-white" : "text-neutral-900"
+          }`}
+>
+  {heading}
+</h2>
 
-    <div class={`mt-10 grid gap-6 md:gap-8 sm:grid-cols-3`}>
-      {items.map((item) => (
-        <article
-          class={`group relative overflow-hidden rounded-[24px]
-                  ${bgImage ? 'bg-white/10 ring-1 ring-white/15' : 'bg-white ring-1 ring-[#C48356]/20'}
-                  shadow-sm transition-all duration-300
-                  hover:-translate-y-1 hover:shadow-xl hover:ring-[#C48356]/40
-                  focus-within:-translate-y-1`}
-          style="min-height: 320px"
+    <div class="mt-10 grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+  {items.map((item, idx) => (
+    <article
+  class={`group relative overflow-hidden rounded-[24px] ${
+    bgImage
+      ? "bg-white/10 ring-1 ring-white/15"
+      : "bg-white ring-1 ring-[#C48356]/20"
+  } shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-[#C48356]/40 focus-within:-translate-y-1 cursor-pointer`}
+  data-cb-open={idx}
+  role="button"
+  tabindex="0"
+>
+  {/* soft halo on hover */}
+  <div
+    class="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+    style="background: conic-gradient(from 180deg, rgba(196,131,86,.25), rgba(196,131,86,0) 60%); filter: blur(28px);"
+  ></div>
+
+  <div
+    class={`flex h-full flex-row items-center gap-4 px-5 py-5
+            md:flex-col md:items-center md:justify-start md:px-8 md:py-8
+            text-left md:text-center`}
+  >
+    {/* ICON CIRCLE */}
+    <div
+      class={`shrink-0 grid place-items-center h-20 w-20 rounded-full ring-2 transition-all duration-300
+              md:h-32 md:w-32 md:mb-6
+              ${
+                bgImage
+                  ? "bg-white/10 ring-white/25"
+                  : "bg-[#C48356]/10 ring-[#C48356]/30"
+              } group-hover:scale-105`}
+    >
+      {"icon" in item ? (
+        <>
+          {item.icon === "shield" && (
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              class="h-10 w-10 md:h-14 md:w-14 text-[#C48356]"
+            >
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 3l7 3v5.5c0 4.6-2.9 7.7-7 9.5-4.1-1.8-7-4.9-7-9.5V6l7-3zM9.5 12.5l2 2 4-4"
+              ></path>
+            </svg>
+          )}
+                  {item.icon === "compass" && (
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      class="h-14 w-14 text-[#C48356]"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                      />
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 9l-2 5-5 2 2-5 5-2z"
+                      ></path>
+                    </svg>
+                  )}
+
+                  {item.icon === "ribbon" && (
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      class="h-14 w-14 text-[#C48356]"
+                    >
+                      <circle
+                        cx="12"
+                        cy="8"
+                        r="5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                      ></circle>
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M8 13l-2 8 6-3 6 3-2-8"
+                      ></path>
+                    </svg>
+                  )}
+
+                  {item.icon === "medal" && (
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      class="h-14 w-14 text-[#C48356]"
+                    >
+                      <circle
+                        cx="12"
+                        cy="14"
+                        r="4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                      ></circle>
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M8 10L5 3h5l2 4 2-4h5l-3 7"
+                      ></path>
+                    </svg>
+                  )}
+
+                  {item.icon === "sparkle" && (
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      class="h-14 w-14 text-[#C48356]"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5zM18 17l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z"
+                      ></path>
+                    </svg>
+                  )}
+                </>
+              ) : (
+                <img
+              src={item.img}
+              alt=""
+              role="presentation"
+              class="h-4/5 w-4/5 object-contain"
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+        </div>
+
+        <h3
+          class={`text-lg md:text-2xl font-semibold ${
+            bgImage ? "text-white" : "text-neutral-900"
+          }`}
         >
-          <!-- subtle top shine with copper tint -->
-          <div class="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[#C48356]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          {item.title}
+        </h3>
+        <p
+          class={`mt-2 md:mt-3 text-sm md:text-base leading-6 md:leading-7 ${
+            bgImage ? "text-white/85" : "text-neutral-600"
+          }`}
+        >
+          {item.desc}
+        </p>
+      </div>
+    </article>
+  ))}
+</div>
 
-          <div class="flex h-full flex-col items-center justify-start px-6 md:px-8 py-8 text-center">
-            <!-- ICON: copper background with icon colored to match -->
-            <div class="mb-8 flex h-48 w-48 items-center justify-center rounded-full bg-[#C48356]/10 ring-2 ring-[#C48356]/30 group-hover:bg-[#C48356]/15 group-hover:ring-[#C48356]/50 transition-all duration-300">
+  {/* MODALS */}
+  {items.map((item, idx) => (
+    <div
+      class="fixed inset-0 z-50 hidden items-center justify-center px-4 md:px-0"
+      data-cb-modal={idx}
+    >
+      {/* overlay */}
+      <div
+        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        data-cb-close
+      ></div>
 
-              <img
-                src={item.img}
-                alt=""
-                role="presentation"
-                class="h-4/5 w-4/5 object-contain icon-copper"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+      {/* panel */}
+      <div class="relative max-w-xl w-full rounded-[2rem] bg-white shadow-2xl border border-neutral-200 overflow-hidden">
+        <button
+          type="button"
+          data-cb-close
+          class="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow-md hover:bg-white"
+          aria-label="Close"
+        >
+          ✕
+        </button>
 
-            <h3 class={`text-xl md:text-2xl font-semibold ${bgImage ? 'text-white' : 'text-neutral-900'}`}>
-              {item.title}
-            </h3>
-
-            <p class={`mt-3 text-base leading-7 ${bgImage ? 'text-white/85' : 'text-neutral-600'}`}>
-              {item.desc}
-            </p>
-
-            <!-- focus ring for keyboard users -->
-            <span class="absolute inset-0 rounded-[24px] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
-                         focus-visible:ring-[#C48356] focus-visible:ring-offset-white" tabindex="-1"></span>
-          </div>
-        </article>
-      ))}
+        <div class="p-6 md:p-8">
+          <p class="text-xs font-semibold tracking-[0.18em] uppercase text-neutral-500 mb-2">
+            {heading}
+          </p>
+          <h3 class="text-2xl md:text-3xl font-semibold text-neutral-900 mb-3">
+            {item.title}
+          </h3>
+          <p class="text-sm md:text-base text-neutral-700 leading-relaxed">
+            {item.modalBody ?? item.desc}
+          </p>
+        </div>
+      </div>
     </div>
-  </div>
+  ))}
 </section>
 
-<style>
-  /* Color icons to match #C48356 (copper/terracotta) */
-  .icon-copper {
-    filter: brightness(0) saturate(100%) 
-            invert(54%) sepia(27%) saturate(1089%) 
-            hue-rotate(335deg) brightness(92%) contrast(88%);
-  }
-  
-  /* For photo variant, make icons white */
-  .is-photo .icon-copper {
-    filter: brightness(0) invert(1);
-  }
+<script is:inline>
+  (() => {
+    const script = document.currentScript;
+    if (!script) return;
+    const section = script.previousElementSibling;
+    if (!section) return;
 
-  /* Update ring colors for photo variant */
-  .is-photo .ring-\[\#C48356\]\/20,
-  .is-photo .ring-\[\#C48356\]\/30,
-  .is-photo .ring-\[\#C48356\]\/50 {
-    --tw-ring-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  .is-photo .text-neutral-900 { 
+    const openCards = section.querySelectorAll("[data-cb-open]");
+    const modals = section.querySelectorAll("[data-cb-modal]");
+    const closeTargets = section.querySelectorAll("[data-cb-close]");
+
+    if (!openCards.length || !modals.length) return;
+
+    const closeAll = () => {
+      modals.forEach((m) => {
+        m.classList.add("hidden");
+        m.classList.remove("flex");
+      });
+      document.body.style.overflow = "";
+    };
+
+    const open = (id) => {
+      modals.forEach((m) => {
+        const isTarget = m.getAttribute("data-cb-modal") === id;
+        if (isTarget) {
+          m.classList.remove("hidden");
+          m.classList.add("flex");
+        } else {
+          m.classList.add("hidden");
+          m.classList.remove("flex");
+        }
+      });
+      document.body.style.overflow = "hidden";
+    };
+
+    openCards.forEach((card) => {
+      const id = card.getAttribute("data-cb-open");
+      if (!id) return;
+
+      const handler = () => open(id);
+      card.addEventListener("click", handler);
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handler();
+        }
+      });
+    });
+
+    closeTargets.forEach((el) => {
+      el.addEventListener("click", closeAll);
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeAll();
+    });
+  })();
+</script>
+
+<style>
+  /* In photo mode, force icon color to white if desired */
+  .covered-band.is-photo svg {
     color: white;
   }
 </style>

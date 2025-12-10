@@ -1,18 +1,28 @@
 ---
 // src/pages/exterior/[slug].astro
+
 import Base from "../../layouts/Base.astro";
+
+import ServiceDetailHero from "../../components/service-detail/ServiceDetailHero.astro";
+import ServiceDetailAlternatingRows from "../../components/service-detail/ServiceDetailAlternatingRows.astro";
+import ServiceDetailFAQ from "../../components/service-detail/ServiceDetailFAQ.astro";
+import ServiceDetailCTA from "../../components/service-detail/ServiceDetailCTA.astro";
+
 import { getServiceTheme, EXTERIOR_SLUGS } from "../../config/serviceThemes";
 
-// SSG routes for /exterior/<slug>
+// ------- Static paths for /exterior/[slug] -------
+
 export const getStaticPaths = () =>
   EXTERIOR_SLUGS.map((slug) => ({ params: { slug } }));
+
+// ------- Page data -------
 
 const { slug = "" } = Astro.params;
 const theme = getServiceTheme(slug);
 
 if (!theme) {
   Astro.response.status = 404;
-  throw new Error(`Service not found: ${slug}`);
+  throw new Error(`Exterior service not found: ${slug}`);
 }
 
 const {
@@ -25,10 +35,11 @@ const {
   benefits = [],
   swatches = [],
   faq = [],
+  subFeatures = [],
 } = theme;
 
-// inline CSS custom properties so we can use them throughout the page
-const vars = [
+// CSS variables so hero / CTA can share the same palette
+const cssVars = [
   `--surface:${color.surface}`,
   `--surface-grad:${color.surfaceGradient ?? "none"}`,
   `--on-surface:${color.onSurface}`,
@@ -38,172 +49,58 @@ const vars = [
   `--accent:${color.accent}`,
 ].join(";");
 
-// little helper for subtle secondary text on colored surfaces
-const onSurfaceFaint =
-  "color: color-mix(in oklab, var(--on-surface) 85%, transparent)";
+// Basic SEO description (you can override per theme if you want)
+const description = `${title} in Minnesota — ${subtitle} Professional exterior ${title.toLowerCase()} by PaintCraft MN.`;
+
+// Map exterior subFeatures into the structure ServiceDetailAlternatingRows expects
+const alternatingItems = subFeatures.map((feat) => ({
+  id: feat.id,
+  label: feat.label,                 // small kicker pill
+  title: feat.modalTitle || feat.label, // main H2 in the row
+  img: feat.img,
+  modalTitle: feat.modalTitle,
+  modalBody: feat.modalBody,
+}));
 ---
 
-<Base title={`${title} | PaintCraft MN`}>
-  <!-- Theme scope with CSS vars -->
-  <div style={vars}>
-    <!-- HERO: solid color like Behr, optional faint image overlay -->
-    <section class="relative min-h-[68vh] flex items-center" style="background: var(--surface);">
-      {heroImage && (
-        <img
-          src={heroImage}
-          alt={title}
-          class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-multiply"
-          loading="eager"
-          decoding="async"
-        />
-      )}
-      {color.surfaceGradient && (
-        <div class="absolute inset-0 pointer-events-none" style="background: var(--surface-grad);"></div>
-      )}
+<Base
+  title={`${title} | Exterior Painting | PaintCraft MN`}
+  description={description}
+>
+  <div style={cssVars}>
+    <!-- HERO (shared component from interior) -->
+    <ServiceDetailHero
+      title={title}
+      subtitle={subtitle}
+      heroImage={heroImage}
+      backHref="/exterior"
+      backLabel="Back to Exterior Services"
+      ctaLabel="Get a Free Estimate"
+    />
 
-      <div class="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16 md:py-24 grid md:grid-cols-2 gap-10">
-        <div class="md:pr-8">
-          <h1 class="text-[clamp(30px,4.2vw,54px)] leading-tight font-serif font-bold"
-              style="color: var(--on-surface);">
-            {title}
-          </h1>
-          <p class="mt-4 text-lg md:text-xl" style={onSurfaceFaint}>
-            {subtitle}
-          </p>
-          <div class="mt-8 flex gap-3">
-            <a href="/contact"
-               class="inline-flex items-center rounded-full px-6 py-3 transition"
-               style="background: var(--primary); color: var(--on-primary);">
-              Get a Free Estimate
-            </a>
-            <a href="/our-work"
-               class="inline-flex items-center rounded-full px-6 py-3 border transition"
-               style={`color: var(--on-surface); border-color: color-mix(in oklab, var(--on-surface) 28%, transparent);`}>
-              See Projects
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- OFFSET PHOTO GRID (Behr vibe) -->
-    {photos.length > 0 && (
-      <section class="bg-white">
-        <div class="mx-auto max-w-6xl px-6 md:px-10 py-16 md:py-20">
-          <div class="grid md:grid-cols-12 gap-6 md:gap-8">
-            {photos.map((src, i) => (
-              <figure
-                class={`overflow-hidden rounded-2xl shadow-sm border border-neutral-200
-                         ${i % 4 === 0 ? "md:col-span-7" : i % 4 === 1 ? "md:col-start-8 md:col-span-5 md:mt-16" :
-                           i % 4 === 2 ? "md:col-span-6" : "md:col-start-7 md:col-span-6 md:-mt-10"}`}
-              >
-                <img src={src} alt={`${title} example ${i + 1}`} class="w-full h-full object-cover" loading="lazy" />
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
+    <!-- ALTERNATING ROWS WITH PROCESS MODALS (Behr-style blocks) -->
+    {alternatingItems.length > 0 && (
+      <ServiceDetailAlternatingRows
+        items={alternatingItems}
+        fallbackImg={heroImage ?? photos[0] ?? "/placeholder-service.jpg"}
+      />
     )}
 
-    <!-- PROCESS + BENEFITS -->
-    <section class="bg-white">
-      <div class="mx-auto max-w-6xl px-6 md:px-10 py-16 md:py-20 grid md:grid-cols-3 gap-12">
-        <div class="md:col-span-2">
-          <h2 class="text-2xl md:text-3xl font-semibold text-neutral-900">Our Process</h2>
-          <p class="mt-3 text-neutral-700">
-            Every {title.toLowerCase()} project starts with careful prep and premium coatings selected for Minnesota weather.
-          </p>
-          {process.length > 0 && (
-            <ol class="mt-6 space-y-3">
-              {process.map((step, idx) => (
-                <li class="flex gap-3">
-                  <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm"
-                        style="background: var(--primary); color: var(--on-primary);">
-                    {idx + 1}
-                  </span>
-                  <span class="pt-[2px] text-neutral-800">{step}</span>
-                </li>
-              ))}
-            </ol>
-          )}
-        </div>
+    <!-- BIG CTA + BBB SEAL (shared CTA component) -->
+    <ServiceDetailCTA
+      title={`Ready to refresh your ${title.toLowerCase()}?`}
+      description="Schedule a quick walk-through and same-day estimate."
+      backHref="/exterior"
+      backLabel="Back to Exterior Services"
+       bbbLink="https://www.bbb.org/us/mn/hopkins/profile/painting-contractors/paintcraft-llc-0704-1000075280/#sealclick"
+    />
 
-        <aside class="md:col-span-1">
-          <div class="rounded-2xl border border-neutral-200 p-6">
-            <h3 class="font-semibold text-neutral-900 mb-3">Why it helps your home</h3>
-            <ul class="space-y-2">
-              {benefits.map((b) => (
-                <li class="pl-5 text-neutral-700 relative">
-                  <span class="absolute left-0 top-2 h-2 w-2 rounded-full" style="background: var(--accent);"></span>
-                  {b}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {swatches.length > 0 && (
-            <div class="rounded-2xl border border-neutral-200 p-6 mt-6">
-              <h3 class="font-semibold text-neutral-900 mb-3">Popular colors</h3>
-              <div class="flex flex-wrap gap-4">
-                {swatches.map((s) => (
-                  <div class="flex flex-col items-center text-xs">
-                    <span class="h-10 w-10 rounded-full border border-black/10 shadow-inner"
-                          style={`background:${s.hex}`}></span>
-                    <span class="mt-1 text-neutral-600">{s.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </aside>
-      </div>
-    </section>
-
-    <!-- FAQ -->
+    <!-- FAQ (SEO-friendly with JSON-LD from component) -->
     {faq.length > 0 && (
-      <section class="bg-white">
-        <div class="mx-auto max-w-6xl px-6 md:px-10 py-12 md:py-16">
-          <h2 class="text-2xl md:text-3xl font-semibold text-neutral-900">FAQ</h2>
-          <div class="mt-6 divide-y divide-neutral-200 border border-neutral-200 rounded-2xl overflow-hidden">
-            {faq.map(({ q, a }) => (
-              <details class="group open:bg-neutral-50">
-                <summary class="cursor-pointer list-none p-5 md:p-6 flex justify-between items-center">
-                  <span class="font-medium text-neutral-900">{q}</span>
-                  <span class="ml-4 inline-flex h-6 w-6 items-center justify-center rounded-full text-neutral-600 border border-neutral-300">
-                    <span class="group-open:hidden">+</span>
-                    <span class="hidden group-open:inline">–</span>
-                  </span>
-                </summary>
-                <div class="p-5 md:p-6 pt-0 text-neutral-700">{a}</div>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ServiceDetailFAQ
+        title={`${title} – Frequently Asked Questions`}
+        items={faq}
+      />
     )}
-
-    <!-- THEMED CTA ON SURFACE COLOR -->
-    <section class="relative py-16 md:py-20" style="background: var(--surface);">
-      <div class="mx-auto max-w-5xl px-6 md:px-10 text-center">
-        <h2 class="text-2xl md:text-3xl font-semibold" style="color: var(--on-surface);">
-          Ready to refresh your exterior?
-        </h2>
-        <p class="mt-3" style={onSurfaceFaint}>
-          Schedule a quick walk-through and a same-day estimate.
-        </p>
-        <div class="mt-8 flex justify-center gap-3">
-          <a href="/contact"
-             class="inline-flex items-center rounded-full px-6 py-3 transition"
-             style="background: var(--primary); color: var(--on-primary);">
-            Get a Free Estimate
-          </a>
-          <a href="/our-work"
-             class="inline-flex items-center rounded-full px-6 py-3 border transition"
-             style={`color: var(--on-surface); border-color: color-mix(in oklab, var(--on-surface) 28%, transparent);`}>
-            See Projects
-          </a>
-        </div>
-      </div>
-    </section>
   </div>
 </Base>

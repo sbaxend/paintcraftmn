@@ -1,10 +1,9 @@
 ---
-/** ---------- Types & props (Astro front-matter supports TS) ---------- */
 type Stage = {
   id: string;
   title: string;
   desc: string;
-  img: string; // path under /public (e.g. "/prep.png")
+  img: string;
 };
 
 export interface Props {
@@ -13,12 +12,13 @@ export interface Props {
 }
 
 const {
+  heading = "A Fresh Interior From Start To Finish",
   stages = [
     {
       id: "prep",
       title: "Prep & Protect",
-      desc: "We carefully protect furniture & floors, then prep all surfaces for perfect paint adhesion.",
-      img: "/prep.png",
+      desc: "We carefully protect your furniture and floors, then prep all surfaces for perfect paint adhesion.",
+      img: "/prep-two.png",
     },
     {
       id: "paint",
@@ -40,85 +40,189 @@ const stageIds = stages.map((s) => s.id);
 ---
 
 <section id={sectionId} class="relative bg-white">
-  <!-- Tight heading so the effect starts sooner -->
-  <div class="mx-auto max-w-7xl px-6 pt-6 pb-3">
+  {/* Shared heading */}
+  <div class="mx-auto max-w-7xl px-6 pt-14 pb-6 text-center">
+    <h2 class="text-[clamp(1.9rem,4.5vw,3rem)] font-semibold tracking-tight text-neutral-900 leading-tight">
+      {heading}
     </h2>
+    <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-neutral-600">
+      Three simple steps to transform your space with professional results.
+    </p>
   </div>
 
-  <!-- SCROLL REGION (enter + pin + exit) -->
-  <div data-wrapper class="relative h-[340vh]">
-    <!-- STICKY VIEWPORT -->
-    <div class="sticky top-0 h-screen overflow-hidden">
-      <!-- MEDIA BUBBLE (contained → near-fullscreen) -->
-      <div class="absolute inset-0 flex items-center justify-center">
-        <div
-          id="ip-bubble"
-          class="relative aspect-[16/9] w-[88vw] md:w-[80vw] max-w-[1400px] rounded-[28px] overflow-hidden
-                 shadow-[0_20px_80px_rgba(0,0,0,.25)] ring-1 ring-black/10"
-          style="transform:translateZ(0) scale(.70); opacity:0;"
+  {/* ========== MOBILE VERSION (no sticky, no clipping) ========== */}
+  <div class="mx-auto max-w-5xl px-6 pb-16 md:hidden" id="ip-mobile-root">
+    {/* Tabs */}
+    <div class="flex gap-2 justify-center mb-4 overflow-x-auto no-scrollbar">
+      {stages.map((s, idx) => (
+        <button
+          type="button"
+          data-ipm-tab={idx}
+          class="shrink-0 rounded-full px-4 py-1.5 text-xs font-medium
+                 bg-neutral-100 text-neutral-700
+                 data-[active=true]:bg-[#C48356] data-[active=true]:text-white
+                 transition-colors"
         >
-          {stages.map((s, idx) => (
-            <img
-              src={s.img}
-              alt={s.title}
-              class={`slide absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-out ${idx === 0 ? "opacity-100" : ""}`}
-              data-idx={idx}
-              loading={idx === 0 ? "eager" : "lazy"}
-              decoding="async"
-            />
-          ))}
-          <!-- vignette for text legibility -->
-          <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.15)_0%,rgba(0,0,0,.35)_60%,rgba(0,0,0,.45)_100%)]"></div>
-        </div>
-      </div>
+          {s.title}
+        </button>
+      ))}
+    </div>
 
-      <!-- TEXT OVERLAY -->
-      <div class="absolute inset-0 flex items-end md:items-center justify-center pb-10 md:pb-0">
-        <div class="mx-auto max-w-4xl px-6 text-center">
+    {/* Card */}
+    <div class="rounded-[28px] overflow-hidden shadow-[0_16px_60px_rgba(0,0,0,.20)] ring-1 ring-black/10">
+      <div class="relative aspect-[4/5]">
+        {stages.map((s, idx) => (
+          <img
+            src={s.img}
+            alt={s.title}
+            class={`ipm-slide absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-400 ${idx === 0 ? "opacity-100" : ""}`}
+            data-idx={idx}
+            loading={idx === 0 ? "eager" : "lazy"}
+            decoding="async"
+          />
+        ))}
+        <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.1)_0%,rgba(0,0,0,.35)_55%,rgba(0,0,0,.55)_100%)]"></div>
+
+        <div class="absolute inset-x-5 bottom-8 text-center text-white">
           {stages.map((s, idx) => (
             <div
-              class={`copy absolute left-1/2 -translate-x-1/2 w-full max-w-3xl opacity-0 transition-opacity duration-400 ${idx === 0 ? "opacity-100" : ""}`}
+              class={`ipm-copy absolute left-1/2 -translate-x-1/2 w-full max-w-[90%] opacity-0 transition-opacity duration-300 ${idx === 0 ? "opacity-100" : ""}`}
               data-idx={idx}
             >
-              <h3 class="text-white drop-shadow text-3xl md:text-5xl font-extrabold">
-                {s.title}
-              </h3>
-              <p class="mt-4 text-white/90 text-base md:text-lg">{s.desc}</p>
+              <h3 class="text-2xl font-semibold drop-shadow">{s.title}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-white/90">
+                {s.desc}
+              </p>
             </div>
           ))}
         </div>
       </div>
     </div>
-
-    <!-- MARKERS (1 full screen per stage) -->
-    <div class="relative">
-      {stageIds.map((id) => (
-        <div id={`marker-${id}`} class="h-screen"></div>
-      ))}
-    </div>
   </div>
 
-  <!-- Data payload for the client script -->
-  <script type="application/json" id="ip-data" set:html={JSON.stringify({ sectionId, stageIds })} />
+  {/* ========== DESKTOP VERSION (sticky scrollytelling) ========== */}
+  <div class="hidden md:block">
+    <div data-wrapper class="relative h-[340vh]">
+      {/* Sticky viewport */}
+      <div class="sticky top-0 h-screen overflow-hidden">
+        {/* Bubble */}
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div
+            id="ip-bubble"
+            class="relative aspect-[16/9] w-[80vw] max-w-[1400px] rounded-[28px] overflow-hidden
+                   shadow-[0_20px_80px_rgba(0,0,0,.25)] ring-1 ring-black/10"
+            style="transform:translateZ(0) scale(.70); opacity:0;"
+          >
+            {/* DESKTOP tabs overlaid at top */}
+            <div class="absolute left-1/2 top-5 z-20 flex -translate-x-1/2 gap-3 px-4">
+              {stages.map((s, idx) => (
+                <button
+                  type="button"
+                  data-ip-tab={idx}
+                  class="rounded-full px-5 py-1.5 text-sm font-medium
+                         bg-white/80 text-neutral-700 shadow-sm
+                         data-[active=true]:bg-white data-[active=true]:text-neutral-900
+                         whitespace-nowrap"
+                >
+                  {s.title}
+                </button>
+              ))}
+            </div>
+
+            {stages.map((s, idx) => (
+              <img
+                src={s.img}
+                alt={s.title}
+                class={`slide absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-out ${idx === 0 ? "opacity-100" : ""}`}
+                data-idx={idx}
+                loading={idx === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+            ))}
+            <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.15)_0%,rgba(0,0,0,.35)_60%,rgba(0,0,0,.45)_100%)]"></div>
+          </div>
+        </div>
+
+        {/* Text overlay */}
+        <div class="absolute inset-0 flex items-center justify-center pb-0">
+          <div class="mx-auto max-w-4xl px-6 text-center">
+            {stages.map((s, idx) => (
+              <div
+                class={`copy absolute left-1/2 -translate-x-1/2 w-full max-w-3xl opacity-0 transition-opacity duration-400 ${idx === 0 ? "opacity-100" : ""}`}
+                data-idx={idx}
+              >
+                <h3 class="text-white drop-shadow text-4xl md:text-5xl font-extrabold">
+                  {s.title}
+                </h3>
+                <p class="mt-4 text-white/90 text-lg">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Markers: one screen per stage */}
+      <div class="relative">
+        {stageIds.map((id) => (
+          <div id={`marker-${id}`} class="h-screen"></div>
+        ))}
+      </div>
+    </div>
+
+    {/* Data payload for desktop script */}
+    <script
+      type="application/json"
+      id="ip-data"
+      set:html={JSON.stringify({ sectionId, stageIds })}
+    />
+  </div>
 </section>
 
-<!-- ========= Client Script (runs in place; no hoisting) ========= -->
+<!-- MOBILE INTERACTION SCRIPT -->
 <script is:inline>
-  const run = () => {
+  (() => {
+    const root = document.getElementById('ip-mobile-root');
+    if (!root) return;
+
+    const tabs  = Array.from(root.querySelectorAll('[data-ipm-tab]'));
+    const slides = Array.from(root.querySelectorAll('.ipm-slide'));
+    const copies = Array.from(root.querySelectorAll('.ipm-copy'));
+
+    const setActive = (idx) => {
+      slides.forEach((el, i) => el.style.opacity = i === idx ? '1' : '0');
+      copies.forEach((el, i) => el.style.opacity = i === idx ? '1' : '0');
+      tabs.forEach((btn, i) => {
+        if (i === idx) btn.setAttribute('data-active', 'true');
+        else btn.removeAttribute('data-active');
+      });
+    };
+
+    tabs.forEach((btn) => {
+      const idx = Number(btn.getAttribute('data-ipm-tab'));
+      if (Number.isNaN(idx)) return;
+      btn.addEventListener('click', () => setActive(idx));
+    });
+
+    setActive(0);
+  })();
+</script>
+
+<!-- DESKTOP SCROLL SCRIPT -->
+<script is:inline>
+  const runDesktopIP = () => {
     const dataEl = document.getElementById('ip-data');
     if (!dataEl) return;
 
-    // ---- Tunables (adjust to taste) ----
-    const ENTER_EARLY       = 0.28; // start fade/scale BEFORE the wrapper hits viewport (0..1 of vh)
-    const START_SCALE       = 0.70; // scale at very first contact
-    const MID_SCALE         = 0.96; // scale by end of enter
-    const EXIT_SCALE        = 0.70; // scale at end of exit
-    const WRAP_VH           = 500;  // wrapper height (syncs with h-[340vh])
-    const FULL_ON_AT        = 0.16; // during pin: when to expand to near-fullscreen
-    const FULL_OFF_AT       = 0.94; // when to release near-fullscreen
-    const FULL_GUTTER_VW    = 0;    // keep a small side gutter in fullscreen
-    const FULL_TRANSITION_MS= 420;  // sizing transition speed
-    // -----------------------------------
+    // Tunables
+    const ENTER_EARLY        = 0.28;
+    const START_SCALE        = 0.70;
+    const MID_SCALE          = 0.96;
+    const EXIT_SCALE         = 0.70;
+    const WRAP_VH            = 340;
+    const FULL_ON_AT         = 0.16;
+    const FULL_OFF_AT        = 0.94;
+    const FULL_GUTTER_VW     = 0;
+    const FULL_TRANSITION_MS = 420;
 
     let data = {};
     try { data = JSON.parse(dataEl.textContent || '{}'); } catch {}
@@ -131,6 +235,7 @@ const stageIds = stages.map((s) => s.id);
     const copies  = Array.from(root.querySelectorAll('.copy'));
     const wrapper = root.querySelector('[data-wrapper]');
     const markers = (data.stageIds || []).map(id => document.getElementById(`marker-${id}`)).filter(Boolean);
+    const tabs    = Array.from(root.querySelectorAll('[data-ip-tab]'));
 
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
     const vh    = () => window.innerHeight;
@@ -145,7 +250,7 @@ const stageIds = stages.map((s) => s.id);
       const enterEnd   = firstTop;
       const pinStart   = firstTop;
       const lastTop    = (markers[markers.length - 1]?.getBoundingClientRect().top || 0) + window.scrollY;
-      const pinEnd     = lastTop + vh(); // one full screen for last marker
+      const pinEnd     = lastTop + vh();
       const exitEnd    = pinEnd + vh() * 0.7;
 
       const markerTops = markers.map(m => (m?.getBoundingClientRect().top || 0) + window.scrollY);
@@ -162,6 +267,10 @@ const stageIds = stages.map((s) => s.id);
     const setActive = (idx) => {
       slides.forEach((el, i) => (el.style.opacity = i === idx ? '1' : '0'));
       copies.forEach((el, i) => (el.style.opacity = i === idx ? '1' : '0'));
+      tabs.forEach((btn, i) => {
+        if (i === idx) btn.setAttribute('data-active', 'true');
+        else btn.removeAttribute('data-active');
+      });
     };
 
     const applyFullscreen = (on) => {
@@ -191,7 +300,7 @@ const stageIds = stages.map((s) => s.id);
       const y = window.scrollY;
       const { enterStart, enterEnd, pinStart, pinEnd, exitEnd, markerTops } = geom;
 
-      // ENTER (fade + scale up early)
+      // ENTER
       if (y <= enterEnd) {
         const p = clamp((y - enterStart) / (enterEnd - enterStart), 0, 1);
         if (bubble) {
@@ -204,7 +313,7 @@ const stageIds = stages.map((s) => s.id);
         return;
       }
 
-      // PIN (step through slides; expand to near-fullscreen)
+      // PIN
       if (y > enterEnd && y <= pinEnd) {
         let idx = 0;
         for (let i = 0; i < markerTops.length; i++) {
@@ -222,7 +331,7 @@ const stageIds = stages.map((s) => s.id);
         return;
       }
 
-      // EXIT (shrink + fade)
+      // EXIT
       const p = clamp((y - pinEnd) / (exitEnd - pinEnd), 0, 1);
       if (bubble) {
         const s = 1.0 + (EXIT_SCALE - 1.0) * p;
@@ -232,16 +341,30 @@ const stageIds = stages.map((s) => s.id);
       applyFullscreen(false);
     };
 
-    // Ensure first slide shows immediately
+    tabs.forEach((btn) => {
+      const idx = Number(btn.getAttribute('data-ip-tab'));
+      if (Number.isNaN(idx)) return;
+      btn.addEventListener('click', () => setActive(idx));
+    });
+
     setActive(0);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   };
 
-  // run now (and also safe if DOM’s not ready yet)
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', run);
+    document.addEventListener('DOMContentLoaded', runDesktopIP);
   } else {
-    run();
+    runDesktopIP();
   }
 </script>
+
+<style>
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

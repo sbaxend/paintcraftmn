@@ -1,32 +1,36 @@
 ---
 export interface Props {
   title: string;
-  bg?: string; // background image path (optional)
+  bg?: string;
 }
 
-const { title, bg = "/hero.png" } = Astro.props as Props;
+const { title, bg = "/interior-home-tile.png" } = Astro.props as Props;
 ---
 
 <section
-  class="relative h-[78vh] min-h-[560px] flex flex-col items-center justify-center text-center bg-black"
+  class="relative h-[85vh] min-h-[700px] flex flex-col items-center justify-center text-center bg-black"
   style={`background-image:url('${bg}'); background-size:cover; background-position:center;`}
 >
-  <!-- Overlay -->
-  <div class="absolute inset-0 bg-black/45"></div>
+  <!-- Dark Overlay -->
+  <div class="absolute inset-0 bg-black/50"></div>
 
-  <!-- Centered Content -->
-  <div class="relative z-10 px-6">
-    <h1 class="text-white text-4xl md:text-6xl font-extrabold drop-shadow-xl">
+  <!-- Main Content -->
+  <div class="relative z-10 px-6 max-w-4xl">
+    <h1
+      class="text-white font-sans font-semibold font-extrabold tracking-tight leading-[1.1]
+             text-[clamp(2.5rem,6vw,4.5rem)] drop-shadow-[0_8px_20px_rgba(0,0,0,0.55)]"
+    >
       {title}
     </h1>
 
+    <!-- CTA Button -->
     <a
       href="/contact"
-      class="mt-8 inline-flex items-center rounded-full bg-blue-600 px-6 py-3 font-medium text-white shadow hover:bg-blue-700 transition"
+      class="mt-8 inline-flex rounded-full border-2 border-[#C48356]/80 
+                bg-[#C48356]/10 px-6 py-3 text-sm font-semibold text-white 
+                transition-all duration-300 hover:bg-[#C48356] shadow-lg"
     >
       Schedule Now
     </a>
   </div>
-  
 </section>
-

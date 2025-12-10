@@ -6,24 +6,41 @@ import WhyChooseVideo from "../components/WhyChooseVideo.astro";
 import ServicesGrid from "../components/ServicesGrid.astro";
 import Reviews from "../components/Reviews.astro";
 import TrustedPartners from "../components/TrustedPartners.astro";
+import ServiceGridSlide from "../components/ServiceGridSlide.astro";
 ---
 
 <Base title="PaintCraft MN | Professional Painting Services">
   <HeroVideo />
 
-  <section class="relative -mt-8 z-10">
-    <div class="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-xl">
-      <p class="text-center text-xl md:text-2xl text-neutral-700">
-        Experience the transformative power of painting and fall in love with your home again.
-      </p>
-    </div>
-  </section>
+  <!-- Clean white spacer section with centered text -->
+  <!-- Clean white spacer section with Meta-style headline + scroll-in animation -->
+<section
+  id="meta-bridge"
+  class="relative bg-gradient-to-b from-white to-neutral-50 py-8 md:py-12 text-center overflow-hidden"
+>
+  <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.04)_0%,transparent_70%)]"></div>
 
-  <!-- REMOVE the max-w wrapper; let the grid be full-bleed -->
-  <ServicesGrid bleed />
+  <div class="relative z-10 px-6">
+  <p
+    class="mx-auto max-w-5xl text-[clamp(2.2rem,4.2vw,3.25rem)] leading-[1.1] font-sans font-semibold tracking-tight text-neutral-800 reveal-up mt-0 mb-1"
+  >
+    Transforming Spaces Into Experiences
+  </p>
+</div>
+
+
+  
+</section>
+
+
+  <!-- Normal positioning for the services grid -->
+  <div class="relative z-10">
+    <ServiceGridSlide bleed />
+  </div>
 
   <CoveredBand />
-  <WhyChooseVideo client:load />
+  <!-- <WhyChooseVideo client:load /> -->
   <Reviews />
   <TrustedPartners />
 </Base>
+

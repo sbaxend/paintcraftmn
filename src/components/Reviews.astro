@@ -22,21 +22,21 @@ const summary = [
 ];
 ---
 
-<section class="relative bg-gradient-to-b from-neutral-50 to-white py-20 md:py-32">
+<section class="relative bg-gradient-to-b from-neutral-50 to-white pt-12 md:pt-16 pb-14 md:pb-20">
   <div class="mx-auto max-w-7xl px-6">
     <!-- Header with Schema.org markup for SEO -->
-    <div class="mb-12 text-center">
+    <div class="mb-8 text-center">
       <h2 class="text-4xl md:text-5xl font-bold text-neutral-900 tracking-tight">
-        Trusted by Homeowners
+        Trusted by MN Homeowners
       </h2>
       <p class="mt-4 text-lg text-neutral-600 max-w-2xl mx-auto">
-        See why customers choose PaintCraft for their painting projects across Minnesota
+        See what homeowners are saying about working with our team
       </p>
     </div>
 
     <!-- Rating Summary with Schema.org microdata -->
     <div 
-      class="mb-12 flex flex-wrap items-center justify-center gap-6 md:gap-8"
+      class="mb-8 flex flex-wrap items-center justify-center gap-6 md:gap-8"
       itemscope 
       itemtype="https://schema.org/AggregateRating"
     >
@@ -52,10 +52,18 @@ const summary = [
           </div>
           <div class="text-sm text-neutral-600">
             <span itemprop="reviewCount">{count}</span> reviews on 
-            <span itemprop="bestRating" content="5" class="hidden">5</span>
-            <span itemprop="worstRating" content="1" class="hidden">1</span>
-            <a href={reviewlink} target="_blank" rel="noopener" class="font-medium text-[#C48356] hover:underline">Google</a>
+            <meta itemprop="bestRating" content="5" />
+            <meta itemprop="worstRating" content="1" />
+            <a
+              href={reviewlink}
+              target="_blank"
+              rel="noopener"
+              class="font-medium text-[#C48356] hover:underline"
+            >
+              Google
+            </a>
           </div>
+
         </div>
       </div>
 
@@ -185,47 +193,90 @@ const summary = [
     const rail = document.getElementById('reviews-rail');
     if (!rail) return;
 
-    let rafId = 0, hovering = false, velocity = 0;
-    const MAX_SPEED = 2.5, FRICTION = 0.92;
+    // ----- TUNABLES -----
+    const MAX_SPEED   = 6.5;  // lower = less sensitive overall (was 2.5)
+    const DEAD_ZONE   = 0.12; // 0–0.2 = wider center area with no movement
+    const CURVE       = 1.6;  // >1 softens response near center (1 = linear)
+    const LERP        = 0.15; // 0.05–0.2: higher = snappier, lower = floatier
+    const FRICTION    = 0.92; // used when we want inertia (not needed here much)
 
-    const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+    let rafId = 0;
+    let hovering = false;
+    let velocity = 0;
+    let targetVelocity = 0;
+
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const lerp  = (a, b, t) => a + (b - a) * t;
+    const sign  = (v) => (v < 0 ? -1 : 1);
+
     const step = () => {
-      if (!hovering || Math.abs(velocity) < 0.01) { 
-        rafId = 0; 
-        return; 
+      // ease current velocity toward the target for smoothness
+      velocity = lerp(velocity, targetVelocity, LERP);
+
+      if (!hovering && Math.abs(velocity) < 0.01) {
+        rafId = 0;
+        return;
       }
+
       const max = rail.scrollWidth - rail.clientWidth;
       rail.scrollLeft = clamp(rail.scrollLeft + velocity, 0, max);
+
+      // tiny decay so it settles if the mouse stops right on the edge
       velocity *= FRICTION;
+
       rafId = requestAnimationFrame(step);
+    };
+
+    const kick = () => {
+      if (!rafId) rafId = requestAnimationFrame(step);
     };
 
     rail.addEventListener('mousemove', (e) => {
       const r = rail.getBoundingClientRect();
-      const t = ((e.clientX - r.left) / r.width) * 2 - 1;
-      velocity = t * MAX_SPEED;
-      if (!hovering) { 
-        hovering = true; 
-        if (!rafId) rafId = requestAnimationFrame(step); 
-      }
-    });
+      // map to -1..1
+      let t = ((e.clientX - r.left) / r.width) * 2 - 1;
 
-    rail.addEventListener('mouseleave', () => { 
-      hovering = false; 
-      velocity = 0; 
-      if (rafId) {
-        cancelAnimationFrame(rafId); 
-        rafId = 0;
+      // dead zone at the center
+      if (Math.abs(t) < DEAD_ZONE) t = 0;
+      else {
+        // re-range outside the dead zone and apply a soft curve
+        const edge = (Math.abs(t) - DEAD_ZONE) / (1 - DEAD_ZONE);
+        const curved = Math.pow(edge, CURVE);
+        t = curved * sign(t);
       }
-    });
 
-    rail.addEventListener('wheel', () => { 
-      hovering = false; 
-      velocity = 0; 
-      if (rafId) {
-        cancelAnimationFrame(rafId); 
-        rafId = 0;
+      targetVelocity = t * MAX_SPEED;
+      if (!hovering) {
+        hovering = true;
+        kick();
       }
-    });
+    }, { passive: true });
+
+    rail.addEventListener('mouseenter', () => {
+      hovering = true;
+      kick();
+    }, { passive: true });
+
+    rail.addEventListener('mouseleave', () => {
+      hovering = false;
+      targetVelocity = 0;
+      // let the loop decay naturally; it'll stop when velocity is tiny
+    }, { passive: true });
+
+    // if user wheels, stop the hover-drive immediately
+    rail.addEventListener('wheel', () => {
+      hovering = false;
+      targetVelocity = 0;
+      velocity = 0;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { passive: true });
+
+    // optional: disable hover scroll on touch devices
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isTouch) {
+      rail.removeEventListener('mousemove', () => {});
+      rail.removeEventListener('mouseenter', () => {});
+      rail.removeEventListener('mouseleave', () => {});
+    }
   })();
 </script>

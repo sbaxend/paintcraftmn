@@ -14,6 +14,22 @@ const year = new Date().getFullYear();
       <p class="mt-3 text-sm text-neutral-600">
         Professional interior & exterior painting across Minnesota.
       </p>
+
+      <!-- BBB Seal -->
+      <a
+        href="https://www.bbb.org/us/mn/hopkins/profile/painting-contractors/paintcraft-llc-0704-1000075280/#sealclick"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-4 inline-block"
+      >
+        <img
+          src="https://seal-minnesota.bbb.org/seals/blue-seal-293-61-bbb-1000075280.png"
+          alt="BBB Accredited Business - PaintCraft LLC"
+          class="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300"
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
     </div>
 
     <!-- Quick Links -->
@@ -41,7 +57,16 @@ const year = new Date().getFullYear();
       <h3 class="text-sm font-semibold text-neutral-900">Follow</h3>
       <ul class="mt-3 space-y-2">
         {socials.map((s) => (
-          <li><a class="text-sm text-neutral-600 hover:text-neutral-900" href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a></li>
+          <li>
+            <a
+              class="text-sm text-neutral-600 hover:text-neutral-900"
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {s.label}
+            </a>
+          </li>
         ))}
       </ul>
     </div>

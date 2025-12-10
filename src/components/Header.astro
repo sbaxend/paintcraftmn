@@ -3,7 +3,7 @@ import { navLinks, ctaButton } from "../config/siteConfig.js";
 const current = Astro.url.pathname;
 ---
 
-<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-neutral-200 supports-[backdrop-filter]:bg-white/70">
+<header id="main-header" class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-neutral-200 supports-[backdrop-filter]:bg-white/70 transition-transform duration-300">
   <div class="mx-auto max-w-7xl px-4 md:px-6">
     <div class="flex h-16 items-center justify-between">
       <!-- Logo -->
@@ -18,57 +18,53 @@ const current = Astro.url.pathname;
 
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-1">
-        {navLinks.map((link) => {
-          const hasDropdown = link.dropdown && link.dropdown.length > 0;
-          return (
-            <div class="relative group" key={link.href}>
-              <a
-                href={link.href}
-                class={`relative flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                  current.startsWith(link.href) && link.href !== "/"
-                    ? "text-[#C48356] bg-[#C48356]/10"
-                    : "text-neutral-700 hover:text-[#C48356] hover:bg-[#C48356]/5"
-                }`}
-                aria-haspopup={hasDropdown ? "true" : "false"}
-                aria-expanded="false"
-              >
-                {link.label}
-                {hasDropdown && (
-                  <svg
-                    class="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                )}
-              </a>
-
-              {hasDropdown && (
-                <div
-                  class="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto focus-within:opacity-100 focus-within:visible focus-within:pointer-events-auto transition-all duration-200 ease-out origin-top"
-                  role="menu"
+        {navLinks.map((link) => (
+          <div class="relative nav-item">
+            <a
+              href={link.href}
+              class={
+                current.startsWith(link.href) && link.href !== "/"
+                  ? "relative flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 text-[#C48356] bg-[#C48356]/10"
+                  : "relative flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 text-neutral-700 hover:text-[#C48356] hover:bg-[#C48356]/5"
+              }
+            >
+              {link.label}
+              {link.dropdown && link.dropdown.length > 0 && (
+                <svg
+                  class="chevron-icon h-3.5 w-3.5 transition-transform duration-200"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  <div class="rounded-2xl bg-white p-2 shadow-xl ring-1 ring-[#C48356]/20 backdrop-blur-xl border border-[#C48356]/10">
-                    {link.dropdown.map((item) => (
-                      <a
-                        href={item.href}
-                        class={`block rounded-lg px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-[#C48356]/10 hover:text-[#C48356] transition-colors ${
-                          current === item.href ? "bg-[#C48356]/10 text-[#C48356]" : ""
-                        }`}
-                        role="menuitem"
-                        key={item.href}
-                      >
-                        {item.label}
-                      </a>
-                    ))}
-                  </div>
-                </div>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
               )}
-            </div>
-          );
-        })}
+            </a>
+
+            {link.dropdown && link.dropdown.length > 0 && (
+              <div
+                class="dropdown-menu absolute left-1/2 -translate-x-1/2 top-full pt-2 w-64 opacity-0 invisible pointer-events-none transition-all duration-200 ease-out origin-top"
+                role="menu"
+              >
+                <div class="rounded-2xl bg-white p-2 shadow-xl ring-1 ring-[#C48356]/20 backdrop-blur-xl border border-[#C48356]/10">
+                  {link.dropdown.map((item) => (
+                    <a
+                      href={item.href}
+                      class={
+                        current === item.href
+                          ? "block rounded-lg px-4 py-2.5 text-sm font-medium bg-[#C48356]/10 text-[#C48356] transition-colors"
+                          : "block rounded-lg px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-[#C48356]/10 hover:text-[#C48356] transition-colors"
+                      }
+                      role="menuitem"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
 
         <a
           href={ctaButton.href}
@@ -95,46 +91,42 @@ const current = Astro.url.pathname;
   <!-- Mobile Drawer -->
   <div id="mobileMenu" class="md:hidden hidden border-t border-neutral-200 bg-white">
     <div class="px-4 py-3 space-y-1.5">
-      {navLinks.map((link) => {
-        const hasDropdown = link.dropdown && link.dropdown.length > 0;
-        return (
-          <div key={`m-${link.href}`}>
-            <a
-              href={link.href}
-              class={`flex items-center justify-between rounded-lg px-3 py-2.5 font-medium transition ${
-                current.startsWith(link.href) && link.href !== "/"
-                  ? "bg-[#C48356]/10 text-[#C48356]"
-                  : "text-neutral-700 hover:bg-[#C48356]/5"
-              }`}
-            >
-              {link.label}
-              {hasDropdown && (
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              )}
-            </a>
-
-            {hasDropdown && (
-              <div class="pl-6 space-y-1">
-                {link.dropdown.map((item) => (
-                  <a
-                    href={item.href}
-                    class={`block rounded-lg px-3 py-2 text-sm text-neutral-600 transition ${
-                      current === item.href
-                        ? "bg-[#C48356]/10 text-[#C48356] font-medium"
-                        : "hover:bg-[#C48356]/5"
-                    }`}
-                    key={`m-${item.href}`}
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </div>
+      {navLinks.map((link) => (
+        <div>
+          <a
+            href={link.href}
+            class={
+              current.startsWith(link.href) && link.href !== "/"
+                ? "flex items-center justify-between rounded-lg px-3 py-2.5 font-medium transition bg-[#C48356]/10 text-[#C48356]"
+                : "flex items-center justify-between rounded-lg px-3 py-2.5 font-medium transition text-neutral-700 hover:bg-[#C48356]/5"
+            }
+          >
+            {link.label}
+            {link.dropdown && link.dropdown.length > 0 && (
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
             )}
-          </div>
-        );
-      })}
+          </a>
+
+          {link.dropdown && link.dropdown.length > 0 && (
+            <div class="pl-6 space-y-1">
+              {link.dropdown.map((item) => (
+                <a
+                  href={item.href}
+                  class={
+                    current === item.href
+                      ? "block rounded-lg px-3 py-2 text-sm bg-[#C48356]/10 text-[#C48356] font-medium transition"
+                      : "block rounded-lg px-3 py-2 text-sm text-neutral-600 hover:bg-[#C48356]/5 transition"
+                  }
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
 
       <a
         href={ctaButton.href}
@@ -147,18 +139,95 @@ const current = Astro.url.pathname;
 </header>
 
 <script is:inline>
-  const btn = document.getElementById("menuBtn");
-  const menu = document.getElementById("mobileMenu");
-  btn?.addEventListener("click", () => {
-    const expanded = btn.getAttribute("aria-expanded") === "true";
-    btn.setAttribute("aria-expanded", String(!expanded));
-    menu?.classList.toggle("hidden");
+(function () {
+  var btn = document.getElementById("menuBtn");
+  var menu = document.getElementById("mobileMenu");
+
+  if (btn && menu) {
+    btn.addEventListener("click", function () {
+      var expanded = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!expanded));
+      menu.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add("hidden");
+        btn.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  var navItems = document.querySelectorAll(".nav-item");
+
+  navItems.forEach(function (item) {
+    var dropdown = item.querySelector(".dropdown-menu");
+    var chevron = item.querySelector(".chevron-icon");
+    var timeoutId = null;
+
+    if (!dropdown) return;
+
+    var showDropdown = function () {
+      if (timeoutId) clearTimeout(timeoutId);
+      dropdown.classList.remove("opacity-0", "invisible", "pointer-events-none");
+      dropdown.classList.add("opacity-100", "visible", "pointer-events-auto");
+      if (chevron) chevron.style.transform = "rotate(180deg)";
+    };
+
+    var hideDropdown = function () {
+      timeoutId = setTimeout(function () {
+        dropdown.classList.remove("opacity-100", "visible", "pointer-events-auto");
+        dropdown.classList.add("opacity-0", "invisible", "pointer-events-none");
+        if (chevron) chevron.style.transform = "rotate(0deg)";
+      }, 150);
+    };
+
+    item.addEventListener("mouseenter", showDropdown);
+    item.addEventListener("mouseleave", hideDropdown);
+    dropdown.addEventListener("mouseenter", function () {
+      if (timeoutId) clearTimeout(timeoutId);
+    });
+    dropdown.addEventListener("mouseleave", hideDropdown);
   });
 
-  document.addEventListener("click", (e) => {
-    if (!btn?.contains(e.target) && !menu?.contains(e.target)) {
-      menu?.classList.add("hidden");
-      btn?.setAttribute("aria-expanded", "false");
+  var lastScrollY = window.scrollY;
+  var ticking = false;
+  var header = document.getElementById("main-header");
+
+  var updateHeaderVisibility = function () {
+    var currentScrollY = window.scrollY;
+
+    if (currentScrollY < 100) {
+      if (header) header.classList.remove("-translate-y-full");
+    } else if (currentScrollY > lastScrollY) {
+      if (header) header.classList.add("-translate-y-full");
+    } else {
+      if (header) header.classList.remove("-translate-y-full");
     }
-  });
+
+    lastScrollY = currentScrollY;
+    ticking = false;
+  };
+
+  var onScroll = function () {
+    if (!ticking) {
+      window.requestAnimationFrame(updateHeaderVisibility);
+      ticking = true;
+    }
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+})();
 </script>
+
+<style>
+  .nav-item .dropdown-menu {
+    transition: opacity 200ms ease-out, visibility 200ms ease-out;
+  }
+  .chevron-icon {
+    transition: transform 200ms ease-out;
+  }
+  #main-header {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+</style>

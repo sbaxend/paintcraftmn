@@ -1,0 +1,202 @@
+---
+import type { SubFeature } from "../../config/serviceThemes";
+
+export interface Props {
+  items?: SubFeature[];
+  fallbackImg: string;
+}
+
+const { items = [], fallbackImg } = Astro.props as Props;
+---
+
+{items.length > 0 && (
+  <section class="bg-white">
+    <div class="mx-auto max-w-6xl px-6 md:px-10 py-16 md:py-20 space-y-16 md:space-y-20">
+      {items.map((feature, index) => {
+        const isEven = index % 2 === 0;
+        const imgSrc = feature.img ?? fallbackImg;
+
+        return (
+            
+          <div class="relative grid md:grid-cols-12 gap-8 items-center">
+            {/* Text block */}
+            <div class={`md:col-span-5 ${isEven ? "md:order-1" : "md:order-2"}`}>
+              <div class="inline-flex items-center rounded-full bg-neutral-100 px-4 py-2 text-xs font-semibold tracking-[0.14em] uppercase text-neutral-500 mb-4">
+                {feature.label}
+              </div>
+
+              <h2 class="text-3xl md:text-4xl font-semibold text-neutral-900 mb-4">
+                {feature.modalTitle}
+              </h2>
+
+              <p class="text-base md:text-lg text-neutral-600 max-w-xl">
+                {feature.teaser}
+              </p>
+            </div>
+
+            {/* Overlapping pill card */}
+            <button
+              type="button"
+              data-detail-open={feature.id}
+              class="absolute bottom-[-2.5rem] left-1/2 -translate-x-1/2 z-20
+         detail-card group w-[88%] md:w-auto max-w-xl rounded-[1.75rem]
+         border border-neutral-200 bg-white p-4 md:p-5 shadow-lg
+         flex items-center justify-between gap-4"
+            >
+              <div>
+                <p class="text-sm font-semibold text-neutral-900 mb-1">
+                  {feature.label}
+                </p>
+                <p class="text-sm text-neutral-600 line-clamp-2">
+                  {feature.teaser}
+                </p>
+              </div>
+              <span class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-neutral-50 text-neutral-800 group-hover:bg-neutral-900 group-hover:text-white transition-colors text-lg leading-none">
+                +
+              </span>
+            </button>
+
+            {/* Image block */}
+            <div class={`md:col-span-7 ${isEven ? "md:order-2" : "md:order-1"}`}>
+              <div class="relative rounded-[2rem] overflow-hidden shadow-2xl border border-neutral-200 bg-white">
+                <img
+                  src={imgSrc}
+                  alt={feature.label}
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+
+
+            {/* Modal for this feature */}
+            <div
+              class="fixed inset-0 z-50 hidden items-center justify-center px-4 md:px-0"
+              data-detail-modal={feature.id}
+            >
+              <div
+                class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                data-detail-close
+              ></div>
+
+              <div
+                class="relative max-w-3xl w-full rounded-[2.5rem] bg-white shadow-2xl border border-neutral-200 overflow-hidden modal-panel"
+              >
+                <button
+                  type="button"
+                  data-detail-close
+                  class="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow-md hover:bg-white"
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+
+                <div class="grid md:grid-cols-2 gap-0">
+                  <div class="relative h-40 md:h-full">
+                    <img
+                      src={imgSrc}
+                      alt={feature.label}
+                      class="absolute inset-0 w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div class="p-6 md:p-8 flex flex-col justify-center">
+                    <p class="text-xs font-semibold tracking-[0.16em] uppercase text-neutral-500 mb-2">
+                      {feature.label}
+                    </p>
+                    <h3 class="text-2xl md:text-3xl font-semibold text-neutral-900 mb-3">
+                      {feature.modalTitle}
+                    </h3>
+                    <p class="text-sm md:text-base text-neutral-700 leading-relaxed">
+                      {feature.modalBody}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <script is:inline>
+      (() => {
+        const openButtons = document.querySelectorAll("[data-detail-open]");
+        const modals = document.querySelectorAll("[data-detail-modal]");
+        const closeTargets = document.querySelectorAll("[data-detail-close]");
+
+        if (!openButtons.length || !modals.length) return;
+
+        const closeAll = () => {
+          modals.forEach((m) => {
+            m.classList.add("hidden");
+            m.classList.remove("flex");
+          });
+          document.body.style.overflow = "";
+        };
+
+        const open = (id) => {
+          modals.forEach((m) => {
+            const isTarget = m.getAttribute("data-detail-modal") === id;
+            if (isTarget) {
+              m.classList.remove("hidden");
+              m.classList.add("flex");
+            } else {
+              m.classList.add("hidden");
+              m.classList.remove("flex");
+            }
+          });
+          document.body.style.overflow = "hidden";
+        };
+
+        openButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-detail-open");
+            if (id) open(id);
+          });
+        });
+
+        closeTargets.forEach((el) => {
+          el.addEventListener("click", closeAll);
+        });
+
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") closeAll();
+        });
+      })();
+    </script>
+
+    <style>
+      .detail-card {
+        transition:
+          box-shadow 0.25s ease,
+          transform 0.25s ease,
+          border-color 0.25s ease;
+      }
+
+      .detail-card:hover {
+        border-color: rgba(15, 23, 42, 0.12);
+      }
+
+      .modal-panel {
+        transform: translateY(12px);
+        opacity: 0;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+
+      [data-detail-modal].flex .modal-panel {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .detail-card,
+        .modal-panel {
+          transition: none !important;
+          transform: none !important;
+        }
+      }
+    </style>
+  </section>
+)}

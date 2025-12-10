@@ -1,0 +1,53 @@
+---
+interface Accolade {
+  label: string;
+  value: string;
+}
+
+export interface Props {
+  items?: Accolade[];
+}
+
+const {
+  items = [
+    { value: "250+", label: "Completed Projects" },
+    { value: "5 Stars", label: "Client Satisfaction" },
+    { value: "10+ Years", label: "Professional Experience" },
+    { value: "100%", label: "Quality Guarantee" },
+  ],
+} = Astro.props as Props;
+---
+
+<section class="accolades-section w-full bg-white py-10 md:py-14">
+  <div class="max-w-5xl mx-auto px-4 md:px-6">
+    <div
+      class="rounded-[2rem] bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]
+             border border-neutral-100 px-6 py-8 md:px-10 md:py-10"
+    >
+      <div
+        class="grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-6
+               justify-items-center text-center"
+      >
+        {items.map((i) => (
+          <div class="flex flex-col items-center">
+            <p
+              class="text-3xl md:text-4xl font-extrabold text-[#C48356] tracking-tight"
+            >
+              {i.value}
+            </p>
+            <p class="mt-2 text-xs md:text-sm text-neutral-600 font-medium">
+              {i.label}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .accolades-section {
+    /* subtle inset glow so it feels like a soft panel between sections */
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.03) inset;
+  }
+</style>

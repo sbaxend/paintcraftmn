@@ -1,10 +1,9 @@
 ---
-/** ---------- Types & props (Astro front-matter supports TS) ---------- */
 type Stage = {
   id: string;
   title: string;
   desc: string;
-  img: string; // path under /public (e.g. "/prep.png")
+  img: string;
 };
 
 export interface Props {
@@ -13,238 +12,207 @@ export interface Props {
 }
 
 const {
-  heading = "We handle everything",
+  heading = "Our Proven Exterior Process",
   stages = [
     {
-      id: "prep",
-      title: "Prep & Protect",
-      desc: "We carefully protect furniture & floors, then prep all surfaces for perfect paint adhesion.",
-      img: "/prep.png",
+      id: "wash",
+      title: "Wash & Prep",
+      desc:
+        "Power-wash, scrape loose paint, sand edges smooth, and spot-prime bare areas for proper adhesion.",
+      img: "/exterior_prep.png",
     },
     {
-      id: "paint",
+      id: "repair",
       title: "Paint & Perfect",
-      desc: "Expert application with premium paints for smooth, even coverage and flawless results.",
-      img: "/perfect.png",
+      desc:
+        "Caulk gaps, fill cracks, replace failing wood as needed, and apply the right primer for the substrate.",
+      img: "/exterior_prime.png",
     },
     {
-      id: "clean",
+      id: "coat",
       title: "Clean & Inspect",
-      desc: "Thorough clean-up and a detailed walkthrough to make sure you love every detail.",
-      img: "/inspect.png",
+      desc:
+        "Premium exterior coatings applied to spec for even coverage, UV resistance, and long-term durability.",
+      img: "/exterior_coat.png",
+    },
+    {
+      id: "detail",
+      title: "Detail, Clean & Inspect",
+      desc:
+        "Crisp lines, hardware reinstalled, full site cleanup, and a final walkthrough to ensure you love it.",
+      img: "/exterior_details.png",
     },
   ],
 } = Astro.props as Props;
-
-const sectionId = "interior-process";
-const stageIds = stages.map((s) => s.id);
 ---
 
-<section id={sectionId} class="relative bg-white">
-  <!-- Tight heading so the effect starts sooner -->
-  <div class="mx-auto max-w-7xl px-6 pt-6 pb-3">
-    <h2 class="text-center font-serif text-3xl md:text-5xl font-semibold text-neutral-900">
-      {heading}
-    </h2>
-  </div>
+<section class="relative bg-white py-20 md:py-32 overflow-hidden">
+  <div class="relative mx-auto max-w-[1600px] px-4 md:px-10">
+    <!-- Top heading -->
+    <div class="text-center mb-10">
+      <h2 class="text-4xl md:text-5xl font-bold text-neutral-900 tracking-tight">
+        {heading}
+      </h2>
+      <p class="mt-4 text-lg text-neutral-600 max-w-3xl mx-auto">
+        Four weather-ready steps to prep, protect, and polish your home’s exterior.
+      </p>
+    </div>
 
-  <!-- SCROLL REGION (enter + pin + exit) -->
-  <div data-wrapper class="relative h-[340vh]">
-    <!-- STICKY VIEWPORT -->
-    <div class="sticky top-0 h-screen overflow-hidden">
-      <!-- MEDIA BUBBLE (contained → near-fullscreen) -->
-      <div class="absolute inset-0 flex items-center justify-center">
-        <div
-          id="ip-bubble"
-          class="relative aspect-[16/9] w-[88vw] md:w-[80vw] max-w-[1400px] rounded-[28px] overflow-hidden
-                 shadow-[0_20px_80px_rgba(0,0,0,.25)] ring-1 ring-black/10"
-          style="transform:translateZ(0) scale(.70); opacity:0;"
-        >
-          {stages.map((s, idx) => (
+    <!-- Bubble -->
+    <div
+      id="ext-process-bubble"
+      class="relative overflow-hidden rounded-[2.5rem] shadow-2xl ring-1 ring-neutral-200/80 bg-black
+             h-[420px] md:h-[520px] lg:h-[580px]"
+    >
+      <!-- Top pills -->
+      <div
+        class="absolute left-1/2 top-8 md:top-6 lg:top-6 -translate-x-1/2 z-20 
+               flex flex-row flex-nowrap gap-2 md:gap-4 
+               overflow-x-auto md:overflow-visible 
+               px-4 scrollbar-none"
+      >
+        {stages.map((stage, index) => (
+          <button
+            type="button"
+            data-ext-tab
+            data-index={index}
+            class={`ext-process-tab px-4 py-2.5 md:px-8 md:py-3.5 
+                    rounded-full text-xs md:text-base 
+                    font-semibold tracking-tight transition-all duration-300 whitespace-nowrap ${
+              index === 0 ? "is-active" : ""
+            }`}
+          >
+            {stage.title}
+          </button>
+        ))}
+      </div>
+      <!-- Slides -->
+      <div class="relative h-full w-full">
+        {stages.map((stage, index) => (
+          <div
+            data-ext-slide
+            class={`ext-slide absolute inset-0 z-0 transition-opacity duration-700 ease-out ${
+              index === 0 ? "opacity-100 ext-slide-active" : "opacity-0"
+            }`}
+          >
+            <!-- Background image -->
             <img
-              src={s.img}
-              alt={s.title}
-              class={`slide absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-out ${idx === 0 ? "opacity-100" : ""}`}
-              data-idx={idx}
-              loading={idx === 0 ? "eager" : "lazy"}
+              src={stage.img}
+              alt={stage.title}
+              class="absolute inset-0 h-full w-full object-cover"
+              loading={index === 0 ? "eager" : "lazy"}
               decoding="async"
             />
-          ))}
-          <!-- vignette for text legibility -->
-          <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.15)_0%,rgba(0,0,0,.35)_60%,rgba(0,0,0,.45)_100%)]"></div>
-        </div>
-      </div>
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/45 to-black/10"></div>
 
-      <!-- TEXT OVERLAY -->
-      <div class="absolute inset-0 flex items-end md:items-center justify-center pb-10 md:pb-0">
-        <div class="mx-auto max-w-4xl px-6 text-center">
-          {stages.map((s, idx) => (
-            <div
-              class={`copy absolute left-1/2 -translate-x-1/2 w-full max-w-3xl opacity-0 transition-opacity duration-400 ${idx === 0 ? "opacity-100" : ""}`}
-              data-idx={idx}
-            >
-              <h3 class="text-white drop-shadow text-3xl md:text-5xl font-extrabold">
-                {s.title}
-              </h3>
-              <p class="mt-4 text-white/90 text-base md:text-lg">{s.desc}</p>
+            <!-- Text content -->
+            <div class="relative z-10 h-full w-full flex items-end justify-center">
+              <div class="px-6 md:px-12 pb-12 md:pb-16 max-w-3xl text-center">
+                <h3 class="text-white text-3xl md:text-5xl font-black tracking-tight mb-4">
+                  {stage.title}
+                </h3>
+                <p class="text-white/90 text-base md:text-lg leading-relaxed">
+                  {stage.desc}
+                </p>
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
 
-    <!-- MARKERS (1 full screen per stage) -->
-    <div class="relative">
-      {stageIds.map((id) => (
-        <div id={`marker-${id}`} class="h-screen"></div>
-      ))}
+    <!-- Bottom CTA -->
+    <div class="mt-12 text-center">
+      <a
+        href="/contact"
+        class="inline-flex items-center justify-center rounded-full bg-[#C48356] px-8 py-4 text-lg font-semibold text-white shadow-lg hover:bg-[#B47347] hover:shadow-xl hover:scale-105 transition-all"
+      >
+        Get Your Free Exterior Estimate
+        <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 8l4 4m0 0l-4 4m4-4H3"
+          />
+        </svg>
+      </a>
     </div>
   </div>
-
-  <!-- Data payload for the client script -->
-  <script type="application/json" id="ip-data" set:html={JSON.stringify({ sectionId, stageIds })} />
 </section>
 
-<!-- ========= Client Script (runs in place; no hoisting) ========= -->
 <script is:inline>
-  const run = () => {
-    const dataEl = document.getElementById('ip-data');
-    if (!dataEl) return;
+  (() => {
+    const bubble = document.getElementById("ext-process-bubble");
+    if (!bubble) return;
 
-    // ---- Tunables (adjust to taste) ----
-    const ENTER_EARLY       = 0.28; // start fade/scale BEFORE the wrapper hits viewport (0..1 of vh)
-    const START_SCALE       = 0.70; // scale at very first contact
-    const MID_SCALE         = 0.96; // scale by end of enter
-    const EXIT_SCALE        = 0.70; // scale at end of exit
-    const WRAP_VH           = 500;  // wrapper height (syncs with h-[340vh])
-    const FULL_ON_AT        = 0.16; // during pin: when to expand to near-fullscreen
-    const FULL_OFF_AT       = 0.94; // when to release near-fullscreen
-    const FULL_GUTTER_VW    = 0;    // keep a small side gutter in fullscreen
-    const FULL_TRANSITION_MS= 420;  // sizing transition speed
-    // -----------------------------------
+    const tabs = Array.from(bubble.querySelectorAll("[data-ext-tab]"));
+    const slides = Array.from(bubble.querySelectorAll("[data-ext-slide]"));
 
-    let data = {};
-    try { data = JSON.parse(dataEl.textContent || '{}'); } catch {}
+    if (!tabs.length || !slides.length) return;
 
-    const root    = document.getElementById(data.sectionId);
-    if (!root) return;
+    let current = 0;
 
-    const bubble  = root.querySelector('#ip-bubble');
-    const slides  = Array.from(root.querySelectorAll('.slide'));
-    const copies  = Array.from(root.querySelectorAll('.copy'));
-    const wrapper = root.querySelector('[data-wrapper]');
-    const markers = (data.stageIds || []).map(id => document.getElementById(`marker-${id}`)).filter(Boolean);
+    const setActive = (index) => {
+      current = index;
 
-    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-    const vh    = () => window.innerHeight;
+      slides.forEach((slide, i) => {
+        const active = i === index;
+        slide.classList.toggle("ext-slide-active", active);
+        slide.classList.toggle("opacity-100", active);
+        slide.classList.toggle("opacity-0", !active);
+      });
 
-    const measure = () => {
-      if (wrapper) wrapper.style.height = `${WRAP_VH}vh`;
-
-      const wTop     = (wrapper?.getBoundingClientRect().top || 0) + window.scrollY;
-      const firstTop = (markers[0]?.getBoundingClientRect().top || 0) + window.scrollY;
-
-      const enterStart = wTop - vh() * ENTER_EARLY;
-      const enterEnd   = firstTop;
-      const pinStart   = firstTop;
-      const lastTop    = (markers[markers.length - 1]?.getBoundingClientRect().top || 0) + window.scrollY;
-      const pinEnd     = lastTop + vh(); // one full screen for last marker
-      const exitEnd    = pinEnd + vh() * 0.7;
-
-      const markerTops = markers.map(m => (m?.getBoundingClientRect().top || 0) + window.scrollY);
-      return { enterStart, enterEnd, pinStart, pinEnd, exitEnd, markerTops };
+      tabs.forEach((tab, i) => {
+        const active = i === index;
+        tab.classList.toggle("is-active", active);
+        tab.setAttribute("aria-pressed", String(active));
+      });
     };
 
-    let geom = measure();
-    let resizeTO;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTO);
-      resizeTO = setTimeout(() => { geom = measure(); onScroll(); }, 120);
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => setActive(index));
     });
 
-    const setActive = (idx) => {
-      slides.forEach((el, i) => (el.style.opacity = i === idx ? '1' : '0'));
-      copies.forEach((el, i) => (el.style.opacity = i === idx ? '1' : '0'));
-    };
-
-    const applyFullscreen = (on) => {
-      if (!bubble) return;
-      if (on && bubble.dataset.full !== '1') {
-        bubble.dataset.full     = '1';
-        bubble.style.transition = `width ${FULL_TRANSITION_MS}ms ease, height ${FULL_TRANSITION_MS}ms ease, max-width ${FULL_TRANSITION_MS}ms ease, border-radius ${FULL_TRANSITION_MS}ms ease, box-shadow ${FULL_TRANSITION_MS}ms ease`;
-        const g = Math.max(0, FULL_GUTTER_VW);
-        bubble.style.width        = `calc(100vw - ${g}vw * 2)`;
-        bubble.style.height       = '100vh';
-        bubble.style.maxWidth     = 'none';
-        bubble.style.borderRadius = '0px';
-        bubble.style.boxShadow    = 'none';
-        bubble.style.transform    = 'translateZ(0) scale(1)';
-        bubble.style.opacity      = '1';
-      } else if (!on && bubble.dataset.full === '1') {
-        bubble.dataset.full     = '';
-        bubble.style.width        = '';
-        bubble.style.height       = '';
-        bubble.style.maxWidth     = '';
-        bubble.style.borderRadius = '';
-        bubble.style.boxShadow    = '';
-      }
-    };
-
-    const onScroll = () => {
-      const y = window.scrollY;
-      const { enterStart, enterEnd, pinStart, pinEnd, exitEnd, markerTops } = geom;
-
-      // ENTER (fade + scale up early)
-      if (y <= enterEnd) {
-        const p = clamp((y - enterStart) / (enterEnd - enterStart), 0, 1);
-        if (bubble) {
-          const s = START_SCALE + (MID_SCALE - START_SCALE) * p;
-          bubble.style.opacity   = String(p);
-          bubble.style.transform = `translateZ(0) scale(${s})`;
-        }
-        applyFullscreen(false);
-        setActive(0);
-        return;
-      }
-
-      // PIN (step through slides; expand to near-fullscreen)
-      if (y > enterEnd && y <= pinEnd) {
-        let idx = 0;
-        for (let i = 0; i < markerTops.length; i++) {
-          if (y >= markerTops[i] - 8) idx = i;
-        }
-        setActive(idx);
-
-        const pinProg = clamp((y - pinStart) / (pinEnd - pinStart), 0, 1);
-        if (bubble) {
-          const s = MID_SCALE + (1.0 - MID_SCALE) * clamp(pinProg * 1.05, 0, 1);
-          bubble.style.opacity   = '1';
-          bubble.style.transform = `translateZ(0) scale(${s})`;
-        }
-        applyFullscreen(pinProg >= FULL_ON_AT && pinProg <= FULL_OFF_AT);
-        return;
-      }
-
-      // EXIT (shrink + fade)
-      const p = clamp((y - pinEnd) / (exitEnd - pinEnd), 0, 1);
-      if (bubble) {
-        const s = 1.0 + (EXIT_SCALE - 1.0) * p;
-        bubble.style.transform = `translateZ(0) scale(${s})`;
-        bubble.style.opacity   = String(1 - p);
-      }
-      applyFullscreen(false);
-    };
-
-    // Ensure first slide shows immediately
+    // init
     setActive(0);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-  };
-
-  // run now (and also safe if DOM’s not ready yet)
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', run);
-  } else {
-    run();
-  }
+  })();
 </script>
+
+<style>
+  /* Slide base state */
+  .ext-slide {
+    opacity: 0;
+  }
+  .ext-slide-active {
+    opacity: 1;
+  }
+
+  /* pill styling */
+  .ext-process-tab {
+    background: rgba(255, 255, 255, 0.16);
+    color: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(18px);
+    white-space: nowrap;
+  }
+
+  .ext-process-tab:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .ext-process-tab.is-active {
+    background: #ffffff;
+    color: #111827;
+    transform: translateY(-2px);
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ext-process-tab,
+    .ext-slide {
+      transition: none !important;
+    }
+  }
+</style>

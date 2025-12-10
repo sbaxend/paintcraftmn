@@ -3,10 +3,10 @@ import Base from "../layouts/Base.astro";
 
 const HERO = {
   kicker: "About PaintCraft",
-  title: "Who We Are",
+  title: "Who we are",
   subtitle:
     "Minnesota-born, brother-run painters focused on clean lines, honest pricing, and a stress-free experience.",
-  photo: "/brothersInArms.webp", // your image (the van photo) — put in /public/about/owners.jpg
+  photo: "/brothersInArms.webp", // TODO: replace with your real photo in /public/about/
 };
 
 const VALUES = [
@@ -17,123 +17,334 @@ const VALUES = [
   },
   {
     title: "Clear, honest communication",
-    desc: "From estimate to final walk-through, you’ll always know what’s happening and what it costs.",
+    desc: "From estimate to final walk-through, you’ll always know what’s happening, when we’ll be there, and what it costs.",
     icon: "💬",
   },
   {
     title: "Respect for your home",
-    desc: "Punctual, tidy, and careful. We leave spaces cleaner than we found them—every time.",
+    desc: "Punctual, tidy, and careful. Floors protected, edges sharp, and spaces cleaner than we found them—every time.",
     icon: "🏠",
   },
 ];
 
 const TIMELINE = [
   { year: "2021", text: "Two brothers start PaintCraft with a brush, a ladder, and a reputation for detail." },
-  { year: "2022", text: "Expanded to full-interior services and cabinet refinishing." },
-  { year: "2023", text: "Added exterior crews and a streamlined scheduling & estimate process." },
+  { year: "2022", text: "Expanded into full-interior services and cabinet refinishing." },
+  { year: "2023", text: "Added dedicated exterior crews and a streamlined estimate & scheduling process." },
   { year: "Today", text: "Hundreds of happy homeowners across the Twin Cities metro—and growing." },
 ];
 ---
 
 <Base title="About Us | PaintCraft MN">
-  <!-- Split hero -->
-  <section class="relative">
-    <div class="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-12 px-6 lg:px-8 pt-14 lg:pt-20 pb-10">
-      <div>
-        <p class="text-blue-600 text-sm font-medium tracking-wide">{HERO.kicker}</p>
-        <h1 class="mt-2 font-serif text-5xl lg:text-7xl font-semibold text-neutral-900">{HERO.title}</h1>
-        <p class="mt-6 max-w-xl text-lg text-neutral-700">{HERO.subtitle}</p>
+  <!-- HERO -->
+  <section class="relative overflow-hidden bg-gradient-to-b from-neutral-50 via-white to-neutral-50">
+    <!-- softened background glow (less orange) -->
+    <div
+      class="pointer-events-none absolute inset-0 opacity-70
+             bg-[radial-gradient(900px_500px_at_0%_0%,rgba(196,131,86,0.08),transparent),radial-gradient(900px_600px_at_100%_-10%,rgba(15,23,42,0.06),transparent)]">
+    </div>
 
-        <div class="mt-8 rounded-2xl bg-white ring-1 ring-black/10 p-6 shadow-sm">
-          <p class="text-neutral-600 leading-relaxed">
+    <div class="relative mx-auto max-w-7xl px-6 lg:px-8 pt-24 md:pt-28 pb-16 md:pb-20 grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-center">
+      <!-- Text side -->
+      <div class="space-y-6">
+        <p class="inline-flex items-center rounded-full bg-white/80 px-4 py-1 text-xs md:text-sm font-semibold tracking-[0.18em] uppercase text-[#C48356] ring-1 ring-[#C48356]/20 shadow-sm">
+          {HERO.kicker}
+        </p>
+
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl font-sans font-semibold tracking-tight text-neutral-900 leading-[1.05]"
+        >
+          {HERO.title}
+        </h1>
+
+        <p class="max-w-xl text-base md:text-lg text-neutral-700">
+          {HERO.subtitle}
+        </p>
+
+        <div class="max-w-xl rounded-2xl bg-white/90 ring-1 ring-black/5 shadow-[0_18px_60px_rgba(15,23,42,0.10)] p-5 md:p-6">
+          <p class="text-sm md:text-base leading-relaxed text-neutral-700">
             We grew up here, and we treat every home like it’s our own. Our promise is simple:
-            do it right, communicate clearly, and make the whole process feel easy. Most of our work
-            comes from referrals—that’s our favorite metric.
+            do it right, communicate clearly, and make the whole process feel easy. Most of our
+            projects come from referrals—and that’s our favorite metric.
+          </p>
+        </div>
+
+        <!-- mini stats row -->
+        <div class="flex flex-wrap gap-4 pt-2 text-sm text-neutral-700">
+          <div class="inline-flex items-center gap-2">
+            <span class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+            <span>Licensed &amp; insured</span>
+          </div>
+          <div class="inline-flex items-center gap-2">
+            <span
+  class="inline-flex h-6 w-6 items-center justify-center rounded-full 
+         bg-neutral-900 text-white text-sm leading-none pt-[1px]"
+>
+              ★
+            </span>
+            <span>5.0★ local reviews</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image side -->
+      <div class="relative lg:justify-self-end">
+        <div
+          class="relative aspect-[4/5] w-full max-w-md md:max-w-lg rounded-[2.2rem] overflow-hidden
+                 bg-neutral-900/80 ring-1 ring-black/10 shadow-[0_28px_80px_rgba(15,23,42,0.45)]"
+        >
+          <img
+            src={HERO.photo}
+            alt="PaintCraft team"
+            loading="lazy"
+            decoding="async"
+            class="h-full w-full object-cover"
+          />
+
+          <!-- subtle gradient -->
+          <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent"></div>
+
+          <!-- floating badge -->
+          <div
+            class="absolute bottom-5 left-5 rounded-2xl bg-white/90 px-4 py-3 shadow-[0_14px_40px_rgba(0,0,0,0.35)] ring-1 ring-black/10"
+          >
+            <p class="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-neutral-500">
+              Twin Cities painters
+            </p>
+            <p class="mt-1 text-sm font-semibold text-neutral-900">
+              250+ projects completed
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST / FAST STATS -->
+  <section class="mx-auto max-w-7xl px-6 lg:px-8 py-12 lg:py-16">
+    <div class="rounded-3xl bg-neutral-900 text-white px-6 py-8 md:px-10 md:py-9 shadow-[0_22px_70px_rgba(0,0,0,0.40)] relative overflow-hidden">
+      <!-- toned-down neutral glow (no brown band) -->
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(700px_700px_at_0%_0%,rgba(255,255,255,0.06),transparent)]"></div>
+
+      <div class="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="text-xs font-semibold tracking-[0.18em] uppercase text-white/60">
+            By the numbers
+          </p>
+          <h2 class="mt-2 text-2xl md:text-3xl font-sans font-semibold tracking-tight">
+            Trusted by homeowners across the Twin Cities.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-center text-sm">
+  <div class="rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10">
+    <div class="text-2xl font-semibold">250+</div>
+    <div class="mt-1 text-xs text-white/70">Projects completed</div>
+  </div>
+
+  <div class="rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10">
+    <div class="text-2xl font-semibold">5.0★</div>
+    <div class="mt-1 text-xs text-white/70">Average rating</div>
+  </div>
+
+  <!-- NEW: BBB Accredited -->
+  <div class="rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10 flex flex-col items-center">
+    <svg class="h-7 w-7 text-white/80 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+        d="M12 2L6 12h12l-6 10" />
+    </svg>
+    <div class="text-xs text-white/70">BBB Accredited</div>
+  </div>
+
+  <!-- NEW: Nextdoor Badge -->
+  <div class="rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10 flex flex-col items-center">
+    <svg class="h-7 w-7 text-white/80 mb-1" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm3.5 6.5l-4.6 7.4a.8.8 0 01-1.3.1L8 13.2l1.2-1.2 1.3 1.4 3.4-5.4 1.6 1.5z"/>
+    </svg>
+    <div class="text-xs text-white/70">Nextdoor Neighborhood Fave</div>
+  </div>
+</div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- VALUES -->
+  <section class="mx-auto max-w-7xl px-6 lg:px-8 py-12 lg:py-16">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8 md:mb-10">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-sans font-semibold tracking-tight text-neutral-900">
+          What matters most to us
+        </h2>
+        <p class="mt-2 max-w-xl text-sm md:text-base text-neutral-600">
+          Every project is different, but these three things stay the same on every job.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7">
+      {VALUES.map((v) => (
+        <article class="group rounded-2xl bg-white/90 ring-1 ring-neutral-200/80 p-6 lg:p-7 shadow-[0_16px_45px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_70px_rgba(15,23,42,0.14)]">
+          <div class="flex items-center justify-between gap-3">
+            {/* Emoji icon in soft circle */}
+            <div class="flex items-center justify-center h-12 w-12 rounded-full bg-neutral-100 text-2xl">
+              {v.icon}
+            </div>
+
+            {/* Fixed: "Since 2021" badge with proper fit */}
+          </div>
+          <h3 class="mt-4 font-semibold text-lg text-neutral-900">
+            {v.title}
+          </h3>
+          <p class="mt-2 text-sm md:text-[0.95rem] leading-relaxed text-neutral-600">
+            {v.desc}
+          </p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  
+
+  <!-- STORY + DIFFERENTIATORS -->
+  <section class="bg-neutral-50/70 border-y border-neutral-200/70">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 py-12 lg:py-16 grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-start">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-sans font-semibold tracking-tight text-neutral-900">
+          Our story
+        </h2>
+        <p class="mt-4 max-w-3xl text-sm md:text-base text-neutral-700 leading-relaxed">
+          PaintCraft started as a weekend side hustle and quickly became a full-time calling.
+          We believe great painting is equal parts prep, product, and pride. That means meticulous
+          masking, proper sanding and patching, the right primers for each surface, and premium
+          finishes that actually hold up to Minnesota seasons and everyday life.
+        </p>
+        <p class="mt-4 max-w-3xl text-sm md:text-base text-neutral-700 leading-relaxed">
+          We stay intentionally small so we can stay close to the work, keep quality high, and
+          make sure every crew on site represents our name the right way.
+        </p>
+      </div>
+
+      <div class="space-y-5">
+        <div class="rounded-2xl bg-white/90 p-5 md:p-6 ring-1 ring-neutral-200/80 shadow-sm">
+          <p class="text-xs font-semibold tracking-[0.16em] uppercase text-neutral-500">
+            Why homeowners choose us
+          </p>
+          <ul class="mt-3 space-y-2.5 text-sm text-neutral-700">
+            <li class="flex items-start gap-2">
+              <span class="mt-[3px] inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/10 text-[10px] text-emerald-600">
+                ✓
+              </span>
+              <span>Detailed, written estimates—not vague ballparks.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-[3px] inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/10 text-[10px] text-emerald-600">
+                ✓
+              </span>
+              <span>Respectful crews that keep your home livable during the job.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-[3px] inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/10 text-[10px] text-emerald-600">
+                ✓
+              </span>
+              <span>Flexible scheduling to work around your family or business.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-[3px] inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/10 text-[10px] text-emerald-600">
+                ✓
+              </span>
+              <span>Final walk-throughs to make sure every line looks right.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="rounded-2xl border border-dashed border-neutral-300/90 p-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+            Our simple promise
+          </p>
+          <p class="mt-2 text-sm text-neutral-800">
+            If something doesn’t look how you expected, we make it right. No drama, no excuses.
           </p>
         </div>
       </div>
-
-      <div class="mt-8 lg:mt-0">
-        <div class="aspect-[4/5] lg:aspect-[4/5] w-full rounded-3xl overflow-hidden ring-1 ring-black/10 shadow-[0_24px_80px_rgba(0,0,0,.12)]">
-          <img src={HERO.photo} alt="PaintCraft owners" class="h-full w-full object-cover" loading="eager" decoding="async" />
-        </div>
-      </div>
     </div>
   </section>
 
-  <!-- Values -->
-  <section class="mx-auto max-w-7xl px-6 lg:px-8 py-12 lg:py-16">
-    <h2 class="sr-only">Our values</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-      {VALUES.map(v => (
-        <div class="rounded-2xl bg-white ring-1 ring-black/10 p-6 lg:p-7 shadow-sm">
-          <div class="text-2xl">{v.icon}</div>
-          <h3 class="mt-3 font-semibold text-lg">{v.title}</h3>
-          <p class="mt-2 text-neutral-600">{v.desc}</p>
-        </div>
-      ))}
-    </div>
-  </section>
+  
 
-  <!-- Story band -->
-  <section class="bg-neutral-50/70 border-y border-neutral-200/70">
-    <div class="mx-auto max-w-6xl px-6 lg:px-8 py-12 lg:py-16">
-      <h2 class="font-serif text-3xl md:text-4xl font-semibold">Our story</h2>
-      <p class="mt-4 max-w-3xl text-neutral-700 leading-relaxed">
-        PaintCraft started as a weekend side hustle and quickly became a full-time calling.
-        We believe great painting is equal parts prep, product, and pride. That means meticulous
-        masking, proper sanding and patching, correct primers, and premium finishes that actually last.
-        We’re small by choice so we can stay close to the work and keep quality high.
-      </p>
-    </div>
-  </section>
-
-  <!-- Trust bar -->
-  <section class="mx-auto max-w-7xl px-6 lg:px-8 py-10">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="rounded-xl ring-1 ring-black/10 p-4 text-center">
-        <div class="text-3xl font-bold">250+</div>
-        <div class="text-sm text-neutral-600">Projects completed</div>
-      </div>
-      <div class="rounded-xl ring-1 ring-black/10 p-4 text-center">
-        <div class="text-3xl font-bold">4.9★</div>
-        <div class="text-sm text-neutral-600">Average rating</div>
-      </div>
-      <div class="rounded-xl ring-1 ring-black/10 p-4 text-center">
-        <div class="text-3xl font-bold">Lead-Safe</div>
-        <div class="text-sm text-neutral-600">EPA Certified</div>
-      </div>
-      <div class="rounded-xl ring-1 ring-black/10 p-4 text-center">
-        <div class="text-3xl font-bold">Insured</div>
-        <div class="text-sm text-neutral-600">Up to $1M</div>
+  <!-- TIMELINE -->
+  <!-- <section class="mx-auto max-w-7xl px-6 lg:px-8 pb-14 lg:pb-18">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-semibold tracking-tight text-neutral-900">
+          How we’ve grown
+        </h2>
+        <p class="mt-2 max-w-xl text-sm md:text-base text-neutral-600">
+          A quick look at where PaintCraft started and where we are today.
+        </p>
       </div>
     </div>
-  </section>
 
-  <!-- Timeline (simple, elegant) -->
-  <section class="mx-auto max-w-6xl px-6 lg:px-8 pb-12 lg:pb-16">
-    <h2 class="sr-only">Timeline</h2>
-    <ol class="relative border-s border-neutral-200/80 ms-4">
-      {TIMELINE.map((t, i) => (
-        <li class="mb-8 ms-6">
-          <span class="absolute -start-2.5 mt-1 h-4 w-4 rounded-full bg-neutral-900 ring-4 ring-white"></span>
-          <div class="text-sm text-neutral-500">{t.year}</div>
-          <p class="mt-1 text-neutral-800">{t.text}</p>
+    <ol class="grid gap-6 md:grid-cols-4">
+      {TIMELINE.map((t) => (
+        <li class="relative rounded-2xl border border-neutral-200/80 bg-white/90 p-4 md:p-5 shadow-[0_12px_40px_rgba(15,23,42,0.04)]">
+          <div class="inline-flex items-center gap-2 rounded-full bg-neutral-900 text-white px-3 py-1 text-xs font-medium">
+            <span>{t.year}</span>
+          </div>
+          <p class="mt-3 text-sm text-neutral-700 leading-relaxed">
+            {t.text}
+          </p>
         </li>
       ))}
     </ol>
-  </section>
+  </section> -->
 
   <!-- CTA -->
-  <section class="mx-auto max-w-7xl px-6 lg:px-8 pb-20">
-    <div class="rounded-3xl bg-neutral-950 text-white p-8 md:p-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+  <section class="mx-auto max-w-7xl px-6 lg:px-8 py-12 lg:py-16">
+  <div
+    class="relative overflow-hidden rounded-3xl bg-neutral-900 text-white
+           px-6 py-8 md:px-10 md:py-9
+           shadow-[0_22px_70px_rgba(0,0,0,0.40)]"
+  >
+    <div class="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
       <div>
-        <h3 class="text-2xl md:text-3xl font-serif font-semibold">Ready to transform your space?</h3>
-        <p class="mt-2 text-neutral-300">Get a fast, accurate estimate—no obligation.</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">
+          Ready when you are
+        </p>
+        <h3 class="mt-2 text-2xl md:text-3xl font-sans font-semibold tracking-tight">
+          Ready to transform your space?
+        </h3>
+        <p class="mt-2 text-sm md:text-base text-white/70 max-w-xl">
+          Share a few details about your project and we’ll follow up with a clear, no-pressure estimate.
+        </p>
       </div>
-      <a href="/contact" class="inline-flex items-center rounded-full bg-white text-neutral-900 px-6 py-3 font-medium shadow hover:bg-neutral-200 transition">
-        Get Free Estimate
+
+      <a
+        href="/contact"
+        class="inline-flex items-center justify-center rounded-full
+               px-8 py-3 text-sm md:text-base font-semibold
+               bg-[#C48356] text-white
+               shadow-none border border-[#C48356]/90
+               transition-all duration-300
+               hover:bg-[#b87349] hover:-translate-y-[1px]"
+      >
+        Get a free estimate
+        <svg
+          class="ml-2 h-4 w-4 md:h-5 md:w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M5 12h14" />
+          <path d="M13 5l7 7-7 7" />
+        </svg>
       </a>
     </div>
-  </section>
+  </div>
+</section>
+
+
 </Base>

@@ -1,0 +1,108 @@
+---
+// src/pages/interior/[slug].astro
+
+import Base from "../../layouts/Base.astro";
+
+import ServiceDetailHero from "../../components/service-detail/ServiceDetailHero.astro";
+import ServiceDetailAlternatingRows from "../../components/service-detail/ServiceDetailAlternatingRows.astro";
+import ServiceDetailFAQ from "../../components/service-detail/ServiceDetailFAQ.astro";
+import ServiceDetailCTA from "../../components/service-detail/ServiceDetailCTA.astro";
+
+import {
+  getInteriorServiceTheme,
+  INTERIOR_SLUGS,
+} from "../../config/interiorServiceThemes";
+
+// ------- Static paths for /interior/[slug] -------
+
+export const getStaticPaths = () =>
+  INTERIOR_SLUGS.map((slug) => ({ params: { slug } }));
+
+// ------- Page data -------
+
+const { slug = "" } = Astro.params;
+const theme = getInteriorServiceTheme(slug);
+
+if (!theme) {
+  Astro.response.status = 404;
+  throw new Error(`Interior service not found: ${slug}`);
+}
+
+const {
+  title,
+  subtitle,
+  color,
+  photos = [],
+  process = [],
+  benefits = [],
+  swatches = [],
+  faq = [],
+  alternating = [],
+} = theme;
+
+// CSS variables so hero / CTA can share the same palette
+const cssVars = [
+  `--surface:${color.surface}`,
+  `--surface-grad:${color.surfaceGradient ?? "none"}`,
+  `--on-surface:${color.onSurface}`,
+  `--primary:${color.primary}`,
+  `--primary-dark:${color.primaryDark}`,
+  `--on-primary:${color.onPrimary}`,
+  `--accent:${color.accent}`,
+].join(";");
+
+// Optional SEO description (tweak per service if you want)
+const description = `${title} in Minnesota — ${subtitle} Professional interior ${title.toLowerCase()} by PaintCraft MN.`;
+---
+
+<Base
+  title={`${title} | Interior Painting | PaintCraft MN`}
+  description={description}
+>
+  <div style={cssVars}>
+    <!-- HERO: simple, Behr-style headline + CTA -->
+    <ServiceDetailHero
+      title={title}
+      subtitle={subtitle}
+      backHref="/interior"
+      backLabel="Back to Interior Services"
+      ctaLabel="Get a Free Estimate"
+    />
+
+    <!-- OPTIONAL: if you ever want a short SEO intro under hero, add it here -->
+    <!--
+    <section class="bg-white">
+      <div class="mx-auto max-w-5xl px-6 md:px-10 py-10 md:py-14">
+        <p class="text-base md:text-lg text-neutral-700">
+          {title} is one of the biggest visual upgrades you can make inside your home.
+          We focus on clean lines, careful prep, and premium coatings that hold up
+          to Minnesota seasons and everyday life.
+        </p>
+      </div>
+    </section>
+    -->
+
+    <!-- ALTERNATING ROWS WITH PROCESS MODALS -->
+    {alternating.length > 0 && (
+      <ServiceDetailAlternatingRows
+        items={alternating}
+        fallbackImg={photos[0] ?? "/placeholder-service.jpg"}
+      />
+    )}
+
+    <!-- BIG CTA + BBB SEAL (before FAQ) -->
+    <ServiceDetailCTA
+      title={`Ready to refresh your ${title.toLowerCase()}?`}
+      description="Schedule a quick walk-through and same-day estimate with PaintCraft MN."
+      backHref="/interior"
+      backLabel="Back to Interior Services"
+      bbbLink="https://www.bbb.org/us/mn/hopkins/profile/painting-contractors/paintcraft-llc-0704-1000075280/#sealclick"
+    />
+
+    <!-- FAQ ACCORDION (SEO-friendly; already outputs FAQPage JSON-LD) -->
+    <ServiceDetailFAQ
+      title={`${title} – Frequently Asked Questions`}
+      items={faq}
+    />
+  </div>
+</Base>

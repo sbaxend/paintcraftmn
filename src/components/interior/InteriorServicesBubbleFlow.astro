@@ -1,0 +1,488 @@
+---
+type Service = {
+  id: string;
+  title: string;
+  img: string;
+  href?: string;
+};
+
+export interface Props {
+  heading?: string;
+  sub?: string;
+  services: Service[];
+  minHeight?: string;
+  basePath?: string;
+}
+
+const {
+  heading = "Our Interior Services",
+  services = [],
+  minHeight = "min-h-[80vh]",
+  basePath = "/interior",
+} = Astro.props as Props;
+
+const items = services.map((s) => ({
+  ...s,
+  href: s.href ?? `interior/${s.id}`,
+}));
+---
+
+<section class="relative bg-neutral-50 pt-10 md:pt-14 pb-20 md:pb-28">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.04)_0%,transparent_70%)]"></div>
+
+  <div class="relative mx-auto max-w-[1600px] px-4 md:px-10">
+    <div
+      id="svc-wrap"
+      class="relative mx-auto w-full overflow-hidden rounded-[2rem] bg-black/90 shadow-2xl ring-1 ring-neutral-200/70 transform-gpu"
+    >
+      <!-- Track -->
+      <div
+        id="svc-track"
+        class={`flex transition-transform duration-700 ease-out ${minHeight}`}
+        style="will-change: transform;"
+      >
+        {items.map((s, i) => (
+          <article
+            class={`slide ${i === 0 ? "is-active" : ""} relative shrink-0 w-full ${minHeight}`}
+            data-dir="forward"
+          >
+            <!-- Background image -->
+            <img
+              src={s.img}
+              alt={s.title}
+              class="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
+
+            <!-- Gradient overlay -->
+            <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/20"></div>
+
+            <!-- Content: center-left in the bubble -->
+            <div class="relative z-10 h-full w-full flex items-center">
+              <div class="w-full px-6 md:px-12 lg:px-20 py-12 md:py-16 flex">
+                <div
+                  class="slide-content max-w-xl text-left flex flex-col items-start
+                         ml-10 md:ml-14 lg:ml-20"
+                >
+                  <h3
+                    class="stagger text-white text-3xl md:text-5xl lg:text-6xl font-sans font-semibold font-black tracking-tight leading-[0.98] mb-4 md:mb-6"
+                  >
+                    {s.title}
+                  </h3>
+
+                  <div class="stagger flex flex-wrap gap-3 mt-2">
+                    <a
+                      href={s.href}
+                      class="inline-flex items-center justify-center rounded-full bg-white px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base font-semibold text-neutral-900 hover:bg-neutral-100 transition-all hover:scale-105 shadow-lg"
+                    >
+                      Learn More
+                    </a>
+                    <a
+                      href="/contact"
+                      class="inline-flex items-center justify-center rounded-full border-2 border-white bg-transparent px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base font-semibold text-white hover:bg-white hover:text-neutral-900 transition-all"
+                    >
+                      Schedule Now
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <!-- Arrows stay as-is (they’re far enough from the text now) -->
+      <button
+        id="svc-prev"
+        class="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-30 shadow-xl"
+        aria-label="Previous slide"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+
+      <button
+        id="svc-next"
+        class="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-30 shadow-xl"
+        aria-label="Next slide"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+
+      <!-- Dots -->
+      <div id="svc-dots" class="absolute bottom-6 md:bottom-8 left-6 md:left-10 flex gap-2 md:gap-3 z-30">
+        {items.map((_, i) => (
+          <button
+            class="h-2 w-2 md:h-2.5 md:w-2.5 rounded-full bg-white/40 hover:bg-white/70 transition-all aria-[current=true]:bg-white aria-[current=true]:w-6 md:aria-[current=true]:w-7"
+            aria-current={i === 0 ? "true" : "false"}
+            aria-label={`Go to slide ${i + 1}`}
+          ></button>
+        ))}
+      </div>
+
+      <!-- Play / Pause -->
+      <button
+        id="svc-auto"
+        class="absolute bottom-6 md:bottom-8 right-6 md:right-10 h-9 w-9 md:h-10 md:w-10 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center hover:bg-white/25 transition-all z-30"
+        aria-label="Pause autoplay"
+        data-state="playing"
+        title="Pause/Play"
+      >
+        <svg class="icon-pause h-4 w-4 md:h-4 md:w-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+        </svg>
+        <svg class="icon-play h-4 w-4 md:h-4 md:w-4 text-white hidden" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+(() => {
+  const wrap = document.getElementById("svc-wrap");
+  const track = document.getElementById("svc-track");
+  const prev = document.getElementById("svc-prev");
+  const next = document.getElementById("svc-next");
+  const dots = Array.from(document.querySelectorAll("#svc-dots > button"));
+  const autoBtn = document.getElementById("svc-auto");
+
+  if (!wrap || !track || !prev || !next || !autoBtn) return;
+
+  // ----- Build infinite loop (clone first & last) -----
+  const originalSlides = Array.from(track.children);
+  const count = originalSlides.length;
+  if (!count) return;
+
+  const firstClone = originalSlides[0].cloneNode(true);
+  const lastClone = originalSlides[count - 1].cloneNode(true);
+  firstClone.dataset.clone = "first";
+  lastClone.dataset.clone = "last";
+
+  track.appendChild(firstClone);
+  track.insertBefore(lastClone, originalSlides[0]);
+
+  let slides = Array.from(track.children);      // now: [lastClone, real0, ..., realN-1, firstClone]
+  const total = slides.length;                  // = count + 2
+
+  const AUTO_MS = 5000;
+  let index = 1;                                // start on first REAL slide
+  let autoTimer = null;
+  let pausedByUser = false;
+
+  const setActive = (direction = "forward") => {
+    // determine logical slide index (1..count) ignoring clones
+    let logicalIndex = index;
+    const current = slides[index];
+
+    if (current?.dataset.clone === "first") logicalIndex = 1;
+    if (current?.dataset.clone === "last")  logicalIndex = count;
+
+    slides.forEach((slide) => {
+      slide.classList.remove("is-active");
+      delete slide.dataset.dir;
+    });
+
+    const activeSlide = slides[logicalIndex];
+    if (activeSlide) {
+      activeSlide.classList.add("is-active");
+      activeSlide.dataset.dir = direction;
+    }
+
+    // update dots (0-based vs logicalIndex 1..count)
+    dots.forEach((d, j) => d.setAttribute("aria-current", String(j === logicalIndex - 1)));
+  };
+
+  const go = (nextIndex, dirHint) => {
+    const prevIndex = index;
+    index = Math.max(0, Math.min(total - 1, nextIndex)); // clamp
+
+    const direction =
+      dirHint ??
+      (index > prevIndex ? "forward" : index < prevIndex ? "backward" : "forward");
+
+    track.style.transition = ""; // use CSS transition
+    track.style.transform = `translateX(-${index * 100}%)`;
+    setActive(direction);
+  };
+
+  // Smooth infinite autoplay: just keep going forward;
+  // clones + transitionend will handle the seamless jump.
+  const autoStep = () => {
+    go(index + 1, "forward");
+  };
+
+  const startAuto = () => {
+    if (pausedByUser) return;
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = window.setInterval(autoStep, AUTO_MS);
+  };
+
+  const stopAuto = () => {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
+  };
+
+  // When we hit a clone slide, snap (no transition) to the matching real one
+  track.addEventListener("transitionend", () => {
+    const current = slides[index];
+    if (!current) return;
+
+    if (current.dataset.clone === "first") {
+      // we moved onto the clone of the FIRST slide (at the far right)
+      track.style.transition = "none";
+      index = 1; // real first
+      track.style.transform = `translateX(-${index * 100}%)`;
+      setActive("forward");
+      requestAnimationFrame(() => {
+        track.style.transition = "";
+      });
+    } else if (current.dataset.clone === "last") {
+      // we moved onto the clone of the LAST slide (far left)
+      track.style.transition = "none";
+      index = count; // real last
+      track.style.transform = `translateX(-${index * 100}%)`;
+      setActive("backward");
+      requestAnimationFrame(() => {
+        track.style.transition = "";
+      });
+    }
+  });
+
+  // ---- Init position on first REAL slide ----
+  track.style.transform = `translateX(-${index * 100}%)`;
+  setActive("forward");
+  startAuto();
+
+  // ---- Controls ----
+  prev.addEventListener("click", () => {
+    go(index - 1, "backward");
+    startAuto();
+  });
+
+  next.addEventListener("click", () => {
+    go(index + 1, "forward");
+    startAuto();
+  });
+
+  dots.forEach((d, i) =>
+  d.addEventListener("click", () => {
+    // dot index 0..count-1 maps to logical slide 1..count
+    const logicalTarget = i + 1;
+    const direction = logicalTarget > index ? "forward" : "backward";
+    go(logicalTarget, direction);
+    startAuto();
+  }),
+);
+
+
+  // keyboard
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") {
+      go(index + 1, "forward");
+      startAuto();
+    }
+    if (e.key === "ArrowLeft") {
+      go(index - 1, "backward");
+      startAuto();
+    }
+  });
+
+  // touch swipe
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  track.addEventListener(
+    "touchstart",
+    (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    },
+    { passive: true },
+  );
+
+  track.addEventListener(
+    "touchend",
+    (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      if (touchEndX < touchStartX - 50) {
+        go(index + 1, "forward");
+        startAuto();
+      }
+      if (touchEndX > touchStartX + 50) {
+        go(index - 1, "backward");
+        startAuto();
+      }
+    },
+    { passive: true },
+  );
+
+  // pause on hover
+  wrap.addEventListener("mouseenter", stopAuto);
+  wrap.addEventListener("mouseleave", startAuto);
+
+  // play/pause
+  autoBtn.addEventListener("click", () => {
+    pausedByUser = !pausedByUser;
+    autoBtn.dataset.state = pausedByUser ? "paused" : "playing";
+    autoBtn.querySelector(".icon-play")?.classList.toggle("hidden", !pausedByUser);
+    autoBtn.querySelector(".icon-pause")?.classList.toggle("hidden", pausedByUser);
+
+    if (pausedByUser) stopAuto();
+    else startAuto();
+  });
+
+  /* META-STYLE bubble scroll scale/fade */
+  const updateBubble = () => {
+    const rect = wrap.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+
+    if (rect.bottom < 0 || rect.top > vh) {
+      wrap.style.opacity = "0";
+      wrap.style.transform = "scale(0.9)";
+      return;
+    }
+
+    const bubbleCenter = rect.top + rect.height / 2;
+    const viewportCenter = vh / 2;
+
+    const dist = Math.abs(bubbleCenter - viewportCenter);
+    const maxDist = vh * 0.8;
+    const t = Math.min(dist / maxDist, 1);
+
+    const scale = 0.9 + (1 - t) * 0.1;
+    const opacity = Math.max(0, 1 - t * 1.1);
+
+    wrap.style.transform = `scale(${scale})`;
+    wrap.style.opacity = String(opacity);
+  };
+
+  const onScroll = () => updateBubble();
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+
+  updateBubble();
+})();
+</script>
+
+
+<style>
+  #svc-track > article {
+    width: 100%;
+  }
+
+  /* Bubble default state + smooth scroll transition */
+  #svc-wrap {
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: center center;
+    transition: transform 0.45s ease-out, opacity 0.45s ease-out;
+  }
+
+/* Text entrance animations – follow slide direction (left/right) */
+
+/* default (before active) */
+.slide .slide-content {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+/* if we're moving backward, start from the left instead */
+.slide[data-dir="backward"] .slide-content {
+  transform: translateX(-40px);
+}
+
+.slide .slide-content .stagger {
+  opacity: 0;
+  transform: inherit; /* use same X offset as parent */
+}
+
+/* FORWARD (next / right arrow) */
+.slide.is-active[data-dir="forward"] .slide-content {
+  animation: slideInFromRight 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.15s;
+}
+
+.slide.is-active[data-dir="forward"] .slide-content .stagger:nth-child(1) {
+  animation: slideInFromRight 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.25s;
+}
+.slide.is-active[data-dir="forward"] .slide-content .stagger:nth-child(2) {
+  animation: slideInFromRight 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.4s;
+}
+.slide.is-active[data-dir="forward"] .slide-content .stagger:nth-child(3) {
+  animation: slideInFromRight 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.55s;
+}
+.slide.is-active[data-dir="forward"] .slide-content .stagger:nth-child(4) {
+  animation: slideInFromRight 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.7s;
+}
+
+/* BACKWARD (prev / left arrow) */
+.slide.is-active[data-dir="backward"] .slide-content {
+  animation: slideInFromLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.15s;
+}
+
+.slide.is-active[data-dir="backward"] .slide-content .stagger:nth-child(1) {
+  animation: slideInFromLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.25s;
+}
+.slide.is-active[data-dir="backward"] .slide-content .stagger:nth-child(2) {
+  animation: slideInFromLeft 0.8s cubic-bezier(0.4, 0, 0, 0.2, 1) forwards;
+  animation-delay: 0.4s;
+}
+.slide.is-active[data-dir="backward"] .slide-content .stagger:nth-child(3) {
+  animation: slideInFromLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.55s;
+}
+.slide.is-active[data-dir="backward"] .slide-content .stagger:nth-child(4) {
+  animation: slideInFromLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.7s;
+}
+
+/* Keyframes */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+  @media (prefers-reduced-motion: reduce) {
+    #svc-wrap {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .slide .slide-content,
+    .slide .slide-content .stagger {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>

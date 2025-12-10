@@ -1,0 +1,80 @@
+---
+// Props:
+// title: string
+// subtitle?: string
+// heroImage?: string
+// backHref?: string
+// backLabel?: string
+// ctaLabel?: string
+
+const {
+  title,
+  subtitle = "",
+  heroImage = "",
+  backHref = "/",
+  backLabel = "Back to Services",
+  ctaLabel = "Get a Free Estimate",
+} = Astro.props;
+---
+
+<section
+  class="relative min-h-[68vh] flex items-center"
+  style="background: var(--surface);"
+>
+  {heroImage && (
+    <img
+      src={heroImage}
+      alt={title}
+      class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-multiply"
+      loading="eager"
+      decoding="async"
+    />
+  )}
+
+  <div
+    class="absolute inset-0 pointer-events-none"
+    style={`background: var(--surface-grad);`}
+  ></div>
+
+  <div
+    class="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16 md:py-24 grid md:grid-cols-2 gap-10"
+  >
+    <div class="md:pr-8">
+
+      <h1
+        class="text-[clamp(30px,4.2vw,54px)] leading-tight font-serif font-bold"
+        style="color: var(--on-surface);"
+      >
+        {title}
+      </h1>
+
+      {subtitle && (
+        <p class="mt-4 text-lg md:text-xl" style={`
+          color: color-mix(in oklab, var(--on-surface) 80%, transparent);
+        `}>
+          {subtitle}
+        </p>
+      )}
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a
+          href="/contact"
+          class="inline-flex items-center rounded-full px-6 py-3 text-sm md:text-base font-semibold transition"
+          style={`background: var(--primary); color: var(--on-primary);`}
+        >
+          {ctaLabel}
+        </a>
+        <a
+          href={backHref}
+          class="inline-flex items-center rounded-full px-6 py-3 text-sm md:text-base border transition"
+          style={`
+            color: var(--on-surface);
+            border-color: color-mix(in oklab, var(--on-surface) 28%, transparent);
+          `}
+        >
+          {backLabel}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

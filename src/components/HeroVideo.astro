@@ -9,7 +9,7 @@ const {
 } = Astro.props;
 ---
 
-<section class="relative h-[70vh] min-h-[460px] overflow-hidden">
+<section class="relative h-[85vh] min-h-[700px] overflow-hidden">
   <!-- Video -->
   <video
     class="absolute inset-0 h-full w-full object-cover"
@@ -28,23 +28,26 @@ const {
   <div class="relative z-10 mx-auto flex h-full max-w-7xl items-center justify-center px-4 text-center text-white">
     <div class="max-w-3xl">
       <!-- Logo with fade-in -->
-      <img src={logoSrc} alt="PaintCraft" class="mx-auto mb-6 h-14 w-auto animate-fade-in" />
+    
 
-      <h1 class="animate-fade-in-up text-4xl font-bold tracking-tight md:text-5xl">
+      <h1 class="font-sans font-semibold animate-fade-in-up text-4xl font-bold tracking-tight text-4xl sm:text-5xl lg:text-6xl">
         {title}
       </h1>
       <p class="mt-4 animate-fade-in-up text-base md:text-lg text-white/90">
         <!-- {subtitle} -->
       </p>
 
-      {cta?.href && (
+     {cta?.href && (
         <a
           href={cta.href}
-          class="mt-8 inline-flex rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700"
+          class="mt-8 inline-flex rounded-full border-2 border-[#C48356]/80 
+                bg-[#C48356]/10 px-6 py-3 text-sm font-semibold text-white 
+                transition-all duration-300 hover:bg-[#C48356] shadow-lg"
         >
           {cta.label}
         </a>
       )}
+
     </div>
   </div>
 </section>
