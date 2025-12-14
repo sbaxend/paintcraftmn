@@ -238,20 +238,42 @@ import Base from "../layouts/Base.astro";
           </div>
 
           <!-- SUBMIT -->
-          <button
-            type="submit"
-            class="mt-2 inline-flex items-center justify-center gap-2 rounded-full
-                   bg-[#C48356] px-6 py-3 font-semibold text-white shadow-lg
-                   hover:bg-[#B47347] hover:shadow-xl hover:scale-[1.05]
-                   transition-all text-sm md:text-base"
-          >
-            Get my free estimate
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12h14" />
-              <path d="M13 5l7 7-7 7" />
-            </svg>
-          </button>
+<button
+  type="submit"
+  id="estimate-submit"
+  class="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-full px-6 py-4 font-semibold shadow-lg transition"
+  style="
+    background-color:#C48356 !important;
+    color:#ffffff !important;
+    -webkit-text-fill-color:#ffffff !important;
+    border: 1px solid #9a5f36 !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+  "
+>
+  <span style="color:#fff !important; -webkit-text-fill-color:#fff !important;">
+    Get my free estimate
+  </span>
+
+  <svg
+    style="color:#fff !important;"
+    class="h-4 w-4 shrink-0"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M5 12h14" />
+    <path d="M13 5l7 7-7 7" />
+  </svg>
+</button>
+
+
+
+
+
 
           <p class="text-xs text-neutral-500">
             By submitting, you agree we may contact you about your project. We never share or sell your information.
