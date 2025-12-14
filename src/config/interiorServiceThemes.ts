@@ -383,7 +383,7 @@ OWe begin by fully protecting the workspace and removing all doors, drawers, and
     id: "pop-prep",
     label: "Protection",
     title: "We fully protect your home from dust",
-    img: "/popcorn-removal-protection.png",
+    img: "/minnesota-popcorn-texture-removal.png",
     modalTitle: "Popcorn Removal Prep Steps",
     modalBody: `
 Our prep process for popcorn ceiling removal starts with fully protecting the home, covering floors, walls, furniture, and vents to contain dust and debris. We seal off adjacent rooms with plastic barriers and control airflow to keep dust from traveling. All fixtures are removed or masked, and the workspace is set up for safe, efficient removal. We use a professional dust extractor with a HEPA filter attached to our sanding equipment, allowing us to remove the texture cleanly while significantly reducing airborne dust. This creates a controlled, cleaner environment.`,
@@ -393,7 +393,7 @@ Our prep process for popcorn ceiling removal starts with fully protecting the ho
     id: "pop-knockdown",
     label: "Knock Down Finish",
     title: "A fresh, modern textured ceiling",
-    img: "/knock-down-finish-minnesota.png",
+    img: "/knockdown-finish-minnesota.png",
     modalTitle: "Knock Down Ceiling Texture",
     modalBody: `
 For a knockdown ceiling finish, we begin by priming the surface to reveal any imperfections and ensure proper adhesion. Depending on the ceiling’s condition, we complete any necessary touch-up repairs and sanding to create a consistent base. Once the surface is ready, we spray an even layer of thinned joint compound using professional texture equipment, allow it to set to the ideal tack time, and gently “knock down” the peaks with a wide knife for a smooth, modern texture. After the finish dries, we perform a detailed inspection, complete any final touch-ups, and apply two coats of ceiling paint to lock in the look. The result is a clean, upgraded knockdown texture that elevates the entire room.`,
@@ -403,7 +403,7 @@ For a knockdown ceiling finish, we begin by priming the surface to reveal any im
     id: "pop-flat",
     label: "Flat Ceiling Finish",
     title: "Crisp, smooth, clean ceilings",
-    img: "/flat-ceiling-finish-minnesota.png",
+    img: "/flat-finish-ceiling.png",
     modalTitle: "Flat Smooth Ceiling Finish",
     modalBody: `
 For a flat ceiling finish, we begin by priming the surface to reveal any imperfections and ensure proper adhesion. Based on the ceiling’s condition, we perform any necessary skim-coating and sanding to achieve a smooth, even surface. Once the surface is ready, we apply two coats of ceiling paint to create a clean, uniform flat finish. The result is a sleek, modern look with consistent color and a refined appearance throughout.`,

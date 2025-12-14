@@ -2,20 +2,18 @@
 import { navLinks, ctaButton } from "../config/siteConfig.js";
 const current = Astro.url.pathname;
 ---
-
 <header id="main-header" class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-neutral-200 supports-[backdrop-filter]:bg-white/70 transition-transform duration-300">
   <div class="mx-auto max-w-7xl px-4 md:px-6">
     <div class="flex h-16 items-center justify-between">
-      <!-- Logo -->
-      <a href="/" class="flex items-center gap-2.5 group">
-        <img
-          src="/paintcraft_logo.webp"
-          alt="PaintCraft logo"
-          class="h-7 w-7 transition-transform group-hover:scale-105"
-        />
-        <span class="font-bold tracking-tight text-lg">PAINTCRAFT</span>
-      </a>
-
+      
+      <!-- Logo Only -->
+      <a href="/" class="flex items-center group">
+  <img
+    src="/paintcraft-new-logo.png"
+    alt="PaintCraft Logo"
+    class="h-14 md:h-20 w-auto transition-transform group-hover:scale-105"
+  />
+</a>
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-1">
         {navLinks.map((link) => (

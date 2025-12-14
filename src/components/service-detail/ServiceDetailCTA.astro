@@ -1,11 +1,4 @@
 ---
-/**
- * ServiceDetailCTA.astro
- *
- * Unified bottom CTA used on interior/exterior sub-service pages.
- * Uses theme CSS variables inherited from the parent (<div style={vars}>)
- */
-
 export interface Props {
   title?: string;
   description?: string;
@@ -28,6 +21,7 @@ const {
   style="background: var(--surface);"
 >
   <div class="mx-auto max-w-5xl px-6 md:px-10">
+
     <h2
       class="text-2xl md:text-3xl font-semibold"
       style="color: var(--on-surface);"
@@ -35,27 +29,38 @@ const {
       {title}
     </h2>
 
-    <p class="mt-3 text-base md:text-lg" style="color: color-mix(in oklab, var(--on-surface) 85%, transparent);">
+    <p
+      class="mt-3 text-base md:text-lg"
+      style="color: color-mix(in oklab, var(--on-surface) 85%, transparent);"
+    >
       {description}
     </p>
 
-    <!-- Buttons -->
+    <!-- Universal Buttons -->
     <div class="mt-8 flex flex-wrap justify-center gap-4">
+
+      <!-- Primary: Black Button -->
       <a
         href="/contact"
-        class="inline-flex items-center rounded-full px-7 py-3 text-base font-semibold transition"
-        style="background: var(--primary); color: var(--on-primary);"
+        class="inline-flex items-center rounded-full px-7 py-3 text-base font-semibold
+               bg-neutral-900 text-white border border-neutral-900 shadow-sm
+               hover:bg-neutral-800 hover:border-neutral-800 hover:shadow-md
+               transition-all duration-200"
       >
         Get a Free Estimate
       </a>
 
+      <!-- Secondary: White Button -->
       <a
         href={backHref}
-        class="inline-flex items-center rounded-full px-7 py-3 border text-base font-semibold transition"
-        style={`color: var(--on-surface); border-color: color-mix(in oklab, var(--on-surface) 28%, transparent);`}
+        class="inline-flex items-center rounded-full px-7 py-3 text-base font-semibold
+               bg-white text-neutral-900 border border-neutral-300 shadow-sm
+               hover:bg-neutral-100 hover:shadow-md
+               transition-all duration-200"
       >
         {backLabel}
       </a>
+
     </div>
 
     <!-- BBB Badge -->
@@ -80,5 +85,6 @@ const {
         </span>
       </a>
     </div>
+
   </div>
 </section>

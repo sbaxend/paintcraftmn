@@ -105,9 +105,7 @@ const TIMELINE = [
           <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent"></div>
 
           <!-- floating badge -->
-          <div
-            class="absolute bottom-5 left-5 rounded-2xl bg-white/90 px-4 py-3 shadow-[0_14px_40px_rgba(0,0,0,0.35)] ring-1 ring-black/10"
-          >
+          <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-white/90 mb-2">
             <p class="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-neutral-500">
               Twin Cities painters
             </p>
@@ -137,32 +135,48 @@ const TIMELINE = [
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-center text-sm">
-  <div class="rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10">
-    <div class="text-2xl font-semibold">250+</div>
-    <div class="mt-1 text-xs text-white/70">Projects completed</div>
+<div class="rounded-2xl bg-white/5 px-5 py-4 ring-1 ring-white/10 flex flex-col items-center">
+  <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/90 mb-2">
+    <span class="text-lg font-semibold text-neutral-900">250+</span>
   </div>
+  <div class="text-xs text-white/70 text-center leading-tight">
+    Projects completed
+  </div>
+</div>
 
-  <div class="rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10">
-    <div class="text-2xl font-semibold">5.0★</div>
-    <div class="mt-1 text-xs text-white/70">Average rating</div>
+<!-- Average Rating -->
+<div class="rounded-2xl bg-white/5 px-5 py-4 ring-1 ring-white/10 flex flex-col items-center">
+  <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/90 mb-2">
+    <span class="text-lg font-semibold text-neutral-900">5.0★</span>
   </div>
+  <div class="text-xs text-white/70 text-center leading-tight">
+    Average rating
+  </div>
+</div>
 
-  <!-- NEW: BBB Accredited -->
-  <div class="rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10 flex flex-col items-center">
-    <svg class="h-7 w-7 text-white/80 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-        d="M12 2L6 12h12l-6 10" />
-    </svg>
-    <div class="text-xs text-white/70">BBB Accredited</div>
-  </div>
 
-  <!-- NEW: Nextdoor Badge -->
-  <div class="rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10 flex flex-col items-center">
-    <svg class="h-7 w-7 text-white/80 mb-1" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm3.5 6.5l-4.6 7.4a.8.8 0 01-1.3.1L8 13.2l1.2-1.2 1.3 1.4 3.4-5.4 1.6 1.5z"/>
-    </svg>
-    <div class="text-xs text-white/70">Nextdoor Neighborhood Fave</div>
+<!-- BBB Badge -->
+<div class="rounded-2xl bg-white/5 px-5 py-4 ring-1 ring-white/10 flex flex-col items-center">
+  <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/90 mb-2">
+    <img
+      src="/BBB.png"
+      alt="BBB Accredited"
+      class="max-h-8 max-w-8 object-contain"
+    />
   </div>
+  <div class="text-xs text-white/70 text-center">BBB Accredited</div>
+</div>
+
+<!-- Nextdoor Badge -->
+<div class="rounded-2xl bg-white/5 px-5 py-4 ring-1 ring-white/10 flex flex-col items-center">
+  <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/90 mb-2">
+    <img
+      src="/Nextdoor.png"
+      alt="Nextdoor Neighborhood Fave"
+      class="max-h-8 max-w-8 object-contain"
+    />
+  </div>
+  <div class="text-xs text-white/70 text-center">Nextdoor Neighborhood Fave</div>
 </div>
 
       </div>

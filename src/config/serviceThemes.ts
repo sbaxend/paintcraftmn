@@ -132,10 +132,9 @@ We begin sanding the surfaces to remove weathered wood and create a smooth, even
   {
     id: "fence-staining",
     label: "Fences",
-    modalTitle: "Fence Staining & Restoration",
+    modalTitle: "A renewed fence, sealed against time and weather",
     modalBody: `
-We remove surface buildup, restore wood tone, and apply long-lasting stain for consistent color, weather resistance, and a clean finished look.
-    `,
+We begin by restoring the wood with a thorough washing. Then comes the sanding to remove buildup, weathering, and raised grain. Right after sanding we use a wood brightener to remove dark spots and enrich the natural color of the wood.  Once the fence is clean, dry, and smooth, we apply a professional-grade stain to enhance the natural character of the wood while providing deep, lasting protection against the elements. The result is a refreshed fence with rich color, even coverage, and long-term durability.`,
     img: "/minneapolis-fence.png",
   },
 ]
@@ -179,7 +178,7 @@ We remove surface buildup, restore wood tone, and apply long-lasting stain for c
     subtitle: "Breathable, long-lasting mineral finishes.",
     slug: "stucco",
     color: {
-      surface: "#222426",
+      surface: "#7B7F61",
       primary: "#475569",
       primaryDark: "#334155",
       accent: "#84CC16",
@@ -206,20 +205,18 @@ We remove surface buildup, restore wood tone, and apply long-lasting stain for c
   {
     id: "siding-full",
     label: "Siding",
-    modalTitle: "Exterior Siding",
+    modalTitle: "Renewed siding, protected for years to come",
     modalBody: `
-We prep and paint all major siding surfaces including stucco, cedar, LP SmartSide, Hardie Board, vinyl, and even masonry accents. Surfaces are washed, repaired, and coated with premium exterior paint that resists fading, cracking, and Minnesota’s extreme weather.
-    `,
-    img: "/exterior-siding-minnesota.png",
+Every lasting finish begins beneath the surface. We carefully wash, sand, and refine the siding, removing what time has worn away and restoring what remains. Once the surface is clean, dry, and properly prepared, we apply professional-grade coatings that bond deeply and stand up to the seasons. The result is a refined exterior, with the purpose to last.`,
+    img: "/minnesota-siding.png",
   },
 
   {
     id: "trim-detail",
     label: "Trim",
-    modalTitle: "Trim Painting & Protection",
+    modalTitle: "Contrast that cleans the lines and elevates the home",
     modalBody: `
-We sand rough spots, tighten joints, spot-prime problem areas, and apply high-quality trim coatings for a smooth, durable finish that stays clean and sharp through every season.
-    `,
+We clean, scrape, sand, and repair each surface to true the edges and restore crisp profiles. With the groundwork complete, we apply high-performance exterior coatings using controlled, precise technique to maintain sharp lines and even coverage. The result is trim that creates contrast, defines the home, and holds its finish season after season.`,
     img: "/exterior-trim-minnesota.png",
   },
 ]
