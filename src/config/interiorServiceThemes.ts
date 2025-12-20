@@ -180,7 +180,7 @@ Our process starts with full protection of walls, floors, and surrounding surfac
     id: "doors",
     label: "Doors",
     title: "Smooth, durable door finishes",
-    img: "/interior-door-painting.png",
+    img: "/interior-door-painting-minnesota.jpeg",
     modalTitle: "Our Door Painting Process",
     modalBody: `
 We begin by fully protecting nearby walls, floors, hardware, and surrounding surfaces to ensure a clean and controlled spray environment. The door is sanded smooth, cleaned thoroughly, and any dents, holes, or seams are repaired for a uniform surface. Bare wood or stained areas receive a quality primer to guarantee strong adhesion and an even finish. Using professional spray equipment, we apply light, consistent coats to achieve a smooth, factory-grade result. After curing, we remove all masking, perform a detailed inspection, and complete any final touch-ups, leaving the door looking sharp, durable, and elevated.`,
@@ -190,7 +190,7 @@ We begin by fully protecting nearby walls, floors, hardware, and surrounding sur
     id: "windows",
     label: "Windows",
     title: "Clean lines and weather-tight protection",
-    img: "/window-painting-finish.png",
+    img: "/interior-window-minnesota-painting.webp",
     modalTitle: "Our Window Painting Process",
     modalBody: `
 We repair trim edges, refresh caulk, prime problem areas, and apply clean, crisp coats with spotless masking for sharp, pro-level window frames.
@@ -257,7 +257,7 @@ We start by protecting all floors and surrounding surfaces, then remove hardware
     id: "cab-standard",
     label: "Standard",
     title: "Smooth, durable finish at a great value",
-    img: "/standard-painting-cabinet-package.png",
+    img: "/cabinet_serviceTile.png",
     modalTitle: "Standard Cabinet Painting Package",
     modalBody: `
 We start by protecting all surfaces, removing hardware, and thoroughly cleaning and sanding every piece for proper adhesion. Stained cabinets are primed with a high-quality bonding primer, then we use professional airless spray equipment to apply smooth, consistent coats for a smooth, durable finish. Once everything dries, we reinstall hardware, inspect every detail, and complete any final touch-ups, delivering cabinets that look modern, refined, and built to last.`,
@@ -267,7 +267,7 @@ We start by protecting all surfaces, removing hardware, and thoroughly cleaning 
     id: "cab-premium",
     label: "Premium",
     title: "Factory-grade finish with full professional prep",
-    img: "/cabinet_serviceTile.png",
+    img: "/premium-cabinet-package-minnesota.jpeg",
     modalTitle: "Premium Cabinet Refinishing Package",
     modalBody: `
 OWe begin by fully protecting the workspace and removing all doors, drawers, and hardware. Each surface is cleaned, sanded, and detailed with precision to ensure a flawless foundation. We apply a specialized 2K primer and finish, an advanced, industrial-grade system sourced from overseas for unmatched durability, adhesion, and longevity. Using professional HVLP spray equipment, we lay down ultra-smooth, controlled coats that deliver a true factory-grade finish. After curing, we reinstall all components, complete a detailed quality inspection, and finalize any touch-ups, providing cabinets with maximum durability, superior scratch resistance, and a premium finish built to last for years.ur top-tier option. Includes advanced prep, full surface restoration, and a sprayed enamel system for a flawless, furniture-quality finish.
@@ -295,7 +295,7 @@ OWe begin by fully protecting the workspace and removing all doors, drawers, and
       onPrimary: "#ffffff",
     },
     
-    photos: ["/stains_serviceTile.png"],
+    photos: ["/minnesota-staining-services."],
     process: [
       "Sand and prep wood surfaces to a smooth, even profile.",
       "Apply stain evenly to bring out natural grain and tone.",
@@ -322,7 +322,7 @@ OWe begin by fully protecting the workspace and removing all doors, drawers, and
         id: "stain-prep",
         label: "Prep & Sanding",
         title: "We prepare the wood for a flawless stain",
-        img: "/how-to-sand-cabinets.png",
+        img: "/prep-and-sanding.png",
         modalTitle: "Stain Prep Process",
         modalBody:
           "Our staining prep begins with full protection of surrounding floors, walls, and furniture to create a clean, controlled workspace. We remove hardware, clean all surfaces thoroughly, and sand the wood to open the grain and ensure even absorption of the stain. Any dents, holes, or imperfections are filled and leveled, then sanded again for a smooth, consistent surface. We finish by removing all dust with a detailed vacuum and tack-cloth wipe down, leaving the wood perfectly prepped for a rich, uniform, professional stain application.",
@@ -331,7 +331,7 @@ OWe begin by fully protecting the workspace and removing all doors, drawers, and
         id: "stain-finish",
         label: "Stain Application",
         title: "Stunning, natural wood tones",
-        img: "/stains_serviceTile.png",
+        img: "/minnesota-staining-services.jpeg",
         modalTitle: "Our Staining Technique",
         modalBody:
           "Once the wood is fully prepped, we begin by applying the stain evenly using a controlled brush-and-wipe or rag application method. The stain is worked into the grain for rich, consistent color, then carefully wiped to remove excess and prevent blotching. We allow proper drying time between coats. After staining, we apply a protective clear coat to lock in the finish, enhance durability, and give the wood a smooth, refined appearance built to last.",
@@ -393,7 +393,7 @@ Our prep process for popcorn ceiling removal starts with fully protecting the ho
     id: "pop-knockdown",
     label: "Knock Down Finish",
     title: "A fresh, modern textured ceiling",
-    img: "/knockdown-finish-minnesota.png",
+    img: "/knock-down-finish-minnesota.jpg",
     modalTitle: "Knock Down Ceiling Texture",
     modalBody: `
 For a knockdown ceiling finish, we begin by priming the surface to reveal any imperfections and ensure proper adhesion. Depending on the ceiling’s condition, we complete any necessary touch-up repairs and sanding to create a consistent base. Once the surface is ready, we spray an even layer of thinned joint compound using professional texture equipment, allow it to set to the ideal tack time, and gently “knock down” the peaks with a wide knife for a smooth, modern texture. After the finish dries, we perform a detailed inspection, complete any final touch-ups, and apply two coats of ceiling paint to lock in the look. The result is a clean, upgraded knockdown texture that elevates the entire room.`,

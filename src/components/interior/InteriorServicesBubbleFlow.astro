@@ -176,27 +176,32 @@ const items = services.map((s) => ({
   let pausedByUser = false;
 
   const setActive = (direction = "forward") => {
-    // determine logical slide index (1..count) ignoring clones
-    let logicalIndex = index;
-    const current = slides[index];
+  const currentSlide = slides[index]; // the slide currently in view (could be clone)
 
-    if (current?.dataset.clone === "first") logicalIndex = 1;
-    if (current?.dataset.clone === "last")  logicalIndex = count;
+  // Clear state on all
+  slides.forEach((slide) => {
+    slide.classList.remove("is-active");
+    delete slide.dataset.dir;
+  });
 
-    slides.forEach((slide) => {
-      slide.classList.remove("is-active");
-      delete slide.dataset.dir;
-    });
+  // Mark the *actual visible* slide active
+  if (currentSlide) {
+    currentSlide.classList.add("is-active");
+    currentSlide.dataset.dir = direction;
+  }
 
-    const activeSlide = slides[logicalIndex];
-    if (activeSlide) {
-      activeSlide.classList.add("is-active");
-      activeSlide.dataset.dir = direction;
-    }
+  // Determine logical dot index (0..count-1) based on what’s visible
+  let logicalDotIndex = index - 1; // because index=1 corresponds to first real slide
 
-    // update dots (0-based vs logicalIndex 1..count)
-    dots.forEach((d, j) => d.setAttribute("aria-current", String(j === logicalIndex - 1)));
-  };
+  if (currentSlide?.dataset.clone === "first") logicalDotIndex = 0;
+  if (currentSlide?.dataset.clone === "last") logicalDotIndex = count - 1;
+
+  // Clamp for safety
+  logicalDotIndex = Math.max(0, Math.min(count - 1, logicalDotIndex));
+
+  dots.forEach((d, j) => d.setAttribute("aria-current", String(j === logicalDotIndex)));
+};
+
 
   const go = (nextIndex, dirHint) => {
     const prevIndex = index;
@@ -229,30 +234,41 @@ const items = services.map((s) => ({
   };
 
   // When we hit a clone slide, snap (no transition) to the matching real one
-  track.addEventListener("transitionend", () => {
-    const current = slides[index];
-    if (!current) return;
+ const snapTo = (newIndex, dir) => {
+  // Freeze animations for the snap frame
+  wrap.dataset.snap = "1";
 
-    if (current.dataset.clone === "first") {
-      // we moved onto the clone of the FIRST slide (at the far right)
-      track.style.transition = "none";
-      index = 1; // real first
-      track.style.transform = `translateX(-${index * 100}%)`;
-      setActive("forward");
-      requestAnimationFrame(() => {
-        track.style.transition = "";
-      });
-    } else if (current.dataset.clone === "last") {
-      // we moved onto the clone of the LAST slide (far left)
-      track.style.transition = "none";
-      index = count; // real last
-      track.style.transform = `translateX(-${index * 100}%)`;
-      setActive("backward");
-      requestAnimationFrame(() => {
-        track.style.transition = "";
-      });
-    }
+  // Snap without transition
+  track.style.transition = "none";
+  index = newIndex;
+  track.style.transform = `translateX(-${index * 100}%)`;
+
+  // Force reflow so the browser commits the no-transition state
+  track.getBoundingClientRect();
+
+  // Keep dots/text state correct, but animations are frozen due to data-snap
+  setActive(dir);
+
+  // Next frame: restore transitions and unfreeze animations
+  requestAnimationFrame(() => {
+    track.style.transition = "";
+    delete wrap.dataset.snap;
   });
+};
+
+track.addEventListener("transitionend", () => {
+  const current = slides[index];
+  if (!current) return;
+
+  if (current.dataset.clone === "first") {
+    // landed on the clone of the first slide (far right) -> snap to real first
+    snapTo(1, "forward");
+  } else if (current.dataset.clone === "last") {
+    // landed on the clone of the last slide (far left) -> snap to real last
+    snapTo(count, "backward");
+  }
+});
+
 
   // ---- Init position on first REAL slide ----
   track.style.transform = `translateX(-${index * 100}%)`;
@@ -372,6 +388,13 @@ const items = services.map((s) => ({
 
 
 <style>
+  @media (max-width: 767px) {
+  #svc-prev,
+  #svc-next {
+    display: none !important;
+  }
+}
+
   #svc-track > article {
     width: 100%;
   }
@@ -401,6 +424,13 @@ const items = services.map((s) => ({
   opacity: 0;
   transform: inherit; /* use same X offset as parent */
 }
+/* Failsafe: if animations ever fail, active slide content is still visible */
+.slide.is-active .slide-content,
+.slide.is-active .slide-content .stagger {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
 
 /* FORWARD (next / right arrow) */
 .slide.is-active[data-dir="forward"] .slide-content {
@@ -436,7 +466,7 @@ const items = services.map((s) => ({
   animation-delay: 0.25s;
 }
 .slide.is-active[data-dir="backward"] .slide-content .stagger:nth-child(2) {
-  animation: slideInFromLeft 0.8s cubic-bezier(0.4, 0, 0, 0.2, 1) forwards;
+  animation: slideInFromLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   animation-delay: 0.4s;
 }
 .slide.is-active[data-dir="backward"] .slide-content .stagger:nth-child(3) {
@@ -447,6 +477,8 @@ const items = services.map((s) => ({
   animation: slideInFromLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   animation-delay: 0.7s;
 }
+
+
 
 /* Keyframes */
 @keyframes slideInFromRight {
@@ -485,4 +517,11 @@ const items = services.map((s) => ({
       transform: none !important;
     }
   }
+  /* Prevent text flicker during infinite-loop snap */
+#svc-wrap[data-snap="1"] .slide-content,
+#svc-wrap[data-snap="1"] .slide-content .stagger {
+  animation: none !important;
+  transition: none !important;
+}
+
 </style>

@@ -10,7 +10,7 @@ const {
 ---
 
 <section
-  class="relative min-h-[68vh] flex items-center"
+  class="relative min-h-[56vh] flex items-center"
   style="background: var(--surface);"
 >
   {heroImage && (
@@ -29,44 +29,47 @@ const {
   ></div>
 
   <div
-    class="relative z-10 mx-auto max-w-6xl px-6 md:px-10 py-16 md:py-24 grid md:grid-cols-2 gap-10"
+    class="relative z-10 mx-auto max-w-6xl px-6 md:px-10
+           py-14 md:py-18 grid md:grid-cols-2 gap-8"
   >
     <div class="md:pr-8">
 
       <h1
-        class="text-[clamp(30px,4.2vw,54px)] leading-tight font-sans font-semibold"
+        class="text-[clamp(28px,4vw,50px)] leading-tight font-sans font-semibold"
         style="color: var(--on-surface);"
       >
         {title}
       </h1>
 
       {subtitle && (
-        <p class="mt-4 text-lg md:text-xl"
-           style="color: color-mix(in oklab, var(--on-surface) 80%, transparent);">
+        <p
+          class="mt-3 text-base md:text-lg"
+          style="color: color-mix(in oklab, var(--on-surface) 80%, transparent);"
+        >
           {subtitle}
         </p>
       )}
 
       <!-- Buttons -->
-      <div class="mt-8 flex flex-wrap gap-3">
+      <div class="mt-6 flex flex-wrap gap-3">
 
-        <!-- Universal Primary Button (Black) -->
         <a
           href="/contact"
-          class="inline-flex items-center rounded-full px-6 py-3 text-sm md:text-base font-semibold
-                 bg-neutral-900 text-white border border-neutral-900 shadow-sm
-                 hover:bg-neutral-800 hover:border-neutral-800 hover:shadow-md
-                 transition-all duration-200"
+          class="inline-flex items-center rounded-full px-6 py-3
+                 text-sm md:text-base font-semibold
+                 bg-neutral-900 text-white border border-neutral-900
+                 shadow-sm hover:bg-neutral-800 hover:border-neutral-800
+                 hover:shadow-md transition-all duration-200"
         >
           {ctaLabel}
         </a>
 
-        <!-- Universal Secondary Button (White + Black Text) -->
         <a
           href={backHref}
-          class="inline-flex items-center rounded-full px-6 py-3 text-sm md:text-base font-semibold
-                 bg-white text-neutral-900 border border-neutral-300 shadow-sm
-                 hover:bg-neutral-100 hover:shadow-md
+          class="inline-flex items-center rounded-full px-6 py-3
+                 text-sm md:text-base font-semibold
+                 bg-white text-neutral-900 border border-neutral-300
+                 shadow-sm hover:bg-neutral-100 hover:shadow-md
                  transition-all duration-200"
         >
           {backLabel}

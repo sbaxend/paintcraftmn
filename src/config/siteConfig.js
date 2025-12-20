@@ -19,7 +19,7 @@ export const services = [
     description:
       "Boost your home's curb appeal and protect it from Minnesota's harsh weather with durable, professional exterior coatings.",
     href: "/exterior",
-    img: "/exterior-home-tile.png",
+    img: "/exteriorTile.png",
     ctas: [{label: "Learn more", href: "/exterior"}, {label: "Get quote", href: "/contact"}],
   },
   {
@@ -80,4 +80,5 @@ export const company = {
 
 export const socials = [
   { label: "Instagram", href: "https://instagram.com/paintcraftmn" },
+  {label: "Facebook", href: "https://www.facebook.com/people/PaintCraft/61555203220568/"}
 ];

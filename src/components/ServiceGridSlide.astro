@@ -30,8 +30,9 @@ const items = services.map((s) => ({
                 src={s.img}
                 alt={s.title}
                 class="absolute inset-0 h-full w-full object-cover rounded-3xl"
-                loading="lazy"
+                loading="eager"
                 decoding="async"
+                fetchpriority="high" 
               />
 
               <!-- Gradient overlay -->
@@ -92,7 +93,7 @@ const items = services.map((s) => ({
     <!-- Arrows -->
     <button
       id="svc-prev"
-      class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-30 shadow-xl"
+      class="hidden md:flex absolute left-4 md:left-8 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-30 shadow-xl"
       aria-label="Previous slide"
     >
       <svg
@@ -110,7 +111,7 @@ const items = services.map((s) => ({
     </button>
     <button
       id="svc-next"
-      class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-30 shadow-xl"
+      class="hidden md:flex absolute right-4 md:right-8 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-30 shadow-xl"
       aria-label="Next slide"
     >
       <svg
@@ -168,193 +169,247 @@ const items = services.map((s) => ({
 </section>
 
 <script is:inline>
-  (() => {
-    const wrap = document.getElementById("svc-wrap");
-    const track = document.getElementById("svc-track");
-    const prev = document.getElementById("svc-prev");
-    const next = document.getElementById("svc-next");
-    const dots = Array.from(document.querySelectorAll("#svc-dots > button"));
-    const autoBtn = document.getElementById("svc-auto");
-    if (!wrap || !track || !prev || !next || !autoBtn) return;
+(() => {
+  const wrap = document.getElementById("svc-wrap");
+  const track = document.getElementById("svc-track");
+  const prev = document.getElementById("svc-prev");
+  const next = document.getElementById("svc-next");
+  const dots = Array.from(document.querySelectorAll("#svc-dots > button"));
+  const autoBtn = document.getElementById("svc-auto");
 
-    const AUTO_MS = 5000;
-    let autoTimer = null;
-    let pausedByUser = false;
+  if (!wrap || !track) return;
 
-    // --- CLONE SLIDES FOR INFINITE LOOP ---
-    const baseSlides = Array.from(track.children);
-    const baseCount = baseSlides.length;
-    if (!baseCount) return;
+  const AUTO_MS = 5000;
+  const DURATION_MS = 700; // must match duration-700
 
-    const firstClone = baseSlides[0].cloneNode(true);
-    const lastClone = baseSlides[baseCount - 1].cloneNode(true);
+  let autoTimer = null;
+  let pausedByUser = false;
+  let isAnimating = false;
+  let snapFallbackTimer = null;
+  let lastDir = 1;
 
-    track.insertBefore(lastClone, baseSlides[0]);
-    track.appendChild(firstClone);
+  // -------------------------------
+  // CLONE SLIDES (INFINITE LOOP)
+  // -------------------------------
+  const baseSlides = Array.from(track.children);
+  const baseCount = baseSlides.length;
+  if (!baseCount) return;
 
-    const slides = Array.from(track.children); // now baseCount + 2
+  const firstClone = baseSlides[0].cloneNode(true);
+  const lastClone  = baseSlides[baseCount - 1].cloneNode(true);
 
-    // Internal index (0..baseCount+1). 1..baseCount are real slides.
-    let index = 1;
+  track.insertBefore(lastClone, baseSlides[0]);
+  track.appendChild(firstClone);
 
-    const setTransform = () => {
-      track.style.transform = `translateX(-${index * 100}%)`;
-    };
+  const slides = Array.from(track.children);
+  let index = 1; // internal index (1..baseCount are real)
 
-    // Map internal index -> real slide index [0..baseCount-1]
-    const getRealIndex = (idx) => {
-      if (idx === 0) return baseCount - 1;       // on lastClone
-      if (idx === baseCount + 1) return 0;       // on firstClone
-      return idx - 1;                            // real slide
-    };
+  // -------------------------------
+  // HELPERS
+  // -------------------------------
+  const clearFallback = () => {
+    if (snapFallbackTimer) clearTimeout(snapFallbackTimer);
+    snapFallbackTimer = null;
+  };
 
-    const setActive = (dir = 1) => {
-      const realIndex = getRealIndex(index);
+  const setTransform = () => {
+    track.style.transform = `translateX(-${index * 100}%)`;
+  };
 
-      slides.forEach((slide, i) => {
-        const isActive = i === index;
-        slide.classList.toggle("is-active", isActive);
-        if (isActive) {
-          slide.dataset.dir = dir === 1 ? "next" : "prev";
-        } else {
-          delete slide.dataset.dir;
-        }
-      });
+  const getRealIndex = (idx) => {
+    if (idx === 0) return baseCount - 1;
+    if (idx === baseCount + 1) return 0;
+    return idx - 1;
+  };
 
-      dots.forEach((dot, i) =>
-        dot.setAttribute("aria-current", String(i === realIndex)),
-      );
-    };
+  const setActive = (dir) => {
+    const realIndex = getRealIndex(index);
 
-    // Init: jump to first real slide, then enable transition
+    slides.forEach((slide, i) => {
+      const active = i === index;
+      slide.classList.toggle("is-active", active);
+      if (active) slide.dataset.dir = dir === 1 ? "next" : "prev";
+      else delete slide.dataset.dir;
+    });
+
+    dots.forEach((dot, i) =>
+      dot.setAttribute("aria-current", String(i === realIndex))
+    );
+  };
+
+ const snapIfNeeded = () => {
+  // last real -> firstClone (index === baseCount + 1)
+  if (index === baseCount + 1) {
+    track.dataset.snapping = "true";   // disable content animations during snap
+    track.style.transition = "none";
+    index = 1;                         // snap to real first
+    setTransform();
+    requestAnimationFrame(() => {
+      track.style.transition = "";
+      delete track.dataset.snapping;
+      isAnimating = false;
+    });
+    // keep direction consistent (still "next")
+    setActive(1);
+    return true;
+  }
+
+  // first real -> lastClone (index === 0)
+  if (index === 0) {
+    track.dataset.snapping = "true";
+    track.style.transition = "none";
+    index = baseCount;                  // snap to real last
+    setTransform();
+    requestAnimationFrame(() => {
+      track.style.transition = "";
+      delete track.dataset.snapping;
+      isAnimating = false;
+    });
+    setActive(-1);
+    return true;
+  }
+
+  return false;
+};
+
+
+
+  // -------------------------------
+  // INIT
+  // -------------------------------
+  track.style.transition = "none";
+  setTransform();
+  setActive(1);
+  requestAnimationFrame(() => {
+    track.style.transition = "";
+  });
+
+  // -------------------------------
+  // STEP LOGIC (CORE FIX)
+  // -------------------------------
+  const step = (delta) => {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    clearFallback();
+    lastDir = delta >= 0 ? 1 : -1;
+
+    index += delta;
+    setTransform();
+    setActive(lastDir);
+
+    // Fallback if transitionend never fires
+    snapFallbackTimer = setTimeout(() => {
+      if (!snapIfNeeded()) isAnimating = false;
+    }, DURATION_MS + 80);
+  };
+
+  track.addEventListener("transitionend", (e) => {
+    if (e.propertyName && e.propertyName !== "transform") return;
+    clearFallback();
+    if (!snapIfNeeded()) isAnimating = false;
+  });
+
+  // -------------------------------
+  // AUTOPLAY
+  // -------------------------------
+  const startAuto = () => {
+    if (pausedByUser) return;
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = setInterval(() => step(1), AUTO_MS);
+  };
+
+  const stopAuto = () => {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
+  };
+
+  // -------------------------------
+  // CONTROLS
+  // -------------------------------
+  prev?.addEventListener("click", () => { step(-1); startAuto(); });
+  next?.addEventListener("click", () => { step(1); startAuto(); });
+
+  dots.forEach((dot, realTarget) => {
+    dot.addEventListener("click", () => {
+      const currentReal = getRealIndex(index);
+      if (realTarget === currentReal || isAnimating) return;
+
+      clearFallback();
+      isAnimating = true;
+
+      lastDir = realTarget > currentReal ? 1 : -1;
+      index = realTarget + 1;
+
+      setTransform();
+      setActive(lastDir);
+
+      snapFallbackTimer = setTimeout(() => {
+        isAnimating = false;
+      }, DURATION_MS + 80);
+
+      startAuto();
+    });
+  });
+
+  // -------------------------------
+  // SWIPE (MOBILE)
+  // -------------------------------
+  let x0 = 0;
+
+  track.addEventListener("touchstart", (e) => {
+    x0 = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  track.addEventListener("touchend", (e) => {
+    const x1 = e.changedTouches[0].screenX;
+    if (x1 < x0 - 50) step(1);
+    if (x1 > x0 + 50) step(-1);
+    startAuto();
+  }, { passive: true });
+
+  // -------------------------------
+  // VISIBILITY / BF CACHE FIX
+  // -------------------------------
+  const resync = () => {
+    clearFallback();
+    isAnimating = false;
     track.style.transition = "none";
     setTransform();
-    setActive(1);
     requestAnimationFrame(() => {
-      track.style.transition = ""; // use Tailwind transition classes
+      track.style.transition = "";
+      setActive(lastDir);
     });
+  };
 
-    const step = (delta) => {
-      const dir = delta >= 0 ? 1 : -1;
-      index += delta;
-      setTransform();
-      setActive(dir);
-    };
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopAuto();
+    else { resync(); startAuto(); }
+  });
 
-    const startAuto = () => {
-      if (pausedByUser) return;
-      if (autoTimer) clearInterval(autoTimer);
-      autoTimer = setInterval(() => step(1), AUTO_MS);
-    };
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted) { resync(); startAuto(); }
+  });
 
-    const stopAuto = () => {
-      if (autoTimer) clearInterval(autoTimer);
-      autoTimer = null;
-    };
+  // -------------------------------
+  // HOVER + PLAY/PAUSE
+  // -------------------------------
+  wrap.addEventListener("mouseenter", stopAuto);
+  wrap.addEventListener("mouseleave", startAuto);
 
-    // Handle snapping after moving onto a clone
-    track.addEventListener("transitionend", () => {
-      if (index === 0) {
-        // we’re on lastClone → snap to real last
-        track.style.transition = "none";
-        index = baseCount;
-        setTransform();
-        requestAnimationFrame(() => {
-          track.style.transition = "";
-        });
-        setActive(-1);
-      } else if (index === baseCount + 1) {
-        // we’re on firstClone → snap to real first
-        track.style.transition = "none";
-        index = 1;
-        setTransform();
-        requestAnimationFrame(() => {
-          track.style.transition = "";
-        });
-        setActive(1);
-      }
-    });
+  autoBtn?.addEventListener("click", () => {
+    pausedByUser = !pausedByUser;
+    autoBtn.dataset.state = pausedByUser ? "paused" : "playing";
+    autoBtn.querySelector(".icon-play")?.classList.toggle("hidden", !pausedByUser);
+    autoBtn.querySelector(".icon-pause")?.classList.toggle("hidden", pausedByUser);
+    pausedByUser ? stopAuto() : startAuto();
+  });
 
-    // --- CONTROLS ---
-
-    // arrows
-    prev.addEventListener("click", () => {
-      step(-1);
-      startAuto();
-    });
-
-    next.addEventListener("click", () => {
-      step(1);
-      startAuto();
-    });
-
-    // dots
-    dots.forEach((dot, realTarget) => {
-      dot.addEventListener("click", () => {
-        const currentReal = getRealIndex(index);
-        if (realTarget === currentReal) return;
-
-        const targetInternal = realTarget + 1; // map to internal index
-        const dir = targetInternal > index ? 1 : -1;
-        index = targetInternal;
-        setTransform();
-        setActive(dir);
-        startAuto();
-      });
-    });
-
-    // keyboard
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowRight") {
-        step(1);
-        startAuto();
-      }
-      if (e.key === "ArrowLeft") {
-        step(-1);
-        startAuto();
-      }
-    });
-
-    // touch swipe
-    let x0 = 0;
-    let x1 = 0;
-    track.addEventListener(
-      "touchstart",
-      (e) => (x0 = e.changedTouches[0].screenX),
-      { passive: true },
-    );
-    track.addEventListener(
-      "touchend",
-      (e) => {
-        x1 = e.changedTouches[0].screenX;
-        if (x1 < x0 - 50) step(1);
-        if (x1 > x0 + 50) step(-1);
-        startAuto();
-      },
-      { passive: true },
-    );
-
-    // hover pause
-    wrap.addEventListener("mouseenter", stopAuto);
-    wrap.addEventListener("mouseleave", startAuto);
-
-    // play/pause button
-    autoBtn.addEventListener("click", () => {
-      pausedByUser = !pausedByUser;
-      autoBtn.dataset.state = pausedByUser ? "paused" : "playing";
-      autoBtn
-        .querySelector(".icon-play")
-        ?.classList.toggle("hidden", !pausedByUser);
-      autoBtn
-        .querySelector(".icon-pause")
-        ?.classList.toggle("hidden", pausedByUser);
-      pausedByUser ? stopAuto() : startAuto();
-    });
-
-    // kick off autoplay
-    startAuto();
-  })();
+  startAuto();
+})();
 </script>
+
+
 
 
 <style>
@@ -372,6 +427,14 @@ const items = services.map((s) => ({
     opacity: 0;
     transform: translateX(-100px);
   }
+  /* When snapping (clone -> real), don't animate content at all */
+  #svc-track[data-snapping="true"] .slide-content,
+  #svc-track[data-snapping="true"] .slide-content .stagger {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
 
   /* active: slide in from the direction we’re moving */
   .slide.is-active[data-dir="next"] .slide-content {

@@ -126,7 +126,7 @@ export const serviceThemes: Record<ServiceKey, ServiceTheme> = {
     modalTitle: "A smooth, restored deck with lasting protection.",
     modalBody: `
 We begin sanding the surfaces to remove weathered wood and create a smooth, even base, detailing spindles and railings. The deck is then cleaned and brightened to open the grain and ensure the stain bonds properly. Once prepped, we apply a premium stain for rich color and long-lasting protection.`,
-    img: "/minnesota-deck.png",
+    img: "/deck-minnesota-exterior.jpeg",
   },
 
   {
@@ -135,7 +135,7 @@ We begin sanding the surfaces to remove weathered wood and create a smooth, even
     modalTitle: "A renewed fence, sealed against time and weather",
     modalBody: `
 We begin by restoring the wood with a thorough washing. Then comes the sanding to remove buildup, weathering, and raised grain. Right after sanding we use a wood brightener to remove dark spots and enrich the natural color of the wood.  Once the fence is clean, dry, and smooth, we apply a professional-grade stain to enhance the natural character of the wood while providing deep, lasting protection against the elements. The result is a refreshed fence with rich color, even coverage, and long-term durability.`,
-    img: "/minneapolis-fence.png",
+    img: "/minneapolis-fence-stain.jpg",
   },
 ]
 
@@ -260,7 +260,7 @@ We clean, scrape, sand, and repair each surface to true the edges and restore cr
     modalTitle: "Doors: Bold, Smooth, Long-Lasting",
     modalBody: `
 Our exterior door painting process begins by protecting nearby surfaces, then cleaning, sanding, and making necessary repairs to the door for a smooth, even base. We prime any bare or weathered areas and apply two coats of exterior grade paint for a durable, long-lasting finish. Once cured, we reinstall hardware, inspect every detail, and complete any final touch-ups leaving your door refreshed and protected.`,
-    img: "/exterior-door.png",
+    img: "/exterior-door-painting-minnesota.jpg",
   },
 
   {
@@ -278,7 +278,7 @@ Our exterior window painting process begins by protecting surrounding siding and
     modalTitle: "Garage Doors: Beautifully Painted to Blend Seamlessly With Your Home’s Style",
     modalBody: `
 We start by pressure washing the garage door to remove dirt, dust, and buildup so the paint can bond properly. Once clean, we sand the surface lightly to ensure better adhesion. From there, we mask surrounding areas, siding, trim, concrete, and any hardware to protect your home from overspray and keep the job site clean. Once prep is complete, we apply two coats of paint for a smooth, factory-level finish. After the final coat dries, we remove all masking, inspect the finish, and make any necessary touch-ups. The result is a clean, consistent, long-lasting garage door finish that elevates your curb appeal.`,
-    img: "/garage-door.png", // replace with your real asset
+    img: "/minnesota-garage-painting.jpg", // replace with your real asset
   },
 ]
 

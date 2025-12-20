@@ -71,65 +71,72 @@ const {
     }`}
   >
     <h2
-  class={`mx-auto max-w-5xl text-[clamp(2.2rem,4.2vw,3.25rem)] leading-[1.1]
-          font-semibold tracking-tight text-center ${
-            bgImage ? "text-white" : "text-neutral-900"
-          }`}
->
-  {heading}
-</h2>
-
-    <div class="mt-10 grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
-  {items.map((item, idx) => (
-    <article
-  class={`group relative overflow-hidden rounded-[24px] ${
-    bgImage
-      ? "bg-white/10 ring-1 ring-white/15"
-      : "bg-white ring-1 ring-[#C48356]/20"
-  } shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-[#C48356]/40 focus-within:-translate-y-1 cursor-pointer`}
-  data-cb-open={idx}
-  role="button"
-  tabindex="0"
->
-  {/* soft halo on hover */}
-  <div
-    class="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-    style="background: conic-gradient(from 180deg, rgba(196,131,86,.25), rgba(196,131,86,0) 60%); filter: blur(28px);"
-  ></div>
-
-  <div
-    class={`flex h-full flex-row items-center gap-4 px-5 py-5
-            md:flex-col md:items-center md:justify-start md:px-8 md:py-8
-            text-left md:text-center`}
-  >
-    {/* ICON CIRCLE */}
-    <div
-      class={`shrink-0 grid place-items-center h-20 w-20 rounded-full ring-2 transition-all duration-300
-              md:h-32 md:w-32 md:mb-6
-              ${
-                bgImage
-                  ? "bg-white/10 ring-white/25"
-                  : "bg-[#C48356]/10 ring-[#C48356]/30"
-              } group-hover:scale-105`}
+      class={`mx-auto max-w-5xl text-[clamp(2.2rem,4.2vw,3.25rem)] leading-[1.1]
+              font-semibold tracking-tight text-center ${
+                bgImage ? "text-white" : "text-neutral-900"
+              }`}
     >
-      {"icon" in item ? (
-        <>
-          {item.icon === "shield" && (
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              class="h-10 w-10 md:h-14 md:w-14 text-[#C48356]"
+      {heading}
+    </h2>
+
+    {/* ✅ ADD id so IO can observe this grid */}
+    <div
+      id="covered-grid"
+      class="mt-10 grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3"
+    >
+      {items.map((item, idx) => (
+        <article
+          class={`cb-card group relative overflow-hidden rounded-[24px] ${
+            bgImage
+              ? "bg-white/10 ring-1 ring-white/15"
+              : "bg-white ring-1 ring-[#C48356]/20"
+          } shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-[#C48356]/40 focus-within:-translate-y-1 cursor-pointer`}
+          data-cb-card
+          data-col={idx}
+          data-cb-open={idx}
+          role="button"
+          tabindex="0"
+        >
+          {/* soft halo on hover */}
+          <div
+            class="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            style="background: conic-gradient(from 180deg, rgba(196,131,86,.25), rgba(196,131,86,0) 60%); filter: blur(28px);"
+          ></div>
+
+          <div
+            class={`flex h-full flex-row items-center gap-4 px-5 py-5
+                    md:flex-col md:items-center md:justify-start md:px-8 md:py-8
+                    text-left md:text-center`}
+          >
+            {/* ICON CIRCLE */}
+            <div
+              class={`shrink-0 grid place-items-center h-20 w-20 rounded-full ring-2 transition-all duration-300
+                      md:h-32 md:w-32 md:mb-6
+                      ${
+                        bgImage
+                          ? "bg-white/10 ring-white/25"
+                          : "bg-[#C48356]/10 ring-[#C48356]/30"
+                      } group-hover:scale-105`}
             >
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.7"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 3l7 3v5.5c0 4.6-2.9 7.7-7 9.5-4.1-1.8-7-4.9-7-9.5V6l7-3zM9.5 12.5l2 2 4-4"
-              ></path>
-            </svg>
-          )}
+              {"icon" in item ? (
+                <>
+                  {item.icon === "shield" && (
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      class="h-10 w-10 md:h-14 md:w-14 text-[#C48356]"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 3l7 3v5.5c0 4.6-2.9 7.7-7 9.5-4.1-1.8-7-4.9-7-9.5V6l7-3zM9.5 12.5l2 2 4-4"
+                      ></path>
+                    </svg>
+                  )}
+
                   {item.icon === "compass" && (
                     <svg
                       viewBox="0 0 24 24"
@@ -224,72 +231,175 @@ const {
                 </>
               ) : (
                 <img
-              src={item.img}
-              alt=""
-              role="presentation"
-              class="h-4/5 w-4/5 object-contain"
-              loading="lazy"
-              decoding="async"
-            />
-          )}
-        </div>
+                  src={item.img}
+                  alt=""
+                  role="presentation"
+                  class="h-4/5 w-4/5 object-contain"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+            </div>
 
-        <h3
-          class={`text-lg md:text-2xl font-semibold ${
-            bgImage ? "text-white" : "text-neutral-900"
-          }`}
-        >
-          {item.title}
-        </h3>
-        <p
-          class={`mt-2 md:mt-3 text-sm md:text-base leading-6 md:leading-7 ${
-            bgImage ? "text-white/85" : "text-neutral-600"
-          }`}
-        >
-          {item.desc}
-        </p>
-      </div>
-    </article>
-  ))}
-</div>
+            <h3
+              class={`text-lg md:text-2xl font-semibold ${
+                bgImage ? "text-white" : "text-neutral-900"
+              }`}
+            >
+              {item.title}
+            </h3>
 
-  {/* MODALS */}
-  {items.map((item, idx) => (
-    <div
-      class="fixed inset-0 z-50 hidden items-center justify-center px-4 md:px-0"
-      data-cb-modal={idx}
-    >
-      {/* overlay */}
-      <div
-        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        data-cb-close
-      ></div>
-
-      {/* panel */}
-      <div class="relative max-w-xl w-full rounded-[2rem] bg-white shadow-2xl border border-neutral-200 overflow-hidden">
-        <button
-          type="button"
-          data-cb-close
-          class="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow-md hover:bg-white"
-          aria-label="Close"
-        >
-          ✕
-        </button>
-
-        <div class="p-6 md:p-8">
-          <p class="text-xs font-semibold tracking-[0.18em] uppercase text-neutral-500 mb-2">
-            {heading}
-          </p>
-          <h3 class="text-2xl md:text-3xl font-semibold text-neutral-900 mb-3">
-            {item.title}
-          </h3>
-          <p class="text-sm md:text-base text-neutral-700 leading-relaxed">
-            {item.modalBody ?? item.desc}
-          </p>
-        </div>
-      </div>
+            <p
+              class={`mt-2 md:mt-3 text-sm md:text-base leading-6 md:leading-7 ${
+                bgImage ? "text-white/85" : "text-neutral-600"
+              }`}
+            >
+              {item.desc}
+            </p>
+          </div>
+        </article>
+      ))}
     </div>
-  ))}
+
+    {/* MODALS */}
+    {items.map((item, idx) => (
+      <div
+        class="fixed inset-0 z-50 hidden items-center justify-center px-4 md:px-0"
+        data-cb-modal={idx}
+      >
+        {/* overlay */}
+        <div
+          class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+          data-cb-close
+        ></div>
+
+        {/* panel */}
+        <div class="relative max-w-xl w-full rounded-[2rem] bg-white shadow-2xl border border-neutral-200 overflow-hidden">
+          <button
+            type="button"
+            data-cb-close
+            class="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow-md hover:bg-white"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+
+          <div class="p-6 md:p-8">
+            <p class="text-xs font-semibold tracking-[0.18em] uppercase text-neutral-500 mb-2">
+              {heading}
+            </p>
+            <h3 class="text-2xl md:text-3xl font-semibold text-neutral-900 mb-3">
+              {item.title}
+            </h3>
+            <p class="text-sm md:text-base text-neutral-700 leading-relaxed">
+              {item.modalBody ?? item.desc}
+            </p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {/* ✅ Animation script (opposite direction: from RIGHT, one at a time) */}
+  <script is:inline>
+    document.documentElement.classList.add("js");
+
+    const grid = document.getElementById("covered-grid");
+    let cards = Array.from(document.querySelectorAll("[data-cb-card]"));
+
+    // Sort right → left (2,1,0) so the one on the right enters first
+    cards = cards.sort((a, b) => Number(a.dataset.col) - Number(b.dataset.col));
+
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    const animateIn = async (el) => {
+      if (prefersReduced) {
+        el.classList.add("is-in");
+        return;
+      }
+
+      el.getBoundingClientRect();
+
+      // WAAPI preferred
+      if (el.animate) {
+        const anim = el.animate(
+          [
+            { opacity: 0, transform: "translateX(120%)" },
+            { opacity: 1, transform: "translateX(0)" },
+          ],
+          {
+            duration: 650,
+            easing: "cubic-bezier(.2,.8,.2,1)",
+            fill: "forwards",
+          }
+        );
+
+        await anim.finished.catch(() => {});
+        el.classList.add("is-in");
+        el.style.opacity = "";
+        el.style.transform = "";
+        return;
+      }
+
+      el.classList.add("is-in");
+      await sleep(700);
+    };
+
+    const runSequence = async () => {
+      for (const card of cards) {
+        await animateIn(card);
+        await sleep(90);
+      }
+    };
+
+    if (!grid || !cards.length || prefersReduced) {
+      cards.forEach((c) => c.classList.add("is-in"));
+    } else {
+      let hasRun = false;
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (hasRun) return;
+          if (entries.some((e) => e.isIntersecting)) {
+            hasRun = true;
+            runSequence();
+            io.disconnect();
+          }
+        },
+        { threshold: 0.18, rootMargin: "0px 0px -10% 0px" }
+      );
+
+      io.observe(grid);
+    }
+  </script>
+
+  <style>
+    /* In photo mode, force icon color to white if desired */
+    .covered-band.is-photo svg {
+      color: white;
+    }
+
+    /* ✅ Visible by default (if JS fails, users still see cards) */
+    .cb-card {
+      opacity: 1;
+      transform: none;
+      transition: opacity 650ms ease, transform 650ms cubic-bezier(.2,.8,.2,1);
+      will-change: opacity, transform;
+    }
+
+    /* ✅ Only hide/animate when JS is enabled */
+    html.js .cb-card {
+      opacity: 0;
+      transform: translateX(120%);
+    }
+
+    html.js .cb-card.is-in {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  </style>
 </section>
 
 <script is:inline>
@@ -350,6 +460,7 @@ const {
     });
   })();
 </script>
+
 
 <style>
   /* In photo mode, force icon color to white if desired */

@@ -1,7 +1,8 @@
 ---
 const {
   logoSrc = "/paintcraft_logo.webp",
-  videoSrc = "/HomeHeroVideo.mp4",
+  videoSrc = "/desktop-hero-video.mp4",
+  mobileVideoSrc = "/mobile-hero-home.mp4",
   poster  = "/hero-poster.jpg",
   title   = "Fall in love with your home, again",
   subtitle = "Expert interior & exterior painting services across Minnesota. Quality craftsmanship. Lasting beauty.",
@@ -10,15 +11,28 @@ const {
 ---
 
 <section class="relative h-[85vh] min-h-[700px] overflow-hidden">
-  <!-- Video -->
+  <!-- Video: Mobile -->
   <video
-    class="absolute inset-0 h-full w-full object-cover"
+    class="absolute inset-0 h-full w-full object-cover md:hidden"
+    src={mobileVideoSrc}
+    poster={poster}
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+  ></video>
+
+  <!-- Video: Desktop -->
+  <video
+    class="absolute inset-0 hidden h-full w-full object-cover md:block"
     src={videoSrc}
     poster={poster}
     autoplay
     muted
     loop
     playsinline
+    preload="metadata"
   ></video>
 
   <!-- Dark overlay for readability -->
@@ -27,17 +41,15 @@ const {
   <!-- Centered content -->
   <div class="relative z-10 mx-auto flex h-full max-w-7xl items-center justify-center px-4 text-center text-white">
     <div class="max-w-3xl">
-      <!-- Logo with fade-in -->
-    
-
-      <h1 class="font-sans font-semibold animate-fade-in-up text-4xl font-bold tracking-tight text-4xl sm:text-5xl lg:text-6xl">
+      <h1 class="font-sans font-semibold animate-fade-in-up text-4xl tracking-tight sm:text-5xl lg:text-6xl">
         {title}
       </h1>
+
       <p class="mt-4 animate-fade-in-up text-base md:text-lg text-white/90">
-        <!-- {subtitle} -->
+        {/* {subtitle} */}
       </p>
 
-     {cta?.href && (
+      {cta?.href && (
         <a
           href={cta.href}
           class="mt-8 inline-flex rounded-full border-2 border-[#C48356]/80 
@@ -47,7 +59,6 @@ const {
           {cta.label}
         </a>
       )}
-
     </div>
   </div>
 </section>

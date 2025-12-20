@@ -20,13 +20,13 @@ const {
     {
       name: "Sherwin-Williams",
       logo: "/SherwinWilliams.webp",
-      href: "https://www.sherwin-williams.com/en-us/color/color-tools/color-visualizer ",
+      href: "https://www.sherwin-williams.com/en-us/color/color-tools/color-visualizer",
       description: "Premium paints & coatings",
     },
     {
       name: "Benjamin Moore",
       logo: "/benjaminMoore.webp",
-      href: "https://www.benjaminmoore.com/en-us/paint-colors?_gl=1*1obv1zu*_up*MQ..*_gs*MQ..&gclid= Cj0KCQiAubrJBhCbARIsAHIdxD86UD1OKCz0x69bDSxTCskIXBmc0jjMWy1J8XRyz36HoS6yC eXOkVMaAuNgEALw_wcB&gclsrc=aw.ds&gbraid=0AAAAADPqh0_UtTqrkwEGwZr1d_zpjH5YY ",
+      href: "https://www.benjaminmoore.com/en-us/paint-colors",
       description: "Luxury color solutions",
     },
     {
@@ -60,67 +60,77 @@ const {
       </h2>
 
       {subtitle && (
-        <p class="mx-auto max-w-3xl text-xl text-neutral-600 mt-4">
-  {subtitle}
-</p>
-    )}
+        <p class="mx-auto mt-4 max-w-3xl text-xl text-neutral-600">
+          {subtitle}
+        </p>
+      )}
     </div>
 
     {/* Partner Cards Grid */}
-    <div class="grid gap-8 md:grid-cols-3 lg:gap-12">
-      {partners.map((partner, index) => (
-        <a
-          href={partner.href ?? "#"}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group relative rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-[#C48356]/30 hover:shadow-xl md:p-10"
-          style={`animation-delay: ${index * 100}ms;`}
-        >
-          {/* Logo Container */}
-          <div class="mb-6 flex h-32 items-center justify-center">
-            <img
-              src={partner.logo}
-              alt={partner.name}
-              class="max-h-full w-auto max-w-full scale-100 object-contain opacity-80 transition-all duration-500 group-hover:scale-110 group-hover:opacity-100"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
+    <div
+      id="partners-grid"
+      class="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 md:gap-8 lg:gap-12"
+    >
+      {partners.map((partner, index) => {
+        // Mobile layout: if exactly 3 cards, make the 3rd one span full row (2 columns)
+        const isThirdOfThree = partners.length === 3 && index === 2;
 
-          {/* Partner Info */}
-          <div class="text-center">
-            <h3 class="mb-2 text-lg font-semibold text-neutral-900">
-              {partner.name}
-            </h3>
-
-            {partner.description && (
-              <p class="text-sm text-neutral-600">
-                {partner.description}
-              </p>
-            )}
-          </div>
-
-          {/* Hover Arrow */}
-          <div class="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#C48356]/0 opacity-0 transition-all duration-500 group-hover:bg-[#C48356]/10 group-hover:opacity-100">
-            <svg
-              class="h-4 w-4 text-[#C48356]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+        return (
+          <a
+            href={partner.href ?? "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={partner.name}
+            data-partner-card
+            data-col={index}
+            class={`partner-card group relative rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-[#C48356]/30 hover:shadow-xl md:p-10 ${
+              isThirdOfThree ? "col-span-2 md:col-span-1" : ""
+            }`}
+          >
+            {/* Logo Container */}
+            <div class="mb-5 flex h-24 items-center justify-center md:mb-6 md:h-32">
+              <img
+                src={partner.logo}
+                alt={partner.name}
+                class="max-h-full w-auto max-w-full scale-100 object-contain opacity-80 transition-all duration-500 group-hover:scale-110 group-hover:opacity-100"
+                loading="lazy"
+                decoding="async"
               />
-            </svg>
-          </div>
+            </div>
 
-          {/* Bottom accent line */}
-          <div class="absolute bottom-0 left-0 right-0 h-1 origin-left scale-x-0 rounded-b-2xl bg-gradient-to-r from-[#C48356] to-[#B47347] transition-transform duration-500 group-hover:scale-x-100" />
-        </a>
-      ))}
+            {/* Partner Info */}
+            <div class="text-center">
+              <h3 class="mb-2 text-base font-semibold text-neutral-900 md:text-lg">
+                {partner.name}
+              </h3>
+
+              {partner.description && (
+                <p class="text-sm text-neutral-600">{partner.description}</p>
+              )}
+            </div>
+
+            {/* Hover Arrow */}
+            <div class="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#C48356]/0 opacity-0 transition-all duration-500 group-hover:bg-[#C48356]/10 group-hover:opacity-100">
+              <svg
+                class="h-4 w-4 text-[#C48356]"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+            </div>
+
+            {/* Bottom accent line */}
+            <div class="absolute bottom-0 left-0 right-0 h-1 origin-left scale-x-0 rounded-b-2xl bg-gradient-to-r from-[#C48356] to-[#B47347] transition-transform duration-500 group-hover:scale-x-100" />
+          </a>
+        );
+      })}
     </div>
 
     {/* Trust Statement */}
@@ -134,36 +144,120 @@ const {
       </p>
     </div>
   </div>
+
+ <script is:inline>
+  document.documentElement.classList.add("js");
+
+  const grid = document.getElementById("partners-grid");
+  let cards = Array.from(document.querySelectorAll("[data-partner-card]"));
+
+  // Sort right → left (2,1,0)
+  cards = cards.sort((a, b) => Number(b.dataset.col) - Number(a.dataset.col));
+
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  const animateIn = async (el) => {
+    // If reduced motion, just show it
+    if (prefersReduced) {
+      el.classList.add("is-in");
+      return;
+    }
+
+    // Force layout so start state is applied
+    el.getBoundingClientRect();
+
+    // Prefer WAAPI (super reliable)
+    if (el.animate) {
+      // Start from the hidden state (matches your CSS)
+      const anim = el.animate(
+        [
+          { opacity: 0, transform: "translateX(-120%)" },
+          { opacity: 1, transform: "translateX(0)" },
+        ],
+        {
+          duration: 650,
+          easing: "cubic-bezier(.2,.8,.2,1)",
+          fill: "forwards",
+        }
+      );
+
+      // Ensure final class state matches after animation
+      await anim.finished.catch(() => {});
+      el.classList.add("is-in");
+      // Clear inline animation styling WAAPI may apply visually
+      el.style.opacity = "";
+      el.style.transform = "";
+      return;
+    }
+
+    // Fallback: class + timeout (never blocks sequence)
+    el.classList.add("is-in");
+    await sleep(700);
+  };
+
+  const runSequence = async () => {
+    for (const card of cards) {
+      await animateIn(card);
+      await sleep(80); // tiny beat between cards (optional, feels premium)
+    }
+  };
+
+  if (!grid || !cards.length || prefersReduced) {
+    cards.forEach((c) => c.classList.add("is-in"));
+  } else {
+    let hasRun = false;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (hasRun) return;
+        if (entries.some((e) => e.isIntersecting)) {
+          hasRun = true;
+          runSequence();
+          io.disconnect();
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
+    );
+
+    io.observe(grid);
+  }
+</script>
+
 </section>
 
 <style>
-  /* Staggered fade-in animation */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* ✅ Visible by default (if JS fails, users still see cards) */
+  .partner-card {
+    opacity: 1;
+    transform: none;
+    transition: opacity 650ms ease, transform 650ms cubic-bezier(.2,.8,.2,1);
+    will-change: opacity, transform;
   }
 
-  a[style*="animation-delay"] {
+  /* ✅ Only hide/animate when JS is enabled */
+  html.js .partner-card {
     opacity: 0;
-    animation: fadeInUp 0.6s ease forwards;
+    transform: translateX(-120%);
+  }
+
+  html.js .partner-card.is-in {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Slightly tighter grid spacing on small screens */
+  @media (max-width: 480px) {
+    #partners-grid {
+      gap: 0.9rem;
+    }
   }
 
   /* Ensure logos don't get too large on very big screens */
   @media (min-width: 1536px) {
-    img {
+    .partner-card img {
       max-height: 140px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .grid {
-      gap: 1.5rem;
     }
   }
 </style>

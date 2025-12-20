@@ -90,41 +90,55 @@ const current = Astro.url.pathname;
   <div id="mobileMenu" class="md:hidden hidden border-t border-neutral-200 bg-white">
     <div class="px-4 py-3 space-y-1.5">
       {navLinks.map((link) => (
-        <div>
+  <div class="mobile-item">
+    <div class="flex items-center">
+      {/* Label navigates */}
+      <a
+        href={link.href}
+        class={
+          current.startsWith(link.href) && link.href !== "/"
+            ? "flex-1 rounded-lg px-3 py-3 font-medium bg-[#C48356]/10 text-[#C48356]"
+            : "flex-1 rounded-lg px-3 py-3 font-medium text-neutral-800 hover:bg-[#C48356]/5 transition"
+        }
+      >
+        {link.label}
+      </a>
+
+      {/* Chevron expands ONLY */}
+      {link.dropdown && link.dropdown.length > 0 && (
+        <button
+          type="button"
+          class="mobile-dropdown-toggle ml-1 inline-flex h-11 w-11 items-center justify-center rounded-lg text-neutral-700 hover:bg-[#C48356]/10 transition"
+          aria-label={`Toggle ${link.label} submenu`}
+          aria-expanded="false"
+        >
+          <svg class="mobile-chevron h-4 w-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      )}
+    </div>
+
+    {/* Submenu */}
+    {link.dropdown && link.dropdown.length > 0 && (
+      <div class="mobile-submenu hidden pl-4 pt-1 space-y-1">
+        {link.dropdown.map((item) => (
           <a
-            href={link.href}
+            href={item.href}
             class={
-              current.startsWith(link.href) && link.href !== "/"
-                ? "flex items-center justify-between rounded-lg px-3 py-2.5 font-medium transition bg-[#C48356]/10 text-[#C48356]"
-                : "flex items-center justify-between rounded-lg px-3 py-2.5 font-medium transition text-neutral-700 hover:bg-[#C48356]/5"
+              current === item.href
+                ? "block rounded-lg px-3 py-2 text-sm bg-[#C48356]/10 text-[#C48356] font-medium"
+                : "block rounded-lg px-3 py-2 text-sm text-neutral-600 hover:bg-[#C48356]/5 transition"
             }
           >
-            {link.label}
-            {link.dropdown && link.dropdown.length > 0 && (
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            )}
+            {item.label}
           </a>
+        ))}
+      </div>
+    )}
+  </div>
+))}
 
-          {link.dropdown && link.dropdown.length > 0 && (
-            <div class="pl-6 space-y-1">
-              {link.dropdown.map((item) => (
-                <a
-                  href={item.href}
-                  class={
-                    current === item.href
-                      ? "block rounded-lg px-3 py-2 text-sm bg-[#C48356]/10 text-[#C48356] font-medium transition"
-                      : "block rounded-lg px-3 py-2 text-sm text-neutral-600 hover:bg-[#C48356]/5 transition"
-                  }
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
 
       <a
         href={ctaButton.href}
@@ -137,6 +151,29 @@ const current = Astro.url.pathname;
 </header>
 
 <script is:inline>
+  // Mobile: chevron toggles submenu, label link navigates
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest(".mobile-dropdown-toggle");
+    if (!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    var wrap = btn.closest(".mobile-item");
+    if (!wrap) return;
+
+    var submenu = wrap.querySelector(".mobile-submenu");
+    if (!submenu) return;
+
+    var chevron = btn.querySelector(".mobile-chevron");
+    var willOpen = submenu.classList.contains("hidden");
+
+    submenu.classList.toggle("hidden");
+    btn.setAttribute("aria-expanded", String(willOpen));
+
+    if (chevron) chevron.style.transform = willOpen ? "rotate(180deg)" : "rotate(0deg)";
+  });
+
 (function () {
   var btn = document.getElementById("menuBtn");
   var menu = document.getElementById("mobileMenu");

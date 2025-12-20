@@ -5,12 +5,85 @@ const {
 } = Astro.props;
 ---
 
-<div class="relative z-10">
+<div class="relative z-10 mb-32 md:mb-48">
   <div
-    class={`mx-auto ${maxWidth} -mt-16 md:-mt-24 lg:-mt-28 rounded-2xl bg-white/95 px-6 py-8 md:px-10 md:py-12 shadow-[0_8px_30px_rgba(0,0,0,0.12)]`}
+    id="hero-quote"
+    class={`hero-quote mx-auto ${maxWidth} -mt-12 md:-mt-16 lg:-mt-20 rounded-3xl bg-white/95 px-8 py-24 md:px-16 md:py-40 shadow-[0_20px_50px_rgba(0,0,0,0.1)]`}
   >
-    <p class="text-center text-xl md:text-2xl leading-relaxed text-neutral-700">
+    <p class="text-center text-2xl md:text-4xl leading-snug font-light text-neutral-800">
       {text}
     </p>
   </div>
+
+<script is:inline>
+  {String.raw`
+    (() => {
+      document.documentElement.classList.add("js");
+
+      const el = document.getElementById("hero-quote");
+      if (!el) return;
+
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (prefersReduced) {
+        el.classList.add("is-in");
+        return;
+      }
+
+      // If user is already scrolled (back nav / anchor), animate immediately.
+      if (window.scrollY > 6) {
+        el.classList.add("is-in");
+        return;
+      }
+
+      let fired = false;
+
+      const fire = () => {
+        if (fired) return;
+        fired = true;
+        el.classList.add("is-in");
+
+        window.removeEventListener("scroll", onScroll, opts);
+        window.removeEventListener("wheel", onScroll, opts);
+        window.removeEventListener("touchmove", onScroll, opts);
+        window.removeEventListener("keydown", onKeydown);
+      };
+
+      const opts = { passive: true };
+      const onScroll = () => fire();
+
+      const onKeydown = (e) => {
+        const keys = ["ArrowDown", "PageDown", " ", "End"];
+        if (keys.includes(e.key)) fire();
+      };
+
+      window.addEventListener("scroll", onScroll, opts);
+      window.addEventListener("wheel", onScroll, opts);
+      window.addEventListener("touchmove", onScroll, opts);
+      window.addEventListener("keydown", onKeydown);
+    })();
+  `}
+</script>
+
 </div>
+
+<style>
+  /* Visible by default if JS fails */
+  .hero-quote {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* When JS is enabled, start subtly lowered + transparent */
+  html.js .hero-quote {
+    opacity: 0;
+    transform: translateY(18px);
+    will-change: opacity, transform;
+  }
+
+  /* Fade up on first scroll */
+  html.js .hero-quote.is-in {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 520ms ease, transform 620ms cubic-bezier(.2,.8,.2,1);
+  }
+</style>
