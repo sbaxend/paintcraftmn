@@ -246,7 +246,7 @@ We repair trim edges, refresh caulk, prime problem areas, and apply clean, crisp
     id: "cab-basic",
     label: "Brush & Roll",
     title: "An affordable refresh with a clean, updated look",
-    img: "/brush-and-roll.png",
+    img: "/brush-and-roll-package.jpg",
     modalTitle: "Brush & Roll Package",
     modalBody: `
 We start by protecting all floors and surrounding surfaces, then remove hardware and clean and sand each area for proper adhesion. Stained cabinets are primed, and we use a fine finish brush and roller to apply thin, even coats for a smooth, durable result. After everything dries, we reinstall hardware, inspect the finish, and complete any touch-ups, delivering refreshed cabinets at a budget-friendly price. most budget-friendly package. Cabinets are prepped, lightly sanded, and finished using a professional brush-and-roll method for a clean, refreshed look.
@@ -383,7 +383,7 @@ OWe begin by fully protecting the workspace and removing all doors, drawers, and
     id: "pop-prep",
     label: "Protection",
     title: "We fully protect your home from dust",
-    img: "/minnesota-popcorn-texture-removal.png",
+    img: "/prepping-for-popcorn-removal.jpeg",
     modalTitle: "Popcorn Removal Prep Steps",
     modalBody: `
 Our prep process for popcorn ceiling removal starts with fully protecting the home, covering floors, walls, furniture, and vents to contain dust and debris. We seal off adjacent rooms with plastic barriers and control airflow to keep dust from traveling. All fixtures are removed or masked, and the workspace is set up for safe, efficient removal. We use a professional dust extractor with a HEPA filter attached to our sanding equipment, allowing us to remove the texture cleanly while significantly reducing airborne dust. This creates a controlled, cleaner environment.`,
