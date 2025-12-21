@@ -5,7 +5,6 @@ export const prerender = false;
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
-// Basic HTML escaping so user input can't break your email HTML
 const escapeHtml = (v: string) =>
   v
     .replaceAll("&", "&amp;")
@@ -14,54 +13,55 @@ const escapeHtml = (v: string) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 
+const isValidEmail = (value: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const formData = await request.formData();
 
-    const firstName = (formData.get("firstName") || "").toString();
-    const lastName = (formData.get("lastName") || "").toString();
-    const email = (formData.get("email") || "").toString();
-    const isValidEmail = (value: string) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    const firstName = (formData.get("firstName") || "").toString().trim();
+    const lastName = (formData.get("lastName") || "").toString().trim();
+    const email = (formData.get("email") || "").toString().trim();
 
-if (!email || !isValidEmail(email)) {
-  return new Response(
-    JSON.stringify({ ok: false, error: "Please enter a valid email." }),
-    { status: 400, headers: { "Content-Type": "application/json" } }
-  );
-}
+    if (!email || !isValidEmail(email)) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "Please enter a valid email." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
-    const phone = (formData.get("phone") || "").toString();
-    const address = (formData.get("address") || "").toString();
-    const zip = (formData.get("zip") || "").toString();
-    const projectType = (formData.get("projectType") || "").toString();
-    const timeline = (formData.get("timeline") || "").toString();
-    const referral = (formData.get("referral") || "").toString();
+    const phone = (formData.get("phone") || "").toString().trim();
+    const address = (formData.get("address") || "").toString().trim();
+    const zip = (formData.get("zip") || "").toString().trim();
+    const projectType = (formData.get("projectType") || "").toString().trim();
+    const timeline = (formData.get("timeline") || "").toString().trim();
+    const referral = (formData.get("referral") || "").toString().trim();
     const message = (formData.get("message") || "").toString();
 
     const roomsJsonRaw = (formData.get("roomsJson") || "").toString();
 
-    // photoUrls comes in as a string (JSON array) from your hidden input
+    // photoUrls comes in as JSON string from a hidden input
     let photoUrls: string[] = [];
-const photoUrlsEntry = formData.get("photoUrls");
-
-if (photoUrlsEntry) {
-  const raw = photoUrlsEntry.toString().trim();
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        photoUrls = parsed.filter((u) => typeof u === "string");
+    const photoUrlsEntry = formData.get("photoUrls");
+    if (photoUrlsEntry) {
+      const raw = photoUrlsEntry.toString().trim();
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            photoUrls = parsed.filter((u) => typeof u === "string");
+          }
+        } catch {
+          photoUrls = [];
+        }
       }
-    } catch {
-      photoUrls = [];
     }
-  }
-}
-
 
     const toEmail = import.meta.env.ESTIMATE_TO_EMAIL;
     const fromEmail = import.meta.env.RESEND_FROM_EMAIL;
+    const replyToDefault = import.meta.env.REPLY_TO_EMAIL || toEmail;
+    const bccEmail = import.meta.env.LEADS_BCC_EMAIL;
 
     if (!toEmail || !fromEmail) {
       return new Response(
@@ -73,7 +73,7 @@ if (photoUrlsEntry) {
     const fullName = `${firstName} ${lastName}`.trim();
     const subject = `New estimate request from ${fullName || "website lead"}`;
 
-    // Rooms block: show nicely if valid JSON, otherwise show raw
+    // Rooms block
     let roomsBlock = "";
     if (roomsJsonRaw && roomsJsonRaw !== "[]") {
       try {
@@ -86,9 +86,11 @@ if (photoUrlsEntry) {
               const wid = r?.widthFt ?? "";
               const hgt = r?.ceilingHtFt ?? "";
               const notes = escapeHtml(String(r?.notes || ""));
+
               return `
                 <tr>
-                  <td style="padding:6px 10px;border-top:1px solid #e5e7eb;"><strong>${name}</strong><br/>
+                  <td style="padding:6px 10px;border-top:1px solid #e5e7eb;">
+                    <strong>${name}</strong><br/>
                     <span style="color:#6b7280;font-size:12px;">${notes}</span>
                   </td>
                   <td style="padding:6px 10px;border-top:1px solid #e5e7eb;">${len}</td>
@@ -161,7 +163,9 @@ if (photoUrlsEntry) {
         ${
           message
             ? `<h3 style="margin:20px 0 8px;font-size:16px;">Project Notes</h3>
-               <p style="font-size:14px;white-space:pre-wrap;">${escapeHtml(message)}</p>`
+               <p style="font-size:14px;white-space:pre-wrap;">${escapeHtml(
+                 message
+               )}</p>`
             : ""
         }
 
@@ -170,42 +174,41 @@ if (photoUrlsEntry) {
       </div>
     `;
 
+    // 1) Send lead email to PaintCraft
     await resend.emails.send({
-  from: fromEmail,
-  to: toEmail,
-  subject,
-  html: htmlBody,
+      from: fromEmail,
+      to: toEmail,
+      subject,
+      html: htmlBody,
 
-  // when PaintCraft hits Reply, it replies to the customer
-  replyTo: email || import.meta.env.REPLY_TO_EMAIL || toEmail,
+      // When PaintCraft hits Reply, it replies to the customer
+      replyTo: email || replyToDefault || toEmail,
 
-  // optional: if you want yourself copied on every lead:
-  bcc: import.meta.env.LEADS_BCC_EMAIL || undefined,
-});
+      // optional copy
+      bcc: bccEmail || undefined,
+    });
 
-
-    if (email) {
-     await resend.emails.send({
-  from: fromEmail,
-  to: email,
-  subject: "We received your estimate request",
-  replyTo: import.meta.env.REPLY_TO_EMAIL || toEmail,
-  html: `
-          <div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:24px;color:#111827;">
-            <h2 style="font-size:20px;margin-bottom:8px;">Thanks for reaching out to PaintCraft MN.</h2>
-            <p style="font-size:14px;color:#374151;margin-bottom:16px;">
-              Hi ${escapeHtml(firstName || "")}${firstName ? "," : ""} we’ve received your estimate request and will review your project details shortly.
-            </p>
-            <p style="font-size:14px;color:#374151;margin-bottom:16px;">
-              You can expect a reply within one business day with next steps. If needed, we’ll schedule a quick walk-through to get you an accurate quote.
-            </p>
-            <p style="font-size:13px;color:#6b7280;">
-              If you have additional photos or details to share, just reply to this email and we’ll add them to your file.
-            </p>
-          </div>
-        `,
-      });
-    }
+    // 2) Auto-confirmation to the customer
+    await resend.emails.send({
+      from: fromEmail,
+      to: email,
+      subject: "We received your estimate request",
+      replyTo: replyToDefault || toEmail,
+      html: `
+        <div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:24px;color:#111827;">
+          <h2 style="font-size:20px;margin-bottom:8px;">Thanks for reaching out to PaintCraft MN.</h2>
+          <p style="font-size:14px;color:#374151;margin-bottom:16px;">
+            Hi ${escapeHtml(firstName || "")}${firstName ? "," : ""} we’ve received your estimate request and will review your project details shortly.
+          </p>
+          <p style="font-size:14px;color:#374151;margin-bottom:16px;">
+            You can expect a reply within one business day with next steps. If needed, we’ll schedule a quick walk-through to get you an accurate quote.
+          </p>
+          <p style="font-size:13px;color:#6b7280;">
+            If you have additional photos or details to share, just reply to this email and we’ll add them to your file.
+          </p>
+        </div>
+      `,
+    });
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
