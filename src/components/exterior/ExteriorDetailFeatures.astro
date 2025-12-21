@@ -28,10 +28,6 @@ const { items = [], fallbackImg } = Astro.props as Props;
               <h2 class="text-3xl md:text-4xl font-semibold text-neutral-900 mb-4">
                 {feature.modalTitle}
               </h2>
-
-              <p class="text-base md:text-lg text-neutral-600 max-w-xl">
-                {feature.teaser}
-              </p>
             </div>
 
             {/* Overlapping pill card */}
@@ -47,9 +43,7 @@ const { items = [], fallbackImg } = Astro.props as Props;
                 <p class="text-sm font-semibold text-neutral-900 mb-1">
                   {feature.label}
                 </p>
-                <p class="text-sm text-neutral-600 line-clamp-2">
-                  {feature.teaser}
-                </p>
+
               </div>
               <span class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-neutral-50 text-neutral-800 group-hover:bg-neutral-900 group-hover:text-white transition-colors text-lg leading-none">
                 +

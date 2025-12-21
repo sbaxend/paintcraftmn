@@ -1,5 +1,9 @@
 ---
-// src/components/exterior/ExteriorServices.astro
+/**
+ * ExteriorServicesBubbleFlow.astro
+ * Same bubble slider as the interior version, but defaults to /exterior
+ * and safely normalizes basePath so hrefs are always correct.
+ */
 
 type Service = {
   id: string;
@@ -13,7 +17,7 @@ export interface Props {
   sub?: string;
   services: Service[];
   minHeight?: string;
-  basePath?: string;
+  basePath?: string; // "/exterior" by default
 }
 
 const {
@@ -24,13 +28,19 @@ const {
   basePath = "/exterior",
 } = Astro.props as Props;
 
+// Normalize basePath: always start with "/" and never end with "/"
+const base = (() => {
+  const withSlash = basePath.startsWith("/") ? basePath : `/${basePath}`;
+  return withSlash.endsWith("/") ? withSlash.slice(0, -1) : withSlash;
+})();
+
 const items = services.map((s) => ({
   ...s,
-  href: s.href ?? `${basePath}/${s.id}`,
+  href: s.href ?? `${base}/${s.id}`,
 }));
 ---
 
-<section class="relative bg-neutral-50 py-20 md:py-32">
+<section class="relative bg-neutral-50 pt-10 md:pt-14 pb-6 md:pb-28">
   <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.04)_0%,transparent_70%)]"></div>
 
   <div class="relative mx-auto max-w-[1600px] px-4 md:px-10">
@@ -73,9 +83,10 @@ const items = services.map((s) => ({
             <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/20"></div>
 
             <!-- Content -->
-            <div class="relative z-10 h-full w-full flex items-center justify-center">
-              <div class="px-6 md:px-12 py-12 md:py-16 flex justify-center w-full">
-                <div class="slide-content max-w-2xl text-center flex flex-col items-center">
+            <div class="relative z-10 h-full w-full flex items-center justify-start">
+
+              <div class="px-6 md:px-16 lg:px-24 py-12 md:py-16 flex justify-start w-full">
+                <div class="slide-content max-w-2xl text-left flex flex-col items-start">
                   <h3 class="stagger text-white text-3xl md:text-5xl lg:text-6xl font-black font-sans font-semibold tracking-tight leading-[0.95] mb-4 md:mb-6">
                     {s.title}
                   </h3>
@@ -156,4 +167,263 @@ const items = services.map((s) => ({
   </div>
 </section>
 
-<!-- keep the exact same <script is:inline> and <style> blocks you already have -->
+<script is:inline>
+(() => {
+  const wrap = document.getElementById("svc-wrap");
+  const track = document.getElementById("svc-track");
+  const prev = document.getElementById("svc-prev");
+  const next = document.getElementById("svc-next");
+  const dots = Array.from(document.querySelectorAll("#svc-dots > button"));
+  const autoBtn = document.getElementById("svc-auto");
+
+  if (!wrap || !track || !prev || !next || !autoBtn) return;
+
+  // ----- Build infinite loop (clone first & last) -----
+  const originalSlides = Array.from(track.children);
+  const count = originalSlides.length;
+  if (!count) return;
+
+  const firstClone = originalSlides[0].cloneNode(true);
+  const lastClone = originalSlides[count - 1].cloneNode(true);
+  firstClone.dataset.clone = "first";
+  lastClone.dataset.clone = "last";
+
+  track.appendChild(firstClone);
+  track.insertBefore(lastClone, originalSlides[0]);
+
+  let slides = Array.from(track.children);
+  const total = slides.length;
+
+  const AUTO_MS = 5000;
+  let index = 1;
+  let autoTimer = null;
+  let pausedByUser = false;
+
+  const setActive = (direction = "forward") => {
+    const currentSlide = slides[index];
+
+    slides.forEach((slide) => {
+      slide.classList.remove("is-active");
+      delete slide.dataset.dir;
+    });
+
+    if (currentSlide) {
+      currentSlide.classList.add("is-active");
+      currentSlide.dataset.dir = direction;
+    }
+
+    let logicalDotIndex = index - 1;
+    if (currentSlide?.dataset.clone === "first") logicalDotIndex = 0;
+    if (currentSlide?.dataset.clone === "last") logicalDotIndex = count - 1;
+
+    logicalDotIndex = Math.max(0, Math.min(count - 1, logicalDotIndex));
+    dots.forEach((d, j) => d.setAttribute("aria-current", String(j === logicalDotIndex)));
+  };
+
+  const go = (nextIndex, dirHint) => {
+    const prevIndex = index;
+    index = Math.max(0, Math.min(total - 1, nextIndex));
+
+    const direction =
+      dirHint ??
+      (index > prevIndex ? "forward" : index < prevIndex ? "backward" : "forward");
+
+    track.style.transition = "";
+    track.style.transform = `translateX(-${index * 100}%)`;
+    setActive(direction);
+  };
+
+  const autoStep = () => go(index + 1, "forward");
+
+  const startAuto = () => {
+    if (pausedByUser) return;
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = window.setInterval(autoStep, AUTO_MS);
+  };
+
+  const stopAuto = () => {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
+  };
+
+  const snapTo = (newIndex, dir) => {
+    wrap.dataset.snap = "1";
+    track.style.transition = "none";
+    index = newIndex;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    track.getBoundingClientRect();
+    setActive(dir);
+    requestAnimationFrame(() => {
+      track.style.transition = "";
+      delete wrap.dataset.snap;
+    });
+  };
+
+  track.addEventListener("transitionend", () => {
+    const current = slides[index];
+    if (!current) return;
+
+    if (current.dataset.clone === "first") snapTo(1, "forward");
+    else if (current.dataset.clone === "last") snapTo(count, "backward");
+  });
+
+  track.style.transform = `translateX(-${index * 100}%)`;
+  setActive("forward");
+  startAuto();
+
+  prev.addEventListener("click", () => { go(index - 1, "backward"); startAuto(); });
+  next.addEventListener("click", () => { go(index + 1, "forward"); startAuto(); });
+
+  dots.forEach((d, i) =>
+    d.addEventListener("click", () => {
+      const logicalTarget = i + 1;
+      const direction = logicalTarget > index ? "forward" : "backward";
+      go(logicalTarget, direction);
+      startAuto();
+    }),
+  );
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") { go(index + 1, "forward"); startAuto(); }
+    if (e.key === "ArrowLeft") { go(index - 1, "backward"); startAuto(); }
+  });
+
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  track.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  track.addEventListener("touchend", (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    if (touchEndX < touchStartX - 50) { go(index + 1, "forward"); startAuto(); }
+    if (touchEndX > touchStartX + 50) { go(index - 1, "backward"); startAuto(); }
+  }, { passive: true });
+
+  wrap.addEventListener("mouseenter", stopAuto);
+  wrap.addEventListener("mouseleave", startAuto);
+
+  autoBtn.addEventListener("click", () => {
+    pausedByUser = !pausedByUser;
+    autoBtn.dataset.state = pausedByUser ? "paused" : "playing";
+    autoBtn.querySelector(".icon-play")?.classList.toggle("hidden", !pausedByUser);
+    autoBtn.querySelector(".icon-pause")?.classList.toggle("hidden", pausedByUser);
+
+    if (pausedByUser) stopAuto();
+    else startAuto();
+  });
+
+  const updateBubble = () => {
+    const rect = wrap.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+
+    if (rect.bottom < 0 || rect.top > vh) {
+      wrap.style.opacity = "0";
+      wrap.style.transform = "scale(0.9)";
+      return;
+    }
+
+    const bubbleCenter = rect.top + rect.height / 2;
+    const viewportCenter = vh / 2;
+
+    const dist = Math.abs(bubbleCenter - viewportCenter);
+    const maxDist = vh * 0.8;
+    const t = Math.min(dist / maxDist, 1);
+
+    const scale = 0.9 + (1 - t) * 0.1;
+    const opacity = Math.max(0, 1 - t * 1.1);
+
+    wrap.style.transform = `scale(${scale})`;
+    wrap.style.opacity = String(opacity);
+  };
+
+  const onScroll = () => updateBubble();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  updateBubble();
+})();
+</script>
+
+<style>
+  @media (max-width: 767px) {
+    #svc-prev,
+    #svc-next {
+      display: none !important;
+    }
+  }
+
+  #svc-track > article {
+    width: 100%;
+  }
+
+  /* Bubble default state + smooth scroll transition */
+  #svc-wrap {
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: center center;
+    transition: transform 0.45s ease-out, opacity 0.45s ease-out;
+  }
+
+  /* Text entrance animations – follow slide direction (left/right) */
+  .slide .slide-content {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+
+  .slide[data-dir="backward"] .slide-content {
+    transform: translateX(-40px);
+  }
+
+  .slide .slide-content .stagger {
+    opacity: 0;
+    transform: inherit;
+  }
+
+  .slide.is-active .slide-content,
+  .slide.is-active .slide-content .stagger {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
+
+  .slide.is-active[data-dir="forward"] .slide-content {
+    animation: slideInFromRight 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.15s;
+  }
+
+  .slide.is-active[data-dir="backward"] .slide-content {
+    animation: slideInFromLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.15s;
+  }
+
+  @keyframes slideInFromRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes slideInFromLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #svc-wrap {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .slide .slide-content,
+    .slide .slide-content .stagger {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* Prevent text flicker during infinite-loop snap */
+  #svc-wrap[data-snap="1"] .slide-content,
+  #svc-wrap[data-snap="1"] .slide-content .stagger {
+    animation: none !important;
+    transition: none !important;
+  }
+</style>

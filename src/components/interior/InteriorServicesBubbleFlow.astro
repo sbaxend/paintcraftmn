@@ -21,9 +21,13 @@ const {
   basePath = "/interior",
 } = Astro.props as Props;
 
+// normalize basePath so it ALWAYS starts with "/"
+const base = basePath.startsWith("/") ? basePath : `/${basePath}`;
+
+// build hrefs consistently
 const items = services.map((s) => ({
   ...s,
-  href: s.href ?? `interior/${s.id}`,
+  href: s.href ?? `${base}/${s.id}`,
 }));
 ---
 
