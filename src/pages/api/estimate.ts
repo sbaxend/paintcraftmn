@@ -21,6 +21,16 @@ export const POST: APIRoute = async ({ request }) => {
     const firstName = (formData.get("firstName") || "").toString();
     const lastName = (formData.get("lastName") || "").toString();
     const email = (formData.get("email") || "").toString();
+    const isValidEmail = (value: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+if (!email || !isValidEmail(email)) {
+  return new Response(
+    JSON.stringify({ ok: false, error: "Please enter a valid email." }),
+    { status: 400, headers: { "Content-Type": "application/json" } }
+  );
+}
+
     const phone = (formData.get("phone") || "").toString();
     const address = (formData.get("address") || "").toString();
     const zip = (formData.get("zip") || "").toString();
@@ -33,17 +43,22 @@ export const POST: APIRoute = async ({ request }) => {
 
     // photoUrls comes in as a string (JSON array) from your hidden input
     let photoUrls: string[] = [];
-    const photoUrlsEntry = formData.get("photoUrls");
-    if (typeof photoUrlsEntry === "string" && photoUrlsEntry.trim()) {
-      try {
-        const parsed = JSON.parse(photoUrlsEntry);
-        if (Array.isArray(parsed)) {
-          photoUrls = parsed.filter((u) => typeof u === "string");
-        }
-      } catch {
-        photoUrls = [];
+const photoUrlsEntry = formData.get("photoUrls");
+
+if (photoUrlsEntry) {
+  const raw = photoUrlsEntry.toString().trim();
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        photoUrls = parsed.filter((u) => typeof u === "string");
       }
+    } catch {
+      photoUrls = [];
     }
+  }
+}
+
 
     const toEmail = import.meta.env.ESTIMATE_TO_EMAIL;
     const fromEmail = import.meta.env.RESEND_FROM_EMAIL;
@@ -156,19 +171,26 @@ export const POST: APIRoute = async ({ request }) => {
     `;
 
     await resend.emails.send({
-      from: fromEmail,
-      to: toEmail,
-      subject,
-      html: htmlBody,
-      replyTo: email || undefined, // ✅ correct key for Resend SDK
-    });
+  from: fromEmail,
+  to: toEmail,
+  subject,
+  html: htmlBody,
+
+  // when PaintCraft hits Reply, it replies to the customer
+  replyTo: email || import.meta.env.REPLY_TO_EMAIL || toEmail,
+
+  // optional: if you want yourself copied on every lead:
+  bcc: import.meta.env.LEADS_BCC_EMAIL || undefined,
+});
+
 
     if (email) {
-      await resend.emails.send({
-        from: fromEmail,
-        to: email,
-        subject: "We received your estimate request",
-        html: `
+     await resend.emails.send({
+  from: fromEmail,
+  to: email,
+  subject: "We received your estimate request",
+  replyTo: import.meta.env.REPLY_TO_EMAIL || toEmail,
+  html: `
           <div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:24px;color:#111827;">
             <h2 style="font-size:20px;margin-bottom:8px;">Thanks for reaching out to PaintCraft MN.</h2>
             <p style="font-size:14px;color:#374151;margin-bottom:16px;">

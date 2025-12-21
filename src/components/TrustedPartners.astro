@@ -41,7 +41,7 @@ const {
 ---
 
 <section
-  class={`relative bg-gradient-to-b from-white to-neutral-50 pt-10 md:pt-14 pb-16 md:pb-24 ${className}`}
+  class={`relative overflow-x-hidden bg-gradient-to-b from-white to-neutral-50 pt-10 md:pt-14 pb-16 md:pb-24 ${className}`}
 >
   <div class="mx-auto max-w-7xl px-6">
     {/* Header */}
@@ -145,68 +145,66 @@ const {
     </div>
   </div>
 
- <script is:inline>
-  document.documentElement.classList.add("js");
+<script is:inline>
+  (() => {
+    document.documentElement.classList.add("js");
 
-  const grid = document.getElementById("partners-grid");
-  let cards = Array.from(document.querySelectorAll("[data-partner-card]"));
+    const grid = document.getElementById("partners-grid");
+    if (!grid) return;
 
-  // Sort right → left (2,1,0)
-  cards = cards.sort((a, b) => Number(b.dataset.col) - Number(a.dataset.col));
+    // ✅ Only grab cards inside THIS grid (prevents collisions with other sections)
+    let cards = Array.from(grid.querySelectorAll("[data-partner-card]"));
 
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!cards.length) return;
 
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    // Right → Left (2,1,0) like you wanted originally
+    cards = cards.sort((a, b) => Number(b.dataset.col || 0) - Number(a.dataset.col || 0));
 
-  const animateIn = async (el) => {
-    // If reduced motion, just show it
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) {
-      el.classList.add("is-in");
+      cards.forEach((c) => c.classList.add("is-in"));
       return;
     }
 
-    // Force layout so start state is applied
-    el.getBoundingClientRect();
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-    // Prefer WAAPI (super reliable)
-    if (el.animate) {
-      // Start from the hidden state (matches your CSS)
-      const anim = el.animate(
-        [
-          { opacity: 0, transform: "translateX(-120%)" },
-          { opacity: 1, transform: "translateX(0)" },
-        ],
-        {
-          duration: 650,
-          easing: "cubic-bezier(.2,.8,.2,1)",
-          fill: "forwards",
-        }
-      );
+    const animateIn = async (el) => {
+      // Force initial state to apply
+      el.getBoundingClientRect();
 
-      // Ensure final class state matches after animation
-      await anim.finished.catch(() => {});
+      // WAAPI (reliable) if available
+      if (el.animate) {
+        const anim = el.animate(
+          [
+            { opacity: 0, transform: "translateX(-120%)" },
+            { opacity: 1, transform: "translateX(0)" },
+          ],
+          {
+            duration: 650,
+            easing: "cubic-bezier(.2,.8,.2,1)",
+            fill: "forwards",
+          }
+        );
+
+        await anim.finished.catch(() => {});
+        el.classList.add("is-in");
+        el.style.opacity = "";
+        el.style.transform = "";
+        return;
+      }
+
+      // Fallback
       el.classList.add("is-in");
-      // Clear inline animation styling WAAPI may apply visually
-      el.style.opacity = "";
-      el.style.transform = "";
-      return;
-    }
+      await sleep(700);
+    };
 
-    // Fallback: class + timeout (never blocks sequence)
-    el.classList.add("is-in");
-    await sleep(700);
-  };
+    const runSequence = async () => {
+      for (const card of cards) {
+        await animateIn(card);
+        await sleep(90);
+      }
+    };
 
-  const runSequence = async () => {
-    for (const card of cards) {
-      await animateIn(card);
-      await sleep(80); // tiny beat between cards (optional, feels premium)
-    }
-  };
-
-  if (!grid || !cards.length || prefersReduced) {
-    cards.forEach((c) => c.classList.add("is-in"));
-  } else {
     let hasRun = false;
 
     const io = new IntersectionObserver(
@@ -221,9 +219,13 @@ const {
       { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
     );
 
-    io.observe(grid);
-  }
+    // ✅ Key fix: wait one frame so html.js + CSS hidden state is “real” first
+    requestAnimationFrame(() => {
+      io.observe(grid);
+    });
+  })();
 </script>
+
 
 </section>
 

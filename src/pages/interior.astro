@@ -13,7 +13,7 @@ import InteriorBlurb from "../components/interior/InteriorBlurb.astro";
 import InteriorProcessBubbleClick from "../components/interior/InteriorProcessBubbleClick.astro";
 
 const interiorService = [
-  { id: "walls",    title: "Walls & Ceilings",        img: "/walls_serviceTile.png" },
+  { id: "walls",    title: "Walls & Ceilings",        img: "/walls-and-ceiling-service.jpeg" },
   { id: "trim",     title: "Trim & Molding",          img: "/trim_serviceTile.png" },
   { id: "cabinets", title: "Cabinets",                img: "/cabinet_serviceTile.png" },
   { id: "staining", title: "Staining",                img: "/interior-stains-service.jpeg" },
@@ -31,7 +31,7 @@ const interiorService = [
   <InteriorBlurb />
 
   <!-- Services section -->
-  <section class="-mt-10">
+  <section class="-mt-10 md:-mt-16">
     <InteriorServicesBubbleFlow
       heading="Interior Services"
       services={interiorService}
@@ -42,8 +42,8 @@ const interiorService = [
   <InteriorProcessBubbleClick
     heading="A Fresh Interior From Start To Finish"
     stages={[
-      { id: "prep",  title: "Prep & Protect",  desc: "We carefully protect your furniture and floors, then prep all surfaces for perfect paint adhesion.", img: "/prep-two.png" },
-      { id: "paint", title: "Paint & Perfect", desc: "Expert application with premium paints for smooth, even coverage and flawless results.", img: "/perfect-two.png" },
+      { id: "prep",  title: "Prep & Protect",  desc: "We carefully protect your furniture and floors, then prep all surfaces for perfect paint adhesion.", img: "/prep-and-protect-interior.png" },
+      { id: "paint", title: "Paint & Perfect", desc: "Expert application with premium paints for smooth, even coverage and flawless results.", img: "/paint-and-perfect.png" },
       { id: "clean", title: "Clean & Inspect", desc: "Thorough clean-up and a detailed walkthrough to make sure you love every detail.", img: "/inspect-two.png" },
     ]}
   />

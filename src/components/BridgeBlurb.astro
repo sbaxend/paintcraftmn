@@ -1,89 +1,107 @@
----
-const {
-  text = "Transforming Spaces Into Experiences",
-  maxWidth = "max-w-4xl",
-} = Astro.props;
----
+<section
+  id="meta-bridge"
+  class="relative bg-gradient-to-b from-white to-neutral-50 py-8 md:py-12 text-center overflow-hidden"
+>
+  <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.04)_0%,transparent_70%)]"></div>
 
-<div class="relative z-10 mb-32 md:mb-48">
-  <div
-    id="hero-quote"
-    class={`hero-quote mx-auto ${maxWidth} -mt-12 md:-mt-16 lg:-mt-20 rounded-3xl bg-white/95 px-8 py-24 md:px-16 md:py-40 shadow-[0_20px_50px_rgba(0,0,0,0.1)]`}
-  >
-    <p class="text-center text-2xl md:text-4xl leading-snug font-light text-neutral-800">
-      {text}
+  <div class="relative z-10 px-6">
+    <p
+      class="mx-auto max-w-5xl text-[clamp(2.2rem,4.2vw,3.25rem)] leading-[1.1] font-sans font-semibold tracking-tight text-neutral-800 reveal-up mt-0 mb-1"
+    >
+      Transforming Spaces Into Experiences
     </p>
   </div>
 
-<script is:inline>
-  {String.raw`
-    (() => {
-      document.documentElement.classList.add("js");
+  <script is:inline>
+    {String.raw`
+      (() => {
+        const section = document.getElementById("meta-bridge");
+        if (!section) return;
 
-      const el = document.getElementById("hero-quote");
-      if (!el) return;
+        const el = section.querySelector(".reveal-up");
+        if (!el) return;
 
-      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (prefersReduced) {
-        el.classList.add("is-in");
-        return;
+        const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (prefersReduced) return; // leave visible
+
+        let hasRun = false;
+
+        const reveal = () => {
+          if (hasRun) return;
+          hasRun = true;
+          el.classList.add("is-in");
+          el.classList.remove("pre");
+        };
+
+        // If we land mid-page (back button / anchor), don't hide it — just keep it visible.
+        const rect = el.getBoundingClientRect();
+        const vh = window.innerHeight || 0;
+        const alreadyNearMiddle = rect.top < vh * 0.75 && rect.bottom > vh * 0.25;
+        if (alreadyNearMiddle) return;
+
+        // ✅ Only hide AFTER JS is running (prevents blank/white gaps)
+        el.classList.add("pre");
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((e) => e.isIntersecting)) {
+              reveal();
+              io.disconnect();
+            }
+          },
+          {
+            // A middle-ish band trigger
+            root: null,
+            rootMargin: "-30% 0px -30% 0px",
+            threshold: 0.01,
+          }
+        );
+
+        io.observe(el);
+
+        // ✅ Safety net: never leave hidden
+        setTimeout(() => {
+          if (!hasRun) reveal();
+        }, 2500);
+      })();
+    `}
+  </script>
+
+  <style>
+    /* Default visible */
+    .reveal-up {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+
+    /* Hidden pre-state only when JS adds it */
+    .reveal-up.pre {
+      opacity: 0;
+      transform: translateY(18px);
+      filter: blur(6px);
+      will-change: opacity, transform, filter;
+    }
+
+    /* Reveal animation */
+    .reveal-up.is-in {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+      transition:
+        opacity 650ms ease,
+        transform 750ms cubic-bezier(.2,.8,.2,1),
+        filter 750ms ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal-up.pre,
+      .reveal-up.is-in {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+        transition: none !important;
       }
-
-      // If user is already scrolled (back nav / anchor), animate immediately.
-      if (window.scrollY > 6) {
-        el.classList.add("is-in");
-        return;
-      }
-
-      let fired = false;
-
-      const fire = () => {
-        if (fired) return;
-        fired = true;
-        el.classList.add("is-in");
-
-        window.removeEventListener("scroll", onScroll, opts);
-        window.removeEventListener("wheel", onScroll, opts);
-        window.removeEventListener("touchmove", onScroll, opts);
-        window.removeEventListener("keydown", onKeydown);
-      };
-
-      const opts = { passive: true };
-      const onScroll = () => fire();
-
-      const onKeydown = (e) => {
-        const keys = ["ArrowDown", "PageDown", " ", "End"];
-        if (keys.includes(e.key)) fire();
-      };
-
-      window.addEventListener("scroll", onScroll, opts);
-      window.addEventListener("wheel", onScroll, opts);
-      window.addEventListener("touchmove", onScroll, opts);
-      window.addEventListener("keydown", onKeydown);
-    })();
-  `}
-</script>
-
-</div>
-
-<style>
-  /* Visible by default if JS fails */
-  .hero-quote {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* When JS is enabled, start subtly lowered + transparent */
-  html.js .hero-quote {
-    opacity: 0;
-    transform: translateY(18px);
-    will-change: opacity, transform;
-  }
-
-  /* Fade up on first scroll */
-  html.js .hero-quote.is-in {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 520ms ease, transform 620ms cubic-bezier(.2,.8,.2,1);
-  }
-</style>
+    }
+  </style>
+</section>

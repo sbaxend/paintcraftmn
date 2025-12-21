@@ -18,13 +18,13 @@ const {
       id: "prep",
       title: "Prep & Protect",
       desc: "We carefully protect your furniture and floors, then prep all surfaces for perfect paint adhesion.",
-      img: "/prep-two.png",
+      img: "/prep-and-protect-interior.png",
     },
     {
       id: "paint",
       title: "Paint & Perfect",
       desc: "Expert application with premium paints for smooth, even coverage and flawless results.",
-      img: "/perfect.png",
+      img: "/paint-and-perfect.png",
     },
     {
       id: "clean",
@@ -41,7 +41,7 @@ const stageIds = stages.map((s) => s.id);
 
 <section id={sectionId} class="relative bg-white">
   {/* Shared heading */}
-  <div class="mx-auto max-w-7xl px-6 pt-14 pb-6 text-center">
+  <div class="mx-auto max-w-7xl px-6 pt-6 md:pt-8 pb-6 text-center">
     <h2 class="text-[clamp(1.9rem,4.5vw,3rem)] font-semibold tracking-tight text-neutral-900 leading-tight">
       {heading}
     </h2>
@@ -102,7 +102,7 @@ const stageIds = stages.map((s) => s.id);
 
   {/* ========== DESKTOP VERSION (sticky scrollytelling) ========== */}
   <div class="hidden md:block">
-    <div data-wrapper class="relative h-[340vh]">
+    <div data-wrapper class="relative h-[220vh]">
       {/* Sticky viewport */}
       <div class="sticky top-0 h-screen overflow-hidden">
         {/* Bubble */}

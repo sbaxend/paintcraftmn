@@ -76,7 +76,7 @@ export const interiorServiceThemes: Record<
       onPrimary: "#ffffff",
     },
     
-    photos: ["/walls_serviceTile.png"],
+    photos: ["/walls-and-ceiling-service.jpeg"],
     process: [
       "Protect floors and furniture with plastic and drop cloths.",
       "Repair nail holes, cracks, and minor wall imperfections.",

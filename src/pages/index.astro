@@ -8,6 +8,7 @@ import Reviews from "../components/Reviews.astro";
 import TrustedPartners from "../components/TrustedPartners.astro";
 import ServiceGridSlide from "../components/ServiceGridSlide.astro";
 import ReviewsTwo from "../components/ReviewsTwo.astro";
+import BridgeBlurb from "../components/BridgeBlurb.astro";
 ---
 
 <Base title="PaintCraft MN | Professional Painting Services">
@@ -15,7 +16,7 @@ import ReviewsTwo from "../components/ReviewsTwo.astro";
 
   <!-- Clean white spacer section with centered text -->
   <!-- Clean white spacer section with Meta-style headline + scroll-in animation -->
-<section
+<!-- <section
   id="meta-bridge"
   class="relative bg-gradient-to-b from-white to-neutral-50 py-8 md:py-12 text-center overflow-hidden"
 >
@@ -27,17 +28,17 @@ import ReviewsTwo from "../components/ReviewsTwo.astro";
   >
     Transforming Spaces Into Experiences
   </p>
-</div>
-
+</div> -->
+<BridgeBlurb />
 
   
 </section>
 
 
   <!-- Normal positioning for the services grid -->
-  <div class="relative z-10">
-    <ServiceGridSlide bleed />
-  </div>
+ <div class="relative z-10">
+  <ServiceGridSlide bleed />
+</div>
 
   <CoveredBand />
   <!-- <WhyChooseVideo client:load /> -->
