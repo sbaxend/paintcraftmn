@@ -181,12 +181,16 @@ const items = services.map((s) => ({
 
   const AUTO_MS = 5000;
   const DURATION_MS = 700; // must match duration-700
+  const EASING = "ease-out"; // must match ease-out
 
   let autoTimer = null;
   let pausedByUser = false;
   let isAnimating = false;
   let snapFallbackTimer = null;
   let lastDir = 1;
+
+  // ✅ one-time flag for "we just snapped clone -> real"
+  let skipAnimOnce = false;
 
   // -------------------------------
   // CLONE SLIDES (INFINITE LOOP)
@@ -216,6 +220,10 @@ const items = services.map((s) => ({
     track.style.transform = `translateX(-${index * 100}%)`;
   };
 
+  const restoreTransition = () => {
+    track.style.transition = `transform ${DURATION_MS}ms ${EASING}`;
+  };
+
   const getRealIndex = (idx) => {
     if (idx === 0) return baseCount - 1;
     if (idx === baseCount + 1) return 0;
@@ -227,52 +235,75 @@ const items = services.map((s) => ({
 
     slides.forEach((slide, i) => {
       const active = i === index;
+
       slide.classList.toggle("is-active", active);
-      if (active) slide.dataset.dir = dir === 1 ? "next" : "prev";
-      else delete slide.dataset.dir;
+
+      if (active) {
+        slide.dataset.dir = dir === 1 ? "next" : "prev";
+
+        // ✅ If we just snapped, block animation on this active slide
+        if (skipAnimOnce) slide.setAttribute("data-skip-anim", "true");
+        else slide.removeAttribute("data-skip-anim");
+      } else {
+        delete slide.dataset.dir;
+        slide.removeAttribute("data-skip-anim");
+      }
     });
+
+    // ✅ consume the one-time snap flag
+    skipAnimOnce = false;
 
     dots.forEach((dot, i) =>
       dot.setAttribute("aria-current", String(i === realIndex))
     );
   };
 
- const snapIfNeeded = () => {
-  // last real -> firstClone (index === baseCount + 1)
-  if (index === baseCount + 1) {
-    track.dataset.snapping = "true";   // disable content animations during snap
-    track.style.transition = "none";
-    index = 1;                         // snap to real first
-    setTransform();
-    requestAnimationFrame(() => {
-      track.style.transition = "";
-      delete track.dataset.snapping;
-      isAnimating = false;
-    });
-    // keep direction consistent (still "next")
-    setActive(1);
-    return true;
-  }
+  // -------------------------------
+  // SNAP (HIDDEN) — removes "rewind"
+  // -------------------------------
+  const snapIfNeeded = () => {
+    const lock = () => track.setAttribute("data-snapping", "true");
+    const unlock = () => track.removeAttribute("data-snapping");
 
-  // first real -> lastClone (index === 0)
-  if (index === 0) {
-    track.dataset.snapping = "true";
-    track.style.transition = "none";
-    index = baseCount;                  // snap to real last
-    setTransform();
-    requestAnimationFrame(() => {
-      track.style.transition = "";
-      delete track.dataset.snapping;
-      isAnimating = false;
-    });
-    setActive(-1);
-    return true;
-  }
+    const snapTo = (newIndex, dir) => {
+      lock();
 
-  return false;
-};
+      // Kill transition and jump instantly
+      track.style.transition = "none";
+      index = newIndex;
+      setTransform();
 
+      // Force layout flush so jump commits without transition
+      track.getBoundingClientRect();
 
+      // ✅ IMPORTANT: mark "skip content anim" BEFORE setActive runs
+      skipAnimOnce = true;
+      setActive(dir);
+
+      // Keep snapping locked across 2 frames so browsers never show the jump
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          restoreTransition();
+          unlock();
+          isAnimating = false;
+        });
+      });
+    };
+
+    // last real -> firstClone (index === baseCount + 1)
+    if (index === baseCount + 1) {
+      snapTo(1, 1); // snap to real first, direction "next"
+      return true;
+    }
+
+    // first real -> lastClone (index === 0)
+    if (index === 0) {
+      snapTo(baseCount, -1); // snap to real last, direction "prev"
+      return true;
+    }
+
+    return false;
+  };
 
   // -------------------------------
   // INIT
@@ -281,11 +312,11 @@ const items = services.map((s) => ({
   setTransform();
   setActive(1);
   requestAnimationFrame(() => {
-    track.style.transition = "";
+    restoreTransition();
   });
 
   // -------------------------------
-  // STEP LOGIC (CORE FIX)
+  // STEP LOGIC
   // -------------------------------
   const step = (delta) => {
     if (isAnimating) return;
@@ -301,7 +332,7 @@ const items = services.map((s) => ({
     // Fallback if transitionend never fires
     snapFallbackTimer = setTimeout(() => {
       if (!snapIfNeeded()) isAnimating = false;
-    }, DURATION_MS + 80);
+    }, DURATION_MS + 120);
   };
 
   track.addEventListener("transitionend", (e) => {
@@ -346,7 +377,7 @@ const items = services.map((s) => ({
 
       snapFallbackTimer = setTimeout(() => {
         isAnimating = false;
-      }, DURATION_MS + 80);
+      }, DURATION_MS + 120);
 
       startAuto();
     });
@@ -376,8 +407,9 @@ const items = services.map((s) => ({
     isAnimating = false;
     track.style.transition = "none";
     setTransform();
+    track.getBoundingClientRect();
     requestAnimationFrame(() => {
-      track.style.transition = "";
+      restoreTransition();
       setActive(lastDir);
     });
   };
@@ -410,93 +442,81 @@ const items = services.map((s) => ({
 </script>
 
 
-
-
 <style>
-  #svc-track > article {
-    width: 100%;
-  }
+  /* Ensure slides fill width */
+  #svc-track > article { width: 100%; }
 
+  /* Initial state based on direction */
   .slide[data-dir="next"] .slide-content,
   .slide[data-dir="next"] .slide-content .stagger {
     opacity: 0;
     transform: translateX(100px);
   }
+
   .slide[data-dir="prev"] .slide-content,
   .slide[data-dir="prev"] .slide-content .stagger {
     opacity: 0;
     transform: translateX(-100px);
   }
-  /* When snapping (clone -> real), don't animate content at all */
-  #svc-track[data-snapping="true"] .slide-content,
-  #svc-track[data-snapping="true"] .slide-content .stagger {
+
+  /* ✅ During snapping (clone -> real), disable content animation so snap is invisible */
+  #svc-track[data-snapping] .slide-content,
+  #svc-track[data-snapping] .slide-content .stagger {
     animation: none !important;
     transform: none !important;
     opacity: 1 !important;
   }
 
+  /* ✅ If we skip anim, FORCE the content to be visible (otherwise it stays at opacity:0) */
+  .slide[data-skip-anim] .slide-content,
+  .slide[data-skip-anim] .slide-content .stagger {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
 
   /* active: slide in from the direction we’re moving */
-  .slide.is-active[data-dir="next"] .slide-content {
+  .slide.is-active[data-dir="next"]:not([data-skip-anim]) .slide-content {
     animation: slideInFromRight 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
-  .slide.is-active[data-dir="prev"] .slide-content {
+  .slide.is-active[data-dir="prev"]:not([data-skip-anim]) .slide-content {
     animation: slideInFromLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
-  .slide.is-active[data-dir="next"] .slide-content .stagger:nth-child(1),
-  .slide.is-active[data-dir="next"] .slide-content .stagger:nth-child(2) {
+  .slide.is-active[data-dir="next"]:not([data-skip-anim]) .stagger {
     animation: staggerFromRight 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
-  .slide.is-active[data-dir="prev"] .slide-content .stagger:nth-child(1),
-  .slide.is-active[data-dir="prev"] .slide-content .stagger:nth-child(2) {
+  .slide.is-active[data-dir="prev"]:not([data-skip-anim]) .stagger {
     animation: staggerFromLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
+  /* Simple delays that won’t break if a subtitle is missing */
+  .slide.is-active:not([data-skip-anim]) .stagger:nth-of-type(1) { animation-delay: 0.12s; }
+  .slide.is-active:not([data-skip-anim]) .stagger:nth-of-type(2) { animation-delay: 0.22s; }
+  .slide.is-active:not([data-skip-anim]) .stagger:nth-of-type(3) { animation-delay: 0.32s; }
+  .slide.is-active:not([data-skip-anim]) .stagger:nth-of-type(4) { animation-delay: 0.42s; }
+
   @keyframes slideInFromRight {
-    from {
-      opacity: 0;
-      transform: translateX(100px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(100px); }
+    to   { opacity: 1; transform: translateX(0); }
   }
 
   @keyframes slideInFromLeft {
-    from {
-      opacity: 0;
-      transform: translateX(-100px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-100px); }
+    to   { opacity: 1; transform: translateX(0); }
   }
 
   @keyframes staggerFromRight {
-    from {
-      opacity: 0;
-      transform: translateX(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(22px); }
+    to   { opacity: 1; transform: translateX(0); }
   }
 
   @keyframes staggerFromLeft {
-    from {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-22px); }
+    to   { opacity: 1; transform: translateX(0); }
   }
 
   @media (prefers-reduced-motion: reduce) {

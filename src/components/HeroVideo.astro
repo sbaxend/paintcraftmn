@@ -1,64 +1,90 @@
 ---
 const {
-  logoSrc = "/paintcraft_logo.webp",
   videoSrc = "/desktop-hero-video.mp4",
   mobileVideoSrc = "/mobile-hero-home.mp4",
   poster  = "/hero-poster.jpg",
   title   = "Fall in love with your home, again",
-  subtitle = "Expert interior & exterior painting services across Minnesota. Quality craftsmanship. Lasting beauty.",
   cta = { label: "Get a Free Estimate", href: "/contact" }
 } = Astro.props;
 ---
 
 <section class="relative h-[85vh] min-h-[700px] overflow-hidden">
-  <!-- Video: Mobile -->
   <video
-    class="absolute inset-0 h-full w-full object-cover md:hidden"
-    src={mobileVideoSrc}
-    poster={poster}
-    autoplay
-    muted
-    loop
-    playsinline
-    preload="metadata"
-  ></video>
+  id="heroVideo"
+  class="absolute inset-0 h-full w-full object-cover"
+  poster={poster}
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="auto"
+  data-desktop-src={videoSrc}
+  data-mobile-src={mobileVideoSrc}
+>
+  <source src={videoSrc} type="video/mp4" />
+</video>
 
-  <!-- Video: Desktop -->
-  <video
-    class="absolute inset-0 hidden h-full w-full object-cover md:block"
-    src={videoSrc}
-    poster={poster}
-    autoplay
-    muted
-    loop
-    playsinline
-    preload="metadata"
-  ></video>
 
-  <!-- Dark overlay for readability -->
   <div class="absolute inset-0 bg-black/45"></div>
 
-  <!-- Centered content -->
   <div class="relative z-10 mx-auto flex h-full max-w-7xl items-center justify-center px-4 text-center text-white">
     <div class="max-w-3xl">
       <h1 class="font-sans font-semibold animate-fade-in-up text-4xl tracking-tight sm:text-5xl lg:text-6xl">
         {title}
       </h1>
 
-      <p class="mt-4 animate-fade-in-up text-base md:text-lg text-white/90">
-        {/* {subtitle} */}
-      </p>
-
       {cta?.href && (
         <a
           href={cta.href}
-          class="mt-8 inline-flex rounded-full border-2 border-[#C48356]/80 
-                bg-[#C48356]/10 px-6 py-3 text-sm font-semibold text-white 
-                transition-all duration-300 hover:bg-[#C48356] shadow-lg"
+          class="mt-8 inline-flex rounded-full border-2 border-[#C48356]/80
+                 bg-[#C48356]/10 px-6 py-3 text-sm font-semibold text-white
+                 transition-all duration-300 hover:bg-[#C48356] shadow-lg"
         >
           {cta.label}
         </a>
       )}
     </div>
   </div>
+
+  <script is:inline>
+(() => {
+  const v = document.getElementById("heroVideo");
+  if (!v) return;
+
+  const desktopSrc = v.dataset.desktopSrc;
+  const mobileSrc  = v.dataset.mobileSrc;
+
+  const isMobile = window.matchMedia("(max-width: 767px)").matches;
+  const desired = isMobile ? mobileSrc : desktopSrc;
+
+  const source = v.querySelector("source");
+  if (source && source.src !== desired) {
+    v.pause();
+    source.src = desired;
+    v.load();
+  }
+
+  const tryPlay = async () => {
+    try { await v.play(); } catch (_) {}
+  };
+
+  v.addEventListener("canplay", tryPlay, { once: true });
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) tryPlay();
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0]?.isIntersecting) tryPlay();
+  }, { threshold: 0.25 });
+
+  observer.observe(v);
+
+  v.addEventListener("stalled", tryPlay);
+  v.addEventListener("error", tryPlay);
+
+  tryPlay();
+})();
+</script>
+
 </section>
