@@ -180,125 +180,180 @@ const items = services.map((s) => ({
   if (!wrap || !track) return;
 
   const AUTO_MS = 5000;
-  const DURATION_MS = 700; // must match duration-700
-  const EASING = "ease-out"; // must match ease-out
+  const DURATION_MS = 720;
+  const EASING = "cubic-bezier(.22,.61,.36,1)";
+  const SWIPE_PX = 50;
 
   let autoTimer = null;
   let pausedByUser = false;
   let isAnimating = false;
-  let snapFallbackTimer = null;
+  let index = 1; // internal index (with clones)
   let lastDir = 1;
 
-  // ✅ one-time flag for "we just snapped clone -> real"
-  let skipAnimOnce = false;
+  // real slide index we last animated (0..baseCount-1)
+  let currentReal = -1;
+
+  // ✅ hard suppression for wrap-around (clone <-> real snap)
+  let wrapSuppress = false;
 
   // -------------------------------
-  // CLONE SLIDES (INFINITE LOOP)
+  // CLONE SETUP
   // -------------------------------
   const baseSlides = Array.from(track.children);
   const baseCount = baseSlides.length;
   if (!baseCount) return;
 
   const firstClone = baseSlides[0].cloneNode(true);
-  const lastClone  = baseSlides[baseCount - 1].cloneNode(true);
+  const lastClone = baseSlides[baseCount - 1].cloneNode(true);
 
   track.insertBefore(lastClone, baseSlides[0]);
   track.appendChild(firstClone);
 
   const slides = Array.from(track.children);
-  let index = 1; // internal index (1..baseCount are real)
+  slides.forEach((s) => (s.style.width = "100%"));
 
   // -------------------------------
-  // HELPERS
+  // TRANSITION CONTROL
   // -------------------------------
-  const clearFallback = () => {
-    if (snapFallbackTimer) clearTimeout(snapFallbackTimer);
-    snapFallbackTimer = null;
+  const setTransition = (on) => {
+    track.style.transition = on ? `transform ${DURATION_MS}ms ${EASING}` : "none";
   };
 
   const setTransform = () => {
-    track.style.transform = `translateX(-${index * 100}%)`;
-  };
-
-  const restoreTransition = () => {
-    track.style.transition = `transform ${DURATION_MS}ms ${EASING}`;
+    track.style.transform = `translate3d(-${index * 100}%,0,0)`;
   };
 
   const getRealIndex = (idx) => {
-    if (idx === 0) return baseCount - 1;
-    if (idx === baseCount + 1) return 0;
-    return idx - 1;
+    if (idx === 0) return baseCount - 1;        // lastClone
+    if (idx === baseCount + 1) return 0;        // firstClone
+    return idx - 1;                             // real slides
   };
 
-  const setActive = (dir) => {
-    const realIndex = getRealIndex(index);
+  const setDots = (realIdx) => {
+    dots.forEach((dot, i) => dot.setAttribute("aria-current", String(i === realIdx)));
+  };
 
+  const setActiveClass = (idx, dir) => {
     slides.forEach((slide, i) => {
-      const active = i === index;
-
+      const active = i === idx;
       slide.classList.toggle("is-active", active);
+      if (active) slide.dataset.dir = dir === 1 ? "next" : "prev";
+      else delete slide.dataset.dir;
+    });
+  };
 
-      if (active) {
-        slide.dataset.dir = dir === 1 ? "next" : "prev";
+  // -------------------------------
+  // CONTENT ANIMATION (JS ONLY)
+  // -------------------------------
+  const killAnimations = (root) => {
+    if (!root) return;
+    if (root.getAnimations) root.getAnimations().forEach((a) => a.cancel());
+  };
 
-        // ✅ If we just snapped, block animation on this active slide
-        if (skipAnimOnce) slide.setAttribute("data-skip-anim", "true");
-        else slide.removeAttribute("data-skip-anim");
-      } else {
-        delete slide.dataset.dir;
-        slide.removeAttribute("data-skip-anim");
-      }
+  const forceVisible = (el) => {
+    if (!el) return;
+    el.style.opacity = "1";
+    el.style.transform = "translate3d(0,0,0)";
+  };
+
+  const animateContent = (realIdx, dir) => {
+    // ✅ never animate during wrap snap
+    if (wrapSuppress) return;
+
+    // ✅ prevent double-run on same real slide
+    if (realIdx === currentReal) return;
+    currentReal = realIdx;
+
+    const activeSlide = slides[index];
+    if (!activeSlide) return;
+
+    const content = activeSlide.querySelector(".slide-content");
+    const items = Array.from(activeSlide.querySelectorAll(".slide-content .stagger"));
+
+    if (!content) return;
+
+    // Cancel any previous WAAPI and reset hard
+    killAnimations(content);
+    items.forEach(killAnimations);
+
+    // Ensure everything starts clean (important!)
+    [content, ...items].forEach((el) => {
+      if (!el) return;
+      el.style.opacity = "";
+      el.style.transform = "";
     });
 
-    // ✅ consume the one-time snap flag
-    skipAnimOnce = false;
+    const fromX = dir === 1 ? 44 : -44;
 
-    dots.forEach((dot, i) =>
-      dot.setAttribute("aria-current", String(i === realIndex))
+    content.animate(
+      [
+        { opacity: 0, transform: `translate3d(${fromX}px,0,0)` },
+        { opacity: 1, transform: "translate3d(0,0,0)" },
+      ],
+      { duration: 520, easing: EASING, fill: "both" }
     );
+
+    items.forEach((el, i) => {
+      el.animate(
+        [
+          { opacity: 0, transform: `translate3d(${fromX * 0.6}px,0,0)` },
+          { opacity: 1, transform: "translate3d(0,0,0)" },
+        ],
+        { duration: 520, delay: 110 + i * 95, easing: EASING, fill: "both" }
+      );
+    });
   };
 
   // -------------------------------
-  // SNAP (HIDDEN) — removes "rewind"
+  // WRAP SNAP (CLONE -> REAL)
   // -------------------------------
   const snapIfNeeded = () => {
-    const lock = () => track.setAttribute("data-snapping", "true");
-    const unlock = () => track.removeAttribute("data-snapping");
-
-    const snapTo = (newIndex, dir) => {
-      lock();
-
-      // Kill transition and jump instantly
-      track.style.transition = "none";
-      index = newIndex;
-      setTransform();
-
-      // Force layout flush so jump commits without transition
-      track.getBoundingClientRect();
-
-      // ✅ IMPORTANT: mark "skip content anim" BEFORE setActive runs
-      skipAnimOnce = true;
-      setActive(dir);
-
-      // Keep snapping locked across 2 frames so browsers never show the jump
+    // ✅ IMPORTANT: during snap we suppress content animation for a couple frames
+    const suppressFor2Frames = () => {
+      wrapSuppress = true;
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          restoreTransition();
-          unlock();
-          isAnimating = false;
+          wrapSuppress = false;
         });
       });
     };
 
-    // last real -> firstClone (index === baseCount + 1)
     if (index === baseCount + 1) {
-      snapTo(1, 1); // snap to real first, direction "next"
+      // landed on firstClone -> snap to real first (1)
+      suppressFor2Frames();
+
+      // update "current real" so it won't animate again
+      currentReal = 0;
+
+      setTransition(false);
+      index = 1;
+      setTransform();
+      track.getBoundingClientRect();
+      setTransition(true);
+
+      setActiveClass(index, 1);
+      setDots(0);
+
+      isAnimating = false;
       return true;
     }
 
-    // first real -> lastClone (index === 0)
     if (index === 0) {
-      snapTo(baseCount, -1); // snap to real last, direction "prev"
+      // landed on lastClone -> snap to real last (baseCount)
+      suppressFor2Frames();
+
+      currentReal = baseCount - 1;
+
+      setTransition(false);
+      index = baseCount;
+      setTransform();
+      track.getBoundingClientRect();
+      setTransition(true);
+
+      setActiveClass(index, -1);
+      setDots(baseCount - 1);
+
+      isAnimating = false;
       return true;
     }
 
@@ -306,38 +361,59 @@ const items = services.map((s) => ({
   };
 
   // -------------------------------
-  // INIT
+  // CORE MOVE
   // -------------------------------
-  track.style.transition = "none";
-  setTransform();
-  setActive(1);
-  requestAnimationFrame(() => {
-    restoreTransition();
-  });
-
-  // -------------------------------
-  // STEP LOGIC
-  // -------------------------------
-  const step = (delta) => {
+  const go = (delta) => {
     if (isAnimating) return;
     isAnimating = true;
 
-    clearFallback();
     lastDir = delta >= 0 ? 1 : -1;
-
     index += delta;
-    setTransform();
-    setActive(lastDir);
 
-    // Fallback if transitionend never fires
-    snapFallbackTimer = setTimeout(() => {
+    setActiveClass(index, lastDir);
+    setTransform();
+
+    const real = getRealIndex(index);
+    setDots(real);
+
+    // ✅ If we're moving onto a clone, DO NOT animate content
+    // (clone->real will snap, and we suppress anyway)
+    const goingToClone = index === 0 || index === baseCount + 1;
+    if (!goingToClone) {
+      animateContent(real, lastDir);
+    } else {
+      // also lock currentReal so snap can’t trigger a second entrance
+      currentReal = real;
+    }
+
+    window.clearTimeout(go._t);
+    go._t = window.setTimeout(() => {
       if (!snapIfNeeded()) isAnimating = false;
-    }, DURATION_MS + 120);
+    }, DURATION_MS + 140);
   };
+
+  // -------------------------------
+  // INIT
+  // -------------------------------
+  setTransition(false);
+  setTransform();
+  track.getBoundingClientRect();
+  setTransition(true);
+
+  setActiveClass(index, 1);
+  setDots(0);
+
+  // ensure first slide is visible (no flicker)
+  const initSlide = slides[index];
+  forceVisible(initSlide?.querySelector(".slide-content"));
+  initSlide?.querySelectorAll(".slide-content .stagger").forEach(forceVisible);
+
+  // animate first slide once
+  animateContent(0, 1);
 
   track.addEventListener("transitionend", (e) => {
     if (e.propertyName && e.propertyName !== "transform") return;
-    clearFallback();
+    window.clearTimeout(go._t);
     if (!snapIfNeeded()) isAnimating = false;
   });
 
@@ -346,82 +422,48 @@ const items = services.map((s) => ({
   // -------------------------------
   const startAuto = () => {
     if (pausedByUser) return;
-    if (autoTimer) clearInterval(autoTimer);
-    autoTimer = setInterval(() => step(1), AUTO_MS);
+    stopAuto();
+    autoTimer = window.setInterval(() => go(1), AUTO_MS);
   };
 
   const stopAuto = () => {
-    if (autoTimer) clearInterval(autoTimer);
+    if (autoTimer) window.clearInterval(autoTimer);
     autoTimer = null;
   };
 
   // -------------------------------
   // CONTROLS
   // -------------------------------
-  prev?.addEventListener("click", () => { step(-1); startAuto(); });
-  next?.addEventListener("click", () => { step(1); startAuto(); });
+  prev?.addEventListener("click", () => { go(-1); startAuto(); });
+  next?.addEventListener("click", () => { go(1); startAuto(); });
 
-  dots.forEach((dot, realTarget) => {
+  dots.forEach((dot, targetReal) => {
     dot.addEventListener("click", () => {
-      const currentReal = getRealIndex(index);
-      if (realTarget === currentReal || isAnimating) return;
+      if (isAnimating) return;
+      const current = getRealIndex(index);
+      if (targetReal === current) return;
 
-      clearFallback();
-      isAnimating = true;
-
-      lastDir = realTarget > currentReal ? 1 : -1;
-      index = realTarget + 1;
-
-      setTransform();
-      setActive(lastDir);
-
-      snapFallbackTimer = setTimeout(() => {
-        isAnimating = false;
-      }, DURATION_MS + 120);
-
+      // jump to internal index (real 0 -> idx 1)
+      const targetInternal = targetReal + 1;
+      go(targetInternal - index);
       startAuto();
     });
   });
 
   // -------------------------------
-  // SWIPE (MOBILE)
+  // SWIPE
   // -------------------------------
   let x0 = 0;
-
   track.addEventListener("touchstart", (e) => {
     x0 = e.changedTouches[0].screenX;
   }, { passive: true });
 
   track.addEventListener("touchend", (e) => {
     const x1 = e.changedTouches[0].screenX;
-    if (x1 < x0 - 50) step(1);
-    if (x1 > x0 + 50) step(-1);
+    if (x1 < x0 - SWIPE_PX) go(1);
+    if (x1 > x0 + SWIPE_PX) go(-1);
     startAuto();
   }, { passive: true });
-
-  // -------------------------------
-  // VISIBILITY / BF CACHE FIX
-  // -------------------------------
-  const resync = () => {
-    clearFallback();
-    isAnimating = false;
-    track.style.transition = "none";
-    setTransform();
-    track.getBoundingClientRect();
-    requestAnimationFrame(() => {
-      restoreTransition();
-      setActive(lastDir);
-    });
-  };
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) stopAuto();
-    else { resync(); startAuto(); }
-  });
-
-  window.addEventListener("pageshow", (e) => {
-    if (e.persisted) { resync(); startAuto(); }
-  });
 
   // -------------------------------
   // HOVER + PLAY/PAUSE
@@ -437,94 +479,61 @@ const items = services.map((s) => ({
     pausedByUser ? stopAuto() : startAuto();
   });
 
+  // -------------------------------
+  // VISIBILITY / BF CACHE
+  // -------------------------------
+  const resync = () => {
+    stopAuto();
+    isAnimating = false;
+    setTransition(false);
+    setTransform();
+    track.getBoundingClientRect();
+    setTransition(true);
+
+    setActiveClass(index, lastDir);
+    setDots(getRealIndex(index));
+
+    startAuto();
+  };
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopAuto();
+    else resync();
+  });
+
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted) resync();
+  });
+
   startAuto();
 })();
 </script>
 
 
+
 <style>
-  /* Ensure slides fill width */
+  #svc-track { will-change: transform; transform: translate3d(0,0,0); backface-visibility: hidden; }
   #svc-track > article { width: 100%; }
 
-  /* Initial state based on direction */
+  /* IMPORTANT: remove/override any old CSS animation rules */
+  .slide.is-active .slide-content,
+  .slide.is-active .slide-content .stagger,
   .slide[data-dir="next"] .slide-content,
-  .slide[data-dir="next"] .slide-content .stagger {
-    opacity: 0;
-    transform: translateX(100px);
-  }
-
+  .slide[data-dir="next"] .slide-content .stagger,
   .slide[data-dir="prev"] .slide-content,
   .slide[data-dir="prev"] .slide-content .stagger {
-    opacity: 0;
-    transform: translateX(-100px);
-  }
-
-  /* ✅ During snapping (clone -> real), disable content animation so snap is invisible */
-  #svc-track[data-snapping] .slide-content,
-  #svc-track[data-snapping] .slide-content .stagger {
-    animation: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-  }
-
-  /* ✅ If we skip anim, FORCE the content to be visible (otherwise it stays at opacity:0) */
-  .slide[data-skip-anim] .slide-content,
-  .slide[data-skip-anim] .slide-content .stagger {
-    opacity: 1 !important;
-    transform: none !important;
     animation: none !important;
   }
 
-
-  /* active: slide in from the direction we’re moving */
-  .slide.is-active[data-dir="next"]:not([data-skip-anim]) .slide-content {
-    animation: slideInFromRight 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-  .slide.is-active[data-dir="prev"]:not([data-skip-anim]) .slide-content {
-    animation: slideInFromLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-  .slide.is-active[data-dir="next"]:not([data-skip-anim]) .stagger {
-    animation: staggerFromRight 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-  .slide.is-active[data-dir="prev"]:not([data-skip-anim]) .stagger {
-    animation: staggerFromLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-  /* Simple delays that won’t break if a subtitle is missing */
-  .slide.is-active:not([data-skip-anim]) .stagger:nth-of-type(1) { animation-delay: 0.12s; }
-  .slide.is-active:not([data-skip-anim]) .stagger:nth-of-type(2) { animation-delay: 0.22s; }
-  .slide.is-active:not([data-skip-anim]) .stagger:nth-of-type(3) { animation-delay: 0.32s; }
-  .slide.is-active:not([data-skip-anim]) .stagger:nth-of-type(4) { animation-delay: 0.42s; }
-
-  @keyframes slideInFromRight {
-    from { opacity: 0; transform: translateX(100px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-
-  @keyframes slideInFromLeft {
-    from { opacity: 0; transform: translateX(-100px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-
-  @keyframes staggerFromRight {
-    from { opacity: 0; transform: translateX(22px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-
-  @keyframes staggerFromLeft {
-    from { opacity: 0; transform: translateX(-22px); }
-    to   { opacity: 1; transform: translateX(0); }
+  /* Reduce Safari text shimmer */
+  .slide-content {
+    transform: translate3d(0,0,0);
+    -webkit-font-smoothing: antialiased;
+    will-change: transform, opacity;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .slide .slide-content,
-    .slide .slide-content .stagger {
-      animation: none !important;
-      opacity: 1 !important;
-      transform: none !important;
-    }
+    #svc-track { transition: none !important; }
   }
 </style>
+
