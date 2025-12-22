@@ -139,7 +139,6 @@ const items = services.map(s => ({
     </button>
   </div>
 </section>
-
 <script is:inline>
 (() => {
   const wrap = document.getElementById('svc-wrap');
@@ -148,176 +147,253 @@ const items = services.map(s => ({
   const next = document.getElementById('svc-next');
   const dots = Array.from(document.querySelectorAll('#svc-dots > button'));
   const autoBtn = document.getElementById('svc-auto');
-  
-  if (!track || !prev || !next || !autoBtn) return;
 
-  const slides = Array.from(track.children);
-  const count = slides.length;
+  if (!wrap || !track || !prev || !next || !autoBtn) return;
+
+  // IMPORTANT: default direction for first render
+  wrap.setAttribute("data-dir", "next");
+
+  let slides = Array.from(track.children);
+  const realCount = slides.length;
+  if (realCount <= 1) return;
+
   const AUTO_MS = 5000;
 
-  let index = 0;
   let autoTimer = null;
   let pausedByUser = false;
+  let isTouching = false;
 
-  const setActive = (i) => {
-    slides.forEach((slide, j) => slide.classList.toggle('is-active', j === i));
-    dots.forEach((d, j) => d.setAttribute('aria-current', String(j === i)));
+  // ---- Helpers for dots/active state (real slides only) ----
+  const setActive = (realIndex) => {
+    // Mark active slide (real slides only; clones ignored)
+    slides.forEach((slide, j) => {
+      slide.classList.toggle('is-active', j === realIndex + 1); // +1 because of leading clone
+    });
+
+    dots.forEach((d, j) => d.setAttribute('aria-current', String(j === realIndex)));
   };
 
-  const go = (i) => {
-    index = (i % count + count) % count;
-    track.style.transform = `translateX(-${index * 100}%)`;
-    setActive(index);
+  const toRealIndex = (trackIndex) => {
+    // track indexes: 0 = lastClone, 1..realCount = real slides, realCount+1 = firstClone
+    if (trackIndex === 0) return realCount - 1;
+    if (trackIndex === realCount + 1) return 0;
+    return trackIndex - 1;
+  };
+
+  const setTrack = (trackIndex, withTransition = true) => {
+    track.style.transition = withTransition ? "" : "none";
+    track.style.transform = `translateX(-${trackIndex * 100}%)`;
+  };
+
+  // ---- Build seamless loop: clone last + first ----
+  const firstClone = slides[0].cloneNode(true);
+  const lastClone = slides[realCount - 1].cloneNode(true);
+  firstClone.classList.add("is-clone");
+  lastClone.classList.add("is-clone");
+
+  track.appendChild(firstClone);
+  track.insertBefore(lastClone, slides[0]);
+
+  // Refresh slides to include clones
+  slides = Array.from(track.children);
+
+  // Start at first real slide (index 1)
+  let index = 1;
+
+  // Initial paint without transition
+  setTrack(index, false);
+  setActive(toRealIndex(index));
+
+  // ---- Navigation with direction (drives your text/button left-right anim via CSS) ----
+  const go = (nextTrackIndex, dir = "next") => {
+    wrap.setAttribute("data-dir", dir);
+    index = nextTrackIndex;
+    setTrack(index, true);
+    setActive(toRealIndex(index));
+  };
+
+  // When we land on a clone, jump instantly (no rewind look)
+  track.addEventListener("transitionend", () => {
+    const current = slides[index];
+    if (!current || !current.classList.contains("is-clone")) return;
+
+    if (index === 0) index = realCount;        // jumped onto lastClone -> go to last real
+    if (index === realCount + 1) index = 1;    // jumped onto firstClone -> go to first real
+
+    // Make the jump invisible
+    setTrack(index, false);
+    setActive(toRealIndex(index));
+  });
+
+  // ---- Autoplay ----
+  const stopAuto = () => {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
   };
 
   const startAuto = () => {
     if (pausedByUser) return;
     stopAuto();
-    autoTimer = setInterval(() => go(index + 1), AUTO_MS);
+    autoTimer = setInterval(() => {
+      go(index + 1, "next");
+    }, AUTO_MS);
   };
 
-  const stopAuto = () => {
-    if (autoTimer) clearInterval(autoTimer);
-  };
-
-  // Initialize
-  setActive(0);
   startAuto();
 
-  // Navigation
+  // ---- Arrow navigation ----
   prev.addEventListener('click', () => {
-    go(index - 1);
+    go(index - 1, "prev");
     startAuto();
   });
 
   next.addEventListener('click', () => {
-    go(index + 1);
+    go(index + 1, "next");
     startAuto();
   });
 
-  dots.forEach((d, i) => d.addEventListener('click', () => {
-    go(i);
-    startAuto();
-  }));
+  // ---- Dots navigation (smooth, continuous feel) ----
+  dots.forEach((d, i) => {
+    d.addEventListener('click', () => {
+      const currentReal = toRealIndex(index);
+      const dir = i >= currentReal ? "next" : "prev";
+      go(i + 1, dir); // i+1 maps real index -> track index
+      startAuto();
+    });
+  });
 
-  // Keyboard navigation
+  // ---- Keyboard navigation ----
   window.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') {
-      go(index + 1);
+      go(index + 1, "next");
       startAuto();
     }
     if (e.key === 'ArrowLeft') {
-      go(index - 1);
+      go(index - 1, "prev");
       startAuto();
     }
   });
 
-  // Touch swipe
+  // ---- Touch swipe ----
   let touchStartX = 0;
   let touchEndX = 0;
 
   track.addEventListener('touchstart', (e) => {
+    isTouching = true;
     touchStartX = e.changedTouches[0].screenX;
+    stopAuto();
   }, { passive: true });
 
   track.addEventListener('touchend', (e) => {
     touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
+    isTouching = false;
+
+    if (touchEndX < touchStartX - 50) {
+      go(index + 1, "next");
+    } else if (touchEndX > touchStartX + 50) {
+      go(index - 1, "prev");
+    }
+
+    startAuto();
   }, { passive: true });
 
-  const handleSwipe = () => {
-    if (touchEndX < touchStartX - 50) {
-      go(index + 1);
-      startAuto();
-    }
-    if (touchEndX > touchStartX + 50) {
-      go(index - 1);
-      startAuto();
-    }
-  };
+  // ---- Pause on hover (desktop) ----
+  wrap.addEventListener('mouseenter', () => {
+    if (!isTouching) stopAuto();
+  });
+  wrap.addEventListener('mouseleave', () => {
+    if (!isTouching) startAuto();
+  });
 
-  // Pause on hover
-  wrap.addEventListener('mouseenter', stopAuto);
-  wrap.addEventListener('mouseleave', startAuto);
-
-  // Play/Pause toggle
+  // ---- Play/Pause toggle ----
   autoBtn.addEventListener('click', () => {
     pausedByUser = !pausedByUser;
     autoBtn.dataset.state = pausedByUser ? 'paused' : 'playing';
     autoBtn.querySelector('.icon-play')?.classList.toggle('hidden', !pausedByUser);
     autoBtn.querySelector('.icon-pause')?.classList.toggle('hidden', pausedByUser);
-    
-    if (pausedByUser) {
-      stopAuto();
-    } else {
-      startAuto();
-    }
+
+    if (pausedByUser) stopAuto();
+    else startAuto();
   });
 })();
 </script>
 
+
 <style>
-  /* Ensure slides fill width */
-  #svc-track > article { 
-    width: 100%;
-  }
+/* Ensure slides fill width */
+#svc-track > article {
+  width: 100%;
+}
 
-  /* Text entrance animations */
-  .slide .slide-content {
-    opacity: 0;
-    transform: translateY(30px);
+/* ----------------------------------------
+   TEXT / CTA ANIMATIONS (DIRECTION-AWARE)
+----------------------------------------- */
+
+/* Base hidden state */
+.slide .slide-content,
+.slide .slide-content .stagger {
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+  will-change: opacity, transform;
+}
+
+/* NEXT → text enters from RIGHT */
+#svc-wrap[data-dir="next"] .slide.is-active .slide-content,
+#svc-wrap[data-dir="next"] .slide.is-active .slide-content .stagger {
+  transform: translate3d(32px, 0, 0);
+}
+
+/* PREV → text enters from LEFT */
+#svc-wrap[data-dir="prev"] .slide.is-active .slide-content,
+#svc-wrap[data-dir="prev"] .slide.is-active .slide-content .stagger {
+  transform: translate3d(-32px, 0, 0);
+}
+
+/* Animate main content container */
+.slide.is-active .slide-content {
+  animation: slideInX 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.12s;
+}
+
+/* Stagger children */
+.slide.is-active .slide-content .stagger:nth-child(1) {
+  animation: slideInX 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.2s;
+}
+
+.slide.is-active .slide-content .stagger:nth-child(2) {
+  animation: slideInX 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.34s;
+}
+
+.slide.is-active .slide-content .stagger:nth-child(3) {
+  animation: slideInX 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.48s;
+}
+
+.slide.is-active .slide-content .stagger:nth-child(4) {
+  animation: slideInX 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.62s;
+}
+
+/* Keyframes */
+@keyframes slideInX {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
-  
+}
+
+/* ----------------------------------------
+   REDUCED MOTION
+----------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .slide .slide-content,
   .slide .slide-content .stagger {
-    opacity: 0;
-    transform: translateY(20px);
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
+}
 
-  .slide.is-active .slide-content {
-    animation: slideContentIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    animation-delay: 0.2s;
-  }
-
-  .slide.is-active .slide-content .stagger:nth-child(1) { 
-    animation: staggerIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    animation-delay: 0.3s;
-  }
-  
-  .slide.is-active .slide-content .stagger:nth-child(2) { 
-    animation: staggerIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    animation-delay: 0.5s;
-  }
-  
-  .slide.is-active .slide-content .stagger:nth-child(3) { 
-    animation: staggerIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    animation-delay: 0.7s;
-  }
-  
-  .slide.is-active .slide-content .stagger:nth-child(4) { 
-    animation: staggerIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    animation-delay: 0.9s;
-  }
-
-  @keyframes slideContentIn {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes staggerIn {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .slide .slide-content,
-    .slide .slide-content .stagger {
-      animation: none !important;
-      opacity: 1 !important;
-      transform: none !important;
-    }
-  }
 </style>

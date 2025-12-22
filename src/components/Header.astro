@@ -2,28 +2,32 @@
 import { navLinks, ctaButton } from "../config/siteConfig.js";
 const current = Astro.url.pathname;
 ---
-<header id="main-header" class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-neutral-200 supports-[backdrop-filter]:bg-white/70 transition-transform duration-300">
+<header
+  id="main-header"
+  class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-neutral-200 supports-[backdrop-filter]:bg-white/70 transition-transform duration-300"
+>
   <div class="mx-auto max-w-7xl px-4 md:px-6">
     <div class="flex h-16 items-center justify-between">
       
-      <!-- Logo Only -->
+      <!-- Logo -->
       <a href="/" class="flex items-center group">
-  <img
-    src="/paintcraft-new-logo.png"
-    alt="PaintCraft Logo"
-    class="h-14 md:h-20 w-auto transition-transform group-hover:scale-105"
-  />
-</a>
-      <!-- Desktop Nav -->
-      <nav class="hidden md:flex items-center gap-1">
+        <img
+          src="/paintcraft-new-logo.png"
+          alt="PaintCraft Logo"
+          class="h-12 md:h-14 xl:h-20 w-auto transition-transform group-hover:scale-105"
+        />
+      </a>
+
+      <!-- DESKTOP NAV (XL ONLY) -->
+      <nav class="hidden xl:flex items-center gap-1">
         {navLinks.map((link) => (
           <div class="relative nav-item">
             <a
               href={link.href}
               class={
                 current.startsWith(link.href) && link.href !== "/"
-                  ? "relative flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 text-[#C48356] bg-[#C48356]/10"
-                  : "relative flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 text-neutral-700 hover:text-[#C48356] hover:bg-[#C48356]/5"
+                  ? "relative flex items-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 text-[#C48356] bg-[#C48356]/10"
+                  : "relative flex items-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 text-neutral-700 hover:text-[#C48356] hover:bg-[#C48356]/5"
               }
             >
               {link.label}
@@ -50,10 +54,9 @@ const current = Astro.url.pathname;
                       href={item.href}
                       class={
                         current === item.href
-                          ? "block rounded-lg px-4 py-2.5 text-sm font-medium bg-[#C48356]/10 text-[#C48356] transition-colors"
-                          : "block rounded-lg px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-[#C48356]/10 hover:text-[#C48356] transition-colors"
+                          ? "block rounded-lg px-4 py-2.5 text-sm font-medium bg-[#C48356]/10 text-[#C48356]"
+                          : "block rounded-lg px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-[#C48356]/10 hover:text-[#C48356]"
                       }
-                      role="menuitem"
                     >
                       {item.label}
                     </a>
@@ -66,16 +69,16 @@ const current = Astro.url.pathname;
 
         <a
           href={ctaButton.href}
-          class="ml-4 inline-flex items-center rounded-xl bg-[#C48356] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#B47347] hover:shadow-md transition-all"
+          class="ml-4 inline-flex items-center rounded-xl bg-[#C48356] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#B47347] hover:shadow-md transition-all whitespace-nowrap"
         >
           {ctaButton.label}
         </a>
       </nav>
 
-      <!-- Mobile Menu Button -->
+      <!-- MOBILE / TABLET MENU BUTTON -->
       <button
         id="menuBtn"
-        class="md:hidden p-2 rounded-lg text-neutral-700 hover:bg-[#C48356]/10 transition"
+        class="xl:hidden p-2 rounded-lg text-neutral-700 hover:bg-[#C48356]/10 transition"
         aria-label="Open menu"
         aria-expanded="false"
       >
@@ -86,59 +89,54 @@ const current = Astro.url.pathname;
     </div>
   </div>
 
-  <!-- Mobile Drawer -->
-  <div id="mobileMenu" class="md:hidden hidden border-t border-neutral-200 bg-white">
+  <!-- MOBILE / TABLET DRAWER -->
+  <div id="mobileMenu" class="xl:hidden hidden border-t border-neutral-200 bg-white">
     <div class="px-4 py-3 space-y-1.5">
       {navLinks.map((link) => (
-  <div class="mobile-item">
-    <div class="flex items-center">
-      {/* Label navigates */}
-      <a
-        href={link.href}
-        class={
-          current.startsWith(link.href) && link.href !== "/"
-            ? "flex-1 rounded-lg px-3 py-3 font-medium bg-[#C48356]/10 text-[#C48356]"
-            : "flex-1 rounded-lg px-3 py-3 font-medium text-neutral-800 hover:bg-[#C48356]/5 transition"
-        }
-      >
-        {link.label}
-      </a>
+        <div class="mobile-item">
+          <div class="flex items-center">
+            <a
+              href={link.href}
+              class={
+                current.startsWith(link.href) && link.href !== "/"
+                  ? "flex-1 rounded-lg px-3 py-3 font-medium bg-[#C48356]/10 text-[#C48356]"
+                  : "flex-1 rounded-lg px-3 py-3 font-medium text-neutral-800 hover:bg-[#C48356]/5"
+              }
+            >
+              {link.label}
+            </a>
 
-      {/* Chevron expands ONLY */}
-      {link.dropdown && link.dropdown.length > 0 && (
-        <button
-          type="button"
-          class="mobile-dropdown-toggle ml-1 inline-flex h-11 w-11 items-center justify-center rounded-lg text-neutral-700 hover:bg-[#C48356]/10 transition"
-          aria-label={`Toggle ${link.label} submenu`}
-          aria-expanded="false"
-        >
-          <svg class="mobile-chevron h-4 w-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      )}
-    </div>
+            {link.dropdown && link.dropdown.length > 0 && (
+              <button
+                type="button"
+                class="mobile-dropdown-toggle ml-1 inline-flex h-11 w-11 items-center justify-center rounded-lg text-neutral-700 hover:bg-[#C48356]/10"
+                aria-expanded="false"
+              >
+                <svg class="mobile-chevron h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            )}
+          </div>
 
-    {/* Submenu */}
-    {link.dropdown && link.dropdown.length > 0 && (
-      <div class="mobile-submenu hidden pl-4 pt-1 space-y-1">
-        {link.dropdown.map((item) => (
-          <a
-            href={item.href}
-            class={
-              current === item.href
-                ? "block rounded-lg px-3 py-2 text-sm bg-[#C48356]/10 text-[#C48356] font-medium"
-                : "block rounded-lg px-3 py-2 text-sm text-neutral-600 hover:bg-[#C48356]/5 transition"
-            }
-          >
-            {item.label}
-          </a>
-        ))}
-      </div>
-    )}
-  </div>
-))}
-
+          {link.dropdown && (
+            <div class="mobile-submenu hidden pl-4 pt-1 space-y-1">
+              {link.dropdown.map((item) => (
+                <a
+                  href={item.href}
+                  class={
+                    current === item.href
+                      ? "block rounded-lg px-3 py-2 text-sm bg-[#C48356]/10 text-[#C48356] font-medium"
+                      : "block rounded-lg px-3 py-2 text-sm text-neutral-600 hover:bg-[#C48356]/5"
+                  }
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
 
       <a
         href={ctaButton.href}
@@ -149,6 +147,7 @@ const current = Astro.url.pathname;
     </div>
   </div>
 </header>
+
 
 <script is:inline>
   // Mobile: chevron toggles submenu, label link navigates

@@ -81,9 +81,10 @@ const {
 
     {/* ✅ ADD id so IO can observe this grid */}
     <div
-      id="covered-grid"
-      class="mt-10 grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3"
-    >
+  id="covered-grid"
+  class="mt-10 grid gap-6 md:gap-8 sm:grid-cols-2 md:grid-cols-3"
+>
+
       {items.map((item, idx) => (
         <article
           class={`cb-card group relative overflow-hidden rounded-[24px] ${
@@ -305,7 +306,8 @@ const {
     document.documentElement.classList.add("js");
 
     const grid = document.getElementById("covered-grid");
-    let cards = Array.from(document.querySelectorAll("[data-cb-card]"));
+    let cards = Array.from(grid.querySelectorAll("[data-cb-card]"));
+
 
     // Sort right → left (2,1,0) so the one on the right enters first
     cards = cards.sort((a, b) => Number(a.dataset.col) - Number(b.dataset.col));
@@ -326,9 +328,10 @@ const {
       if (el.animate) {
         const anim = el.animate(
           [
-            { opacity: 0, transform: "translateX(120%)" },
-            { opacity: 1, transform: "translateX(0)" },
-          ],
+          { opacity: 0, transform: "translate3d(0, 16px, 0)" },
+          { opacity: 1, transform: "translate3d(0, 0, 0)" },
+        ],
+
           {
             duration: 650,
             easing: "cubic-bezier(.2,.8,.2,1)",
@@ -395,10 +398,11 @@ const {
       transform: translateX(120%);
     }
 
-    html.js .cb-card.is-in {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    html.js .cb-card {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+}
+
   </style>
 </section>
 

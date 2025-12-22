@@ -55,14 +55,10 @@ const {
         </span>
       </div>
 
-      <h2 class="mb-3 text-4xl font-bold text-neutral-900 md:text-5xl">
-        {title}
-      </h2>
+      <h2 class="mb-3 text-4xl font-bold text-neutral-900 md:text-5xl">{title}</h2>
 
       {subtitle && (
-        <p class="mx-auto mt-4 max-w-3xl text-xl text-neutral-600">
-          {subtitle}
-        </p>
+        <p class="mx-auto mt-4 max-w-3xl text-xl text-neutral-600">{subtitle}</p>
       )}
     </div>
 
@@ -145,88 +141,90 @@ const {
     </div>
   </div>
 
-<script is:inline>
-  (() => {
-    document.documentElement.classList.add("js");
+  <script is:inline>
+    (() => {
+      document.documentElement.classList.add("js");
 
-    const grid = document.getElementById("partners-grid");
-    if (!grid) return;
+      const grid = document.getElementById("partners-grid");
+      if (!grid) return;
 
-    // ✅ Only grab cards inside THIS grid (prevents collisions with other sections)
-    let cards = Array.from(grid.querySelectorAll("[data-partner-card]"));
+      // ✅ Only grab cards inside THIS grid (prevents collisions with other sections)
+      let cards = Array.from(grid.querySelectorAll("[data-partner-card]"));
+      if (!cards.length) return;
 
-    if (!cards.length) return;
+      // Right → Left (2,1,0) like you wanted originally
+      cards = cards.sort(
+        (a, b) => Number(b.dataset.col || 0) - Number(a.dataset.col || 0)
+      );
 
-    // Right → Left (2,1,0) like you wanted originally
-    cards = cards.sort((a, b) => Number(b.dataset.col || 0) - Number(a.dataset.col || 0));
+      const prefersReduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
 
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) {
-      cards.forEach((c) => c.classList.add("is-in"));
-      return;
-    }
-
-    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-    const animateIn = async (el) => {
-      // Force initial state to apply
-      el.getBoundingClientRect();
-
-      // WAAPI (reliable) if available
-      if (el.animate) {
-        const anim = el.animate(
-          [
-            { opacity: 0, transform: "translateX(-120%)" },
-            { opacity: 1, transform: "translateX(0)" },
-          ],
-          {
-            duration: 650,
-            easing: "cubic-bezier(.2,.8,.2,1)",
-            fill: "forwards",
-          }
-        );
-
-        await anim.finished.catch(() => {});
-        el.classList.add("is-in");
-        el.style.opacity = "";
-        el.style.transform = "";
+      if (prefersReduced) {
+        cards.forEach((c) => c.classList.add("is-in"));
         return;
       }
 
-      // Fallback
-      el.classList.add("is-in");
-      await sleep(700);
-    };
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-    const runSequence = async () => {
-      for (const card of cards) {
-        await animateIn(card);
-        await sleep(90);
-      }
-    };
+      const animateIn = async (el) => {
+        // Force initial state to apply
+        el.getBoundingClientRect();
 
-    let hasRun = false;
+        // ✅ Fade + small slide (no off-screen translateX, prevents horizontal scroll)
+        if (el.animate) {
+          const anim = el.animate(
+            [
+              { opacity: 0, transform: "translate3d(0, 16px, 0)" },
+              { opacity: 1, transform: "translate3d(0, 0, 0)" },
+            ],
+            {
+              duration: 650,
+              easing: "cubic-bezier(.2,.8,.2,1)",
+              fill: "forwards",
+            }
+          );
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (hasRun) return;
-        if (entries.some((e) => e.isIntersecting)) {
-          hasRun = true;
-          runSequence();
-          io.disconnect();
+          await anim.finished.catch(() => {});
+          el.classList.add("is-in");
+          el.style.opacity = "";
+          el.style.transform = "";
+          return;
         }
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
-    );
 
-    // ✅ Key fix: wait one frame so html.js + CSS hidden state is “real” first
-    requestAnimationFrame(() => {
-      io.observe(grid);
-    });
-  })();
-</script>
+        // Fallback
+        el.classList.add("is-in");
+        await sleep(700);
+      };
 
+      const runSequence = async () => {
+        for (const card of cards) {
+          await animateIn(card);
+          await sleep(90);
+        }
+      };
 
+      let hasRun = false;
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (hasRun) return;
+          if (entries.some((e) => e.isIntersecting)) {
+            hasRun = true;
+            runSequence();
+            io.disconnect();
+          }
+        },
+        { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
+      );
+
+      // ✅ Key fix: wait one frame so html.js + CSS hidden state is “real” first
+      requestAnimationFrame(() => {
+        io.observe(grid);
+      });
+    })();
+  </script>
 </section>
 
 <style>
@@ -234,19 +232,19 @@ const {
   .partner-card {
     opacity: 1;
     transform: none;
-    transition: opacity 650ms ease, transform 650ms cubic-bezier(.2,.8,.2,1);
+    transition: opacity 650ms ease, transform 650ms cubic-bezier(.2, .8, .2, 1);
     will-change: opacity, transform;
   }
 
   /* ✅ Only hide/animate when JS is enabled */
   html.js .partner-card {
     opacity: 0;
-    transform: translateX(-120%);
+    transform: translate3d(0, 16px, 0);
   }
 
   html.js .partner-card.is-in {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 
   /* Slightly tighter grid spacing on small screens */

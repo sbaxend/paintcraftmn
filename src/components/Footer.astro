@@ -4,17 +4,19 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="mt-16 border-t border-neutral-200 bg-neutral-50">
-  <div class="mx-auto max-w-7xl px-4 md:px-6 py-12 grid gap-10 md:grid-cols-4">
-    <!-- Brand -->
-    <div>
+  <!-- ✅ iPad/tablet: 2 columns, Desktop: 4 columns -->
+  <div class="mx-auto max-w-7xl px-4 md:px-6 py-12 grid gap-10 md:grid-cols-2 md:gap-x-12 xl:grid-cols-4 xl:gap-x-16">
+    <!-- ✅ Brand spans full width on tablet, returns to 1 col on desktop -->
+    <div class="md:col-span-2 xl:col-span-1">
       <div class="flex items-center gap-2">
         <img
-    src="/paintcraft-new-logo.png"
-    alt="PaintCraft Logo"
-    class="h-14 md:h-20 w-auto transition-transform group-hover:scale-105"
-  />
+          src="/paintcraft-new-logo.png"
+          alt="PaintCraft Logo"
+          class="h-12 md:h-14 xl:h-20 w-auto transition-transform group-hover:scale-105"
+        />
       </div>
-      <p class="mt-3 text-sm text-neutral-600">
+
+      <p class="mt-3 text-sm text-neutral-600 max-w-md">
         Professional interior & exterior painting across Minnesota.
       </p>
 
@@ -23,12 +25,12 @@ const year = new Date().getFullYear();
         href="https://www.bbb.org/us/mn/hopkins/profile/painting-contractors/paintcraft-llc-0704-1000075280/#sealclick"
         target="_blank"
         rel="noopener noreferrer"
-        class="mt-4 inline-block"
+        class="mt-5 inline-block"
       >
         <img
           src="https://seal-minnesota.bbb.org/seals/blue-seal-293-61-bbb-1000075280.png"
           alt="BBB Accredited Business - PaintCraft LLC"
-          class="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300"
+          class="h-12 md:h-14 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300"
           loading="lazy"
           decoding="async"
         />
@@ -40,7 +42,11 @@ const year = new Date().getFullYear();
       <h3 class="text-sm font-semibold text-neutral-900">Quick Links</h3>
       <ul class="mt-3 space-y-2">
         {navLinks.map((l) => (
-          <li><a class="text-sm text-neutral-600 hover:text-neutral-900" href={l.href}>{l.label}</a></li>
+          <li>
+            <a class="text-sm text-neutral-600 hover:text-neutral-900" href={l.href}>
+              {l.label}
+            </a>
+          </li>
         ))}
       </ul>
     </div>
@@ -50,7 +56,11 @@ const year = new Date().getFullYear();
       <h3 class="text-sm font-semibold text-neutral-900">Contact</h3>
       <ul class="mt-3 space-y-2 text-sm text-neutral-600">
         <li>{company.phone}</li>
-        <li><a class="hover:text-neutral-900" href={`mailto:${company.email}`}>{company.email}</a></li>
+        <li>
+          <a class="hover:text-neutral-900" href={`mailto:${company.email}`}>
+            {company.email}
+          </a>
+        </li>
         <li>{company.address}</li>
       </ul>
     </div>

@@ -45,9 +45,6 @@ const { bleed = true } = Astro.props;
 
             <div class={`absolute inset-0 p-6 sm:p-8 lg:p-12 flex ${i === 0 ? "items-end" : "items-end md:items-center"} ${i === 0 ? "justify-start" : "justify-end"}`}>
               <div class={`max-w-xl text-white ${i === 0 ? "text-left" : "text-right"}`}>
-                {s.kicker && (
-                  <p class="uppercase tracking-wide text-sm/6 opacity-85">{s.kicker}</p>
-                )}
                 <h3 class="font-extrabold drop-shadow-[0_10px_40px_rgba(0,0,0,.4)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
                   {s.title}
                 </h3>
