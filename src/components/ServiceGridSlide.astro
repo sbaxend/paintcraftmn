@@ -176,338 +176,225 @@ const items = services.map((s) => ({
   const next = document.getElementById("svc-next");
   const dots = Array.from(document.querySelectorAll("#svc-dots > button"));
   const autoBtn = document.getElementById("svc-auto");
-
   if (!wrap || !track) return;
 
+  /* CONFIG */
   const AUTO_MS = 5000;
-  const DURATION_MS = 720;
+  const DURATION = 720;
   const EASING = "cubic-bezier(.22,.61,.36,1)";
   const SWIPE_PX = 50;
 
-  let autoTimer = null;
-  let pausedByUser = false;
-  let isAnimating = false;
-  let index = 1; // internal index (with clones)
+  /* STATE */
+  let index = 1;
   let lastDir = 1;
+  let animating = false;
+  let paused = false;
+  let autoTimer = null;
+  let lastAnimatedReal = -1;
+  let suppressAnim = false;
 
-  // real slide index we last animated (0..baseCount-1)
-  let currentReal = -1;
-
-  // ✅ hard suppression for wrap-around (clone <-> real snap)
-  let wrapSuppress = false;
-
-  // -------------------------------
-  // CLONE SETUP
-  // -------------------------------
+  /* CLONES */
   const baseSlides = Array.from(track.children);
-  const baseCount = baseSlides.length;
-  if (!baseCount) return;
+  const count = baseSlides.length;
+  if (!count) return;
 
-  const firstClone = baseSlides[0].cloneNode(true);
-  const lastClone = baseSlides[baseCount - 1].cloneNode(true);
-
-  track.insertBefore(lastClone, baseSlides[0]);
-  track.appendChild(firstClone);
+  track.insertBefore(baseSlides[count - 1].cloneNode(true), baseSlides[0]);
+  track.appendChild(baseSlides[0].cloneNode(true));
 
   const slides = Array.from(track.children);
-  slides.forEach((s) => (s.style.width = "100%"));
+  slides.forEach(s => s.style.width = "100%");
 
-  // -------------------------------
-  // TRANSITION CONTROL
-  // -------------------------------
-  const setTransition = (on) => {
-    track.style.transition = on ? `transform ${DURATION_MS}ms ${EASING}` : "none";
-  };
+  /* HELPERS */
+  const setTransition = on =>
+    track.style.transition = on ? `transform ${DURATION}ms ${EASING}` : "none";
 
-  const setTransform = () => {
+  const setX = () =>
     track.style.transform = `translate3d(-${index * 100}%,0,0)`;
-  };
 
-  const getRealIndex = (idx) => {
-    if (idx === 0) return baseCount - 1;        // lastClone
-    if (idx === baseCount + 1) return 0;        // firstClone
-    return idx - 1;                             // real slides
-  };
+  const realIndex = i =>
+    i === 0 ? count - 1 : i === count + 1 ? 0 : i - 1;
 
-  const setDots = (realIdx) => {
-    dots.forEach((dot, i) => dot.setAttribute("aria-current", String(i === realIdx)));
-  };
+  const setDots = r =>
+    dots.forEach((d,i)=>d.setAttribute("aria-current", i === r));
 
-  const setActiveClass = (idx, dir) => {
-    slides.forEach((slide, i) => {
-      const active = i === idx;
-      slide.classList.toggle("is-active", active);
-      if (active) slide.dataset.dir = dir === 1 ? "next" : "prev";
-      else delete slide.dataset.dir;
+  const setActive = (i,dir) =>
+    slides.forEach((s,n)=>{
+      s.classList.toggle("is-active", n === i);
+      n === i ? s.dataset.dir = dir === 1 ? "next" : "prev" : delete s.dataset.dir;
     });
-  };
 
-  // -------------------------------
-  // CONTENT ANIMATION (JS ONLY)
-  // -------------------------------
-  const killAnimations = (root) => {
-    if (!root) return;
-    if (root.getAnimations) root.getAnimations().forEach((a) => a.cancel());
-  };
+  /* CONTENT ANIMATION */
+  const animateContent = (real, dir) => {
+    if (suppressAnim || real === lastAnimatedReal) return;
+    lastAnimatedReal = real;
 
-  const forceVisible = (el) => {
-    if (!el) return;
-    el.style.opacity = "1";
-    el.style.transform = "translate3d(0,0,0)";
-  };
-
-  const animateContent = (realIdx, dir) => {
-    // ✅ never animate during wrap snap
-    if (wrapSuppress) return;
-
-    // ✅ prevent double-run on same real slide
-    if (realIdx === currentReal) return;
-    currentReal = realIdx;
-
-    const activeSlide = slides[index];
-    if (!activeSlide) return;
-
-    const content = activeSlide.querySelector(".slide-content");
-    const items = Array.from(activeSlide.querySelectorAll(".slide-content .stagger"));
-
+    const slide = slides[index];
+    const content = slide?.querySelector(".slide-content");
+    const items = slide?.querySelectorAll(".stagger");
     if (!content) return;
 
-    // Cancel any previous WAAPI and reset hard
-    killAnimations(content);
-    items.forEach(killAnimations);
-
-    // Ensure everything starts clean (important!)
-    [content, ...items].forEach((el) => {
-      if (!el) return;
-      el.style.opacity = "";
-      el.style.transform = "";
-    });
+    content.getAnimations?.().forEach(a=>a.cancel());
+    items?.forEach(el=>el.getAnimations?.().forEach(a=>a.cancel()));
 
     const fromX = dir === 1 ? 44 : -44;
 
     content.animate(
       [
         { opacity: 0, transform: `translate3d(${fromX}px,0,0)` },
-        { opacity: 1, transform: "translate3d(0,0,0)" },
+        { opacity: 1, transform: "translate3d(0,0,0)" }
       ],
       { duration: 520, easing: EASING, fill: "both" }
     );
 
-    items.forEach((el, i) => {
+    items?.forEach((el,i)=>{
       el.animate(
         [
-          { opacity: 0, transform: `translate3d(${fromX * 0.6}px,0,0)` },
-          { opacity: 1, transform: "translate3d(0,0,0)" },
+          { opacity: 0, transform: `translate3d(${fromX*0.6}px,0,0)` },
+          { opacity: 1, transform: "translate3d(0,0,0)" }
         ],
-        { duration: 520, delay: 110 + i * 95, easing: EASING, fill: "both" }
+        { duration: 520, delay: 120 + i*90, easing: EASING, fill: "both" }
       );
     });
   };
 
-  // -------------------------------
-  // WRAP SNAP (CLONE -> REAL)
-  // -------------------------------
+  /* SNAP */
   const snapIfNeeded = () => {
-    // ✅ IMPORTANT: during snap we suppress content animation for a couple frames
-    const suppressFor2Frames = () => {
-      wrapSuppress = true;
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          wrapSuppress = false;
-        });
-      });
+    const suppress = () => {
+      suppressAnim = true;
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => suppressAnim = false)
+      );
     };
 
-    if (index === baseCount + 1) {
-      // landed on firstClone -> snap to real first (1)
-      suppressFor2Frames();
-
-      // update "current real" so it won't animate again
-      currentReal = 0;
-
+    if (index === count + 1) {
+      suppress();
       setTransition(false);
       index = 1;
-      setTransform();
+      setX();
       track.getBoundingClientRect();
       setTransition(true);
-
-      setActiveClass(index, 1);
+      setActive(index,1);
       setDots(0);
-
-      isAnimating = false;
+      animating = false;
       return true;
     }
 
     if (index === 0) {
-      // landed on lastClone -> snap to real last (baseCount)
-      suppressFor2Frames();
-
-      currentReal = baseCount - 1;
-
+      suppress();
       setTransition(false);
-      index = baseCount;
-      setTransform();
+      index = count;
+      setX();
       track.getBoundingClientRect();
       setTransition(true);
-
-      setActiveClass(index, -1);
-      setDots(baseCount - 1);
-
-      isAnimating = false;
+      setActive(index,-1);
+      setDots(count - 1);
+      animating = false;
       return true;
     }
-
     return false;
   };
 
-  // -------------------------------
-  // CORE MOVE
-  // -------------------------------
-  const go = (delta) => {
-    if (isAnimating) return;
-    isAnimating = true;
+  /* MOVE */
+  const go = delta => {
+    if (animating) return;
+    animating = true;
 
     lastDir = delta >= 0 ? 1 : -1;
     index += delta;
 
-    setActiveClass(index, lastDir);
-    setTransform();
+    setActive(index,lastDir);
+    setX();
 
-    const real = getRealIndex(index);
-    setDots(real);
+    const r = realIndex(index);
+    setDots(r);
 
-    // ✅ If we're moving onto a clone, DO NOT animate content
-    // (clone->real will snap, and we suppress anyway)
-    const goingToClone = index === 0 || index === baseCount + 1;
-    if (!goingToClone) {
-      animateContent(real, lastDir);
-    } else {
-      // also lock currentReal so snap can’t trigger a second entrance
-      currentReal = real;
+    if (index > 0 && index < count + 1) {
+      animateContent(r,lastDir);
     }
 
-    window.clearTimeout(go._t);
-    go._t = window.setTimeout(() => {
-      if (!snapIfNeeded()) isAnimating = false;
-    }, DURATION_MS + 140);
+    clearTimeout(go._t);
+    go._t = setTimeout(()=>{
+      if (!snapIfNeeded()) animating = false;
+    }, DURATION + 140);
   };
 
-  // -------------------------------
-  // INIT
-  // -------------------------------
+  /* INIT */
   setTransition(false);
-  setTransform();
+  setX();
   track.getBoundingClientRect();
   setTransition(true);
-
-  setActiveClass(index, 1);
+  setActive(index,1);
   setDots(0);
+  animateContent(0,1);
 
-  // ensure first slide is visible (no flicker)
-  const initSlide = slides[index];
-  forceVisible(initSlide?.querySelector(".slide-content"));
-  initSlide?.querySelectorAll(".slide-content .stagger").forEach(forceVisible);
-
-  // animate first slide once
-  animateContent(0, 1);
-
-  track.addEventListener("transitionend", (e) => {
-    if (e.propertyName && e.propertyName !== "transform") return;
-    window.clearTimeout(go._t);
-    if (!snapIfNeeded()) isAnimating = false;
+  track.addEventListener("transitionend", e => {
+    if (e.propertyName === "transform" && !snapIfNeeded()) animating = false;
   });
 
-  // -------------------------------
-  // AUTOPLAY
-  // -------------------------------
-  const startAuto = () => {
-    if (pausedByUser) return;
-    stopAuto();
-    autoTimer = window.setInterval(() => go(1), AUTO_MS);
-  };
-
+  /* AUTOPLAY */
   const stopAuto = () => {
-    if (autoTimer) window.clearInterval(autoTimer);
+    clearInterval(autoTimer);
     autoTimer = null;
   };
 
-  // -------------------------------
-  // CONTROLS
-  // -------------------------------
-  prev?.addEventListener("click", () => { go(-1); startAuto(); });
-  next?.addEventListener("click", () => { go(1); startAuto(); });
+  const startAuto = () => {
+    if (paused) return;
+    stopAuto();
+    autoTimer = setInterval(() => go(1), AUTO_MS);
+  };
 
-  dots.forEach((dot, targetReal) => {
-    dot.addEventListener("click", () => {
-      if (isAnimating) return;
-      const current = getRealIndex(index);
-      if (targetReal === current) return;
+  /* CONTROLS */
+  prev?.addEventListener("click",()=>{ go(-1); startAuto(); });
+  next?.addEventListener("click",()=>{ go(1); startAuto(); });
 
-      // jump to internal index (real 0 -> idx 1)
-      const targetInternal = targetReal + 1;
-      go(targetInternal - index);
+  dots.forEach((dot,i)=>{
+    dot.addEventListener("click",()=>{
+      if (animating) return;
+      const cur = realIndex(index);
+      if (i === cur) return;
+      go(i + 1 - index);
       startAuto();
     });
   });
 
-  // -------------------------------
-  // SWIPE
-  // -------------------------------
+  /* SWIPE */
   let x0 = 0;
-  track.addEventListener("touchstart", (e) => {
-    x0 = e.changedTouches[0].screenX;
-  }, { passive: true });
-
-  track.addEventListener("touchend", (e) => {
-    const x1 = e.changedTouches[0].screenX;
-    if (x1 < x0 - SWIPE_PX) go(1);
-    if (x1 > x0 + SWIPE_PX) go(-1);
+  track.addEventListener("touchstart",e=>x0=e.changedTouches[0].screenX,{passive:true});
+  track.addEventListener("touchend",e=>{
+    const x1=e.changedTouches[0].screenX;
+    if(x1<x0-SWIPE_PX) go(1);
+    if(x1>x0+SWIPE_PX) go(-1);
     startAuto();
-  }, { passive: true });
+  },{passive:true});
 
-  // -------------------------------
-  // HOVER + PLAY/PAUSE
-  // -------------------------------
-  wrap.addEventListener("mouseenter", stopAuto);
-  wrap.addEventListener("mouseleave", startAuto);
+  /* HOVER */
+  if (matchMedia("(hover:hover)").matches) {
+    wrap.addEventListener("pointerenter",stopAuto);
+    wrap.addEventListener("pointerleave",startAuto);
+  }
 
-  autoBtn?.addEventListener("click", () => {
-    pausedByUser = !pausedByUser;
-    autoBtn.dataset.state = pausedByUser ? "paused" : "playing";
-    autoBtn.querySelector(".icon-play")?.classList.toggle("hidden", !pausedByUser);
-    autoBtn.querySelector(".icon-pause")?.classList.toggle("hidden", pausedByUser);
-    pausedByUser ? stopAuto() : startAuto();
+  /* PLAY / PAUSE */
+  autoBtn?.addEventListener("click",()=>{
+    paused = !paused;
+    autoBtn.dataset.state = paused ? "paused" : "playing";
+    autoBtn.querySelector(".icon-play")?.classList.toggle("hidden", !paused);
+    autoBtn.querySelector(".icon-pause")?.classList.toggle("hidden", paused);
+    paused ? stopAuto() : startAuto();
   });
 
-  // -------------------------------
-  // VISIBILITY / BF CACHE
-  // -------------------------------
-  const resync = () => {
-    stopAuto();
-    isAnimating = false;
-    setTransition(false);
-    setTransform();
-    track.getBoundingClientRect();
-    setTransition(true);
-
-    setActiveClass(index, lastDir);
-    setDots(getRealIndex(index));
-
-    startAuto();
-  };
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) stopAuto();
-    else resync();
+  document.addEventListener("visibilitychange",()=>{
+    document.hidden ? stopAuto() : startAuto();
   });
 
-  window.addEventListener("pageshow", (e) => {
-    if (e.persisted) resync();
+  window.addEventListener("pageshow",e=>{
+    if(e.persisted) startAuto();
   });
 
   startAuto();
 })();
 </script>
+
+
 
 
 

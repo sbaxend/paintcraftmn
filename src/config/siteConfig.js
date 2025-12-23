@@ -19,7 +19,7 @@ export const services = [
     description:
       "Boost your home's curb appeal and protect it from Minnesota's harsh weather with durable, professional exterior coatings.",
     href: "/exterior",
-    img: "/exteriorTile.png",
+    img: "/exterior-hero-minnesota.png",
     ctas: [{label: "Learn more", href: "/exterior"}, {label: "Get quote", href: "/contact"}],
   },
   {
