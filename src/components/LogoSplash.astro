@@ -1,6 +1,6 @@
 ---
 const {
-  logoSrc = "/paintcraft_logo.webp",
+  logoSrc = "/paintcraft-mn-logo.png",
 } = Astro.props;
 ---
 
@@ -32,14 +32,14 @@ const {
     position: relative;
   }
 
-  /* Logo styling */
-  .splash-logo {
-    width: auto;
-    height: 70px;
-    opacity: 0;
-    transform: scale(0.92);
-    filter: brightness(1) drop-shadow(0 0 30px rgba(196, 131, 86, 0.35));
-  }
+.splash-logo {
+  width: auto;
+  height: clamp(90px, 12vw, 160px);
+  opacity: 0;
+  transform: scale(0.92);
+  filter: brightness(1) drop-shadow(0 0 30px rgba(196, 131, 86, 0.35));
+}
+
 
   /* Logo fade in */
   .splash-logo.animate-in {
