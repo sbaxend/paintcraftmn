@@ -270,7 +270,7 @@ We start by protecting all surfaces, removing hardware, and thoroughly cleaning 
     img: "/premium-cabinet-package-minnesota.jpeg",
     modalTitle: "Premium Cabinet Refinishing Package",
     modalBody: `
-OWe begin by fully protecting the workspace and removing all doors, drawers, and hardware. Each surface is cleaned, sanded, and detailed with precision to ensure a flawless foundation. We apply a specialized 2K primer and finish, an advanced, industrial-grade system sourced from overseas for unmatched durability, adhesion, and longevity. Using professional HVLP spray equipment, we lay down ultra-smooth, controlled coats that deliver a true factory-grade finish. After curing, we reinstall all components, complete a detailed quality inspection, and finalize any touch-ups, providing cabinets with maximum durability, superior scratch resistance, and a premium finish built to last for years.ur top-tier option. Includes advanced prep, full surface restoration, and a sprayed enamel system for a flawless, furniture-quality finish.
+We fully protect the workspace and remove all doors, drawers, and hardware. Surfaces are thoroughly cleaned, sanded, and prepped before applying a specialized industrial-grade 2K primer and finish for exceptional durability and adhesion. Using professional HVLP spray equipment, we deliver a smooth, factory-quality finish. After curing, all components are reinstalled, inspected, and detailed, resulting in a long-lasting, scratch-resistant, furniture-quality finish.
     `,
   },
 ]
