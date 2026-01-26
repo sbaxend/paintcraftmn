@@ -5,593 +5,549 @@ import Base from "../layouts/Base.astro";
 <Base title="Get a Free Estimate | PaintCraft MN">
   <!-- HERO -->
   <section class="relative overflow-hidden">
-  <div class="absolute inset-0 bg-[radial-gradient(1200px_600px_at_20%_-10%,rgba(59,130,246,.10),transparent),radial-gradient(900px_500px_at_100%_0%,rgba(16,185,129,.08),transparent)]"></div>
-  <div class="relative mx-auto max-w-7xl px-6 pt-24 md:pt-28 pb-12 md:pb-16">
-    <p class="text-sm font-medium text-[#C48356]">Free, no-pressure estimate</p>
-    <h1 class="mt-2 text-4xl md:text-6xl font-sans font-semibold tracking-tight text-neutral-900">
-      Tell us about your project—<span class="whitespace-nowrap">we’ll handle the rest.</span>
-    </h1>
-    <p class="mt-4 max-w-2xl text-neutral-600">
-      Fast replies. Clear pricing. Work that lasts. Share a few details and we’ll get back within one business day.
-    </p>
+    <div class="absolute inset-0 bg-[radial-gradient(1200px_600px_at_20%_-10%,rgba(59,130,246,.10),transparent),radial-gradient(900px_500px_at_100%_0%,rgba(16,185,129,.08),transparent)]"></div>
+    <div class="relative mx-auto max-w-7xl px-6 pt-24 md:pt-28 pb-12 md:pb-16">
+      <p class="text-sm font-medium text-[#C48356]">Free, no-pressure estimate</p>
+      <h1 class="mt-2 text-4xl md:text-6xl font-sans font-semibold tracking-tight text-neutral-900">
+        Tell us about your project—<span class="whitespace-nowrap">we’ll handle the rest.</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-neutral-600">
+        Fast replies. Clear pricing. Work that lasts. Share a few details and we’ll get back within one business day.
+      </p>
 
-    <div class="mt-6 flex flex-wrap items-center gap-3 text-sm text-neutral-700">
-      <span class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 ring-1 ring-black/10">
-        <span class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-        Licensed &amp; insured
-      </span>
-      <span class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 ring-1 ring-black/10">
-        200+ homes painted
-      </span>
-      <span class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 ring-1 ring-black/10">
-        ★★★★★ local reviews
-      </span>
-    </div>
-  </div>
-</section>
-
-
-<!-- FORM + CONTACT INFO -->
-<section class="relative">
-  <div class="mx-auto max-w-7xl px-6 pb-20">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-
-      <!-- Form card -->
-      <div class="rounded-2xl bg-white/90 p-6 md:p-8 shadow-[0_20px_60px_rgba(0,0,0,.12)] ring-1 ring-black/10 backdrop-blur">
-        <form
-          id="estimate-form"
-          method="POST"
-          action="/api/estimate"
-          class="space-y-6"
-        >
-          <!-- Honeypot (spam trap) -->
-          <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" />
-
-          <!-- CONTACT INFO -->
-          <div class="grid md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-neutral-800 mb-1">First name</label>
-              <input
-                name="firstName"
-                required
-                class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
-                       focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-neutral-800 mb-1">Last name</label>
-              <input
-                name="lastName"
-                required
-                class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
-                       focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
-              />
-            </div>
-          </div>
-
-          <div class="grid md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-neutral-800 mb-1">Email</label>
-              <input
-                type="email"
-                name="email"
-                required
-                class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
-                       focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-neutral-800 mb-1">Phone</label>
-              <input
-                type="tel"
-                name="phone"
-                placeholder="(555) 555-5555"
-                class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
-                       focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
-              />
-            </div>
-          </div>
-
-          <!-- ADDRESS -->
-          <div class="grid md:grid-cols-3 gap-4">
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-neutral-800 mb-1">Street address</label>
-              <input
-                name="address"
-                class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
-                       focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-neutral-800 mb-1">ZIP</label>
-              <input
-                name="zip"
-                inputmode="numeric"
-                class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
-                       focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
-              />
-            </div>
-          </div>
-
-          <!-- PROJECT DETAILS -->
-          <div class="grid md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-neutral-800 mb-1">Project type</label>
-              <select
-                name="projectType"
-                class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base bg-white
-                       focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none"
-              >
-                <option>Interior painting</option>
-                <option>Exterior painting</option>
-                <option>Cabinets</option>
-                <option>Trim / Doors</option>
-                <option>Deck / Fence</option>
-                <option>Drywall / Texture</option>
-                <option>Commercial</option>
-                <option>Other</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-neutral-800 mb-1">Timeline</label>
-              <select
-                name="timeline"
-                class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base bg-white
-                       focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none"
-              >
-                <option>As soon as possible</option>
-                <option>Within 2–4 weeks</option>
-                <option>1–3 months</option>
-                <option>Just pricing for now</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- REFERRAL -->
-          <div class="grid md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-neutral-800 mb-1">How did you hear about us?</label>
-              <select
-                name="referral"
-                class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base bg-white
-                       focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none"
-              >
-                <option>Friend / Family</option>
-                <option>Nextdoor</option>
-                <option>Google</option>
-                <option>Facebook / Instagram</option>
-                <option>Yard sign / Truck</option>
-                <option>Other</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- ROOMS & MEASUREMENTS (dynamic) -->
-          <input type="hidden" name="roomsJson" id="rooms-json" />
-
-          <div>
-            <label class="block text-sm font-medium text-neutral-800 mb-1">
-              Rooms &amp; measurements <span class="text-neutral-500 text-xs font-normal">(optional)</span>
-            </label>
-
-            <p class="text-[#C48356] text-sm mb-4 bg-white/70 p-3 rounded-lg border border-neutral-200">
-              Note: Measurements help us get a head start, but this form provides only a rough estimate.
-              A final quote will still require an on-site walkthrough.
-            </p>
-
-            <p class="mt-1 text-xs text-neutral-500">
-              Add each room you’d like painted. If you know the length, width, and ceiling height, include those too.
-            </p>
-
-            <div id="rooms-list" class="mt-4 space-y-4"></div>
-
-            <button
-              type="button"
-              id="add-room-btn"
-              class="mt-3 inline-flex items-center gap-2 rounded-full border border-neutral-300
-                     px-4 py-2 text-sm font-medium text-neutral-700
-                     hover:border-[#C48356] hover:text-[#C48356] hover:bg-neutral-50
-                     transition-colors"
-            >
-              <span class="text-lg leading-none">＋</span>
-              Add room
-            </button>
-          </div>
-
-          <!-- PROJECT NOTES -->
-          <div>
-            <label class="block text-sm font-medium text-neutral-800 mb-1">
-              Tell us about your project
-            </label>
-            <textarea
-              name="message"
-              rows="5"
-              placeholder="Rooms or areas, colors if known, special details, repairs needed…"
-              class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
-                     focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
-            ></textarea>
-          </div>
-
-          <!-- PHOTOS -->
-          <div>
-            <label class="block text-sm font-medium text-neutral-800 mb-1">
-              Photos (optional)
-            </label>
-
-            <input
-              type="file"
-              id="photos-input"
-              accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-              multiple
-              class="w-full rounded-xl border border-dashed border-neutral-300 px-4 py-3 bg-white text-sm md:text-base"
-              data-cloud-name={import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME}
-              data-upload-preset={import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-            />
-
-            <!-- submitted to your API -->
-            <input type="hidden" name="photoUrls" id="photo-urls" />
-
-            <p class="mt-1 text-xs text-neutral-500">
-              Photos of rooms and any damage help us quote faster.
-            </p>
-            <p class="mt-1 text-xs text-neutral-500" id="photo-upload-status"></p>
-          </div>
-
-          <!-- SUBMIT -->
-<button
-  type="submit"
-  id="estimate-submit"
-  class="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-full px-6 py-4 font-semibold shadow-lg transition"
-  style="
-    background-color:#C48356 !important;
-    color:#ffffff !important;
-    -webkit-text-fill-color:#ffffff !important;
-    border: 1px solid #9a5f36 !important;
-    text-shadow: none !important;
-    opacity: 1 !important;
-  "
->
-  <span style="color:#fff !important; -webkit-text-fill-color:#fff !important;">
-    Get my free estimate
-  </span>
-
-  <svg
-    style="color:#fff !important;"
-    class="h-4 w-4 shrink-0"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <path d="M5 12h14" />
-    <path d="M13 5l7 7-7 7" />
-  </svg>
-</button>
-
-
-
-
-
-
-          <p class="text-xs text-neutral-500">
-            By submitting, you agree we may contact you about your project. We never share or sell your information.
-          </p>
-        </form>
+      <div class="mt-6 flex flex-wrap items-center gap-3 text-sm text-neutral-700">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 ring-1 ring-black/10">
+          <span class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+          Licensed &amp; insured
+        </span>
+        <span class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 ring-1 ring-black/10">
+          200+ homes painted
+        </span>
+        <span class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 ring-1 ring-black/10">
+          ★★★★★ local reviews
+        </span>
       </div>
-
-      <!-- Sidebar -->
-      <aside class="space-y-6 lg:sticky lg:top-16">
-        <div class="rounded-2xl bg-white/70 p-6 ring-1 ring-black/10 shadow-sm backdrop-blur">
-          <h3 class="text-lg font-semibold text-neutral-900">Prefer to talk first?</h3>
-          <ul class="mt-3 space-y-2 text-neutral-700 text-sm">
-            <li>📞 <a href="tel:+19526979987" class="underline decoration-[#C48356]/40 underline-offset-2">Call / Text (952) 697-9987</a></li>
-            <li>✉️ <a href="mailto:info@paintcraftmn.com" class="underline decoration-[#C48356]/40 underline-offset-2">info@paintcraftmn.com</a></li>
-            <li>🕘 Mon–Fri 8am–6pm • Sat by appointment</li>
-          </ul>
-        </div>
-
-        <div class="rounded-2xl bg-white/70 p-6 ring-1 ring-black/10 shadow-sm backdrop-blur">
-          <h3 class="text-lg font-semibold text-neutral-900">Service area</h3>
-          <p class="mt-2 text-neutral-700 text-sm">
-            Minneapolis • St. Paul • Maple Grove • Plymouth • Minnetonka • surrounding suburbs
-          </p>
-          <div class="mt-4 overflow-hidden rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-black/10">
-            <div class="relative aspect-[16/9]">
-              <iframe
-                class="absolute inset-0 h-full w-full border-0"
-                loading="lazy"
-                allowfullscreen
-                referrerpolicy="no-referrer-when-downgrade"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d180609.80193113533!2d-93.40141012601988!3d44.98373916540674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x52b333909377bbbd%3A0x939fc9842f7aee07!2sMinneapolis%2C%20MN!5e0!3m2!1sen!2sus!4v1763750182803!5m2!1sen!2sus"
-              ></iframe>
-            </div>
-          </div>
-        </div>
-
-        <div class="rounded-2xl bg-white/70 p-6 ring-1 ring-black/10 shadow-sm backdrop-blur">
-          <h3 class="text-lg font-semibold text-neutral-900">What to expect</h3>
-          <ol class="mt-3 list-decimal pl-5 text-neutral-700 text-sm space-y-1.5">
-            <li>We’ll review your details and reply within 1 business day.</li>
-            <li>on-site walkthrough</li>
-            <li>Clear written estimate &amp; scheduling options.</li>
-          </ol>
-        </div>
-      </aside>
     </div>
-  </div>
+  </section>
 
-  <!-- Dynamic rooms script -->
-<script is:inline>
-  window.addEventListener("DOMContentLoaded", () => {
-    // ---- Elements
-    const form = document.getElementById("estimate-form");
-    const roomsList = document.getElementById("rooms-list");
-    const addRoomBtn = document.getElementById("add-room-btn");
-    const roomsHidden = document.getElementById("rooms-json");
+  <!-- FORM + CONTACT INFO -->
+  <section class="relative">
+    <div class="mx-auto max-w-7xl px-6 pb-20">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+        <!-- Form card -->
+        <div class="rounded-2xl bg-white/90 p-6 md:p-8 shadow-[0_20px_60px_rgba(0,0,0,.12)] ring-1 ring-black/10 backdrop-blur">
+          <form id="estimate-form" method="POST" action="/api/estimate" class="space-y-6">
+            <!-- Honeypot (spam trap) -->
+            <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" />
 
-    const photosInput = document.getElementById("photos-input");
-    const photoUrlsHidden = document.getElementById("photo-urls");
-    const uploadStatus = document.getElementById("photo-upload-status");
+            <!-- Timestamp for your API anti-spam -->
+            <input type="hidden" name="_ts" id="ts" />
 
-    if (!form) return;
-
-    // Track upload state so we don't submit early
-    let isUploadingPhotos = false;
-
-    // ---- Rooms builder
-    let roomIndex = 0;
-
-    const createRoomBlock = (index) => {
-      return `
-        <div class="room-block rounded-xl border border-neutral-200 p-4 md:p-5 bg-white relative" data-room-index="${index}">
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex-1">
-              <label class="block text-xs font-semibold text-neutral-700 mb-1">Room name</label>
-              <input
-                name="rooms[${index}][name]"
-                placeholder="Living room, Bedroom 1, Hallway…"
-                class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 bg-white"
-              />
+            <!-- CONTACT INFO -->
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-neutral-800 mb-1">First name</label>
+                <input
+                  name="firstName"
+                  required
+                  autocomplete="given-name"
+                  class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
+                         focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-neutral-800 mb-1">Last name</label>
+                <input
+                  name="lastName"
+                  required
+                  autocomplete="family-name"
+                  class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
+                         focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
+                />
+              </div>
             </div>
 
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-neutral-800 mb-1">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  autocomplete="email"
+                  class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
+                         focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-neutral-800 mb-1">Phone</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  autocomplete="tel"
+                  placeholder="(555) 555-5555"
+                  class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
+                         focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
+                />
+              </div>
+            </div>
+
+            <!-- ADDRESS -->
+            <div class="grid md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-neutral-800 mb-1">Street address</label>
+                <input
+                  name="address"
+                  autocomplete="street-address"
+                  class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
+                         focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-neutral-800 mb-1">ZIP</label>
+                <input
+                  name="zip"
+                  inputmode="numeric"
+                  autocomplete="postal-code"
+                  class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
+                         focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
+                />
+              </div>
+            </div>
+
+            <!-- PROJECT DETAILS -->
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-neutral-800 mb-1">Project type</label>
+                <select
+                  name="projectType"
+                  class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base bg-white
+                         focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none"
+                >
+                  <option>Interior painting</option>
+                  <option>Exterior painting</option>
+                  <option>Cabinets</option>
+                  <option>Trim / Doors</option>
+                  <option>Deck / Fence</option>
+                  <option>Drywall / Texture</option>
+                  <option>Commercial</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-neutral-800 mb-1">Timeline</label>
+                <select
+                  name="timeline"
+                  class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base bg-white
+                         focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none"
+                >
+                  <option>As soon as possible</option>
+                  <option>Within 2–4 weeks</option>
+                  <option>1–3 months</option>
+                  <option>Just pricing for now</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- REFERRAL -->
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-neutral-800 mb-1">How did you hear about us?</label>
+                <select
+                  name="referral"
+                  class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base bg-white
+                         focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none"
+                >
+                  <option>Friend / Family</option>
+                  <option>Nextdoor</option>
+                  <option>Google</option>
+                  <option>Facebook / Instagram</option>
+                  <option>Yard sign / Truck</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- ROOMS & MEASUREMENTS (dynamic) -->
+            <input type="hidden" name="roomsJson" id="rooms-json" />
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-800 mb-1">
+                Rooms &amp; measurements <span class="text-neutral-500 text-xs font-normal">(optional)</span>
+              </label>
+
+              <p class="text-[#C48356] text-sm mb-4 bg-white/70 p-3 rounded-lg border border-neutral-200">
+                Note: Measurements help us get a head start, but this form provides only a rough estimate.
+                A final quote will still require an on-site walkthrough.
+              </p>
+
+              <p class="mt-1 text-xs text-neutral-500">
+                Add each room you’d like painted. If you know the length, width, and ceiling height, include those too.
+              </p>
+
+              <div id="rooms-list" class="mt-4 space-y-4"></div>
+
+              <button
+                type="button"
+                id="add-room-btn"
+                class="mt-3 inline-flex items-center gap-2 rounded-full border border-neutral-300
+                       px-4 py-2 text-sm font-medium text-neutral-700
+                       hover:border-[#C48356] hover:text-[#C48356] hover:bg-neutral-50
+                       transition-colors"
+              >
+                <span class="text-lg leading-none">＋</span>
+                Add room
+              </button>
+            </div>
+
+            <!-- PROJECT NOTES -->
+            <div>
+              <label class="block text-sm font-medium text-neutral-800 mb-1">Tell us about your project</label>
+              <textarea
+                name="message"
+                rows="5"
+                placeholder="Rooms or areas, colors if known, special details, repairs needed…"
+                class="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm md:text-base
+                       focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 outline-none bg-white"
+              ></textarea>
+            </div>
+
+            <!-- PHOTOS -->
+            <div>
+              <label class="block text-sm font-medium text-neutral-800 mb-1">Photos (optional)</label>
+
+              <input
+                type="file"
+                id="photos-input"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                multiple
+                class="w-full rounded-xl border border-dashed border-neutral-300 px-4 py-3 bg-white text-sm md:text-base"
+                data-cloud-name={import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME}
+                data-upload-preset={import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+              />
+
+              <!-- submitted to your API -->
+              <input type="hidden" name="photoUrls" id="photo-urls" />
+
+              <p class="mt-1 text-xs text-neutral-500">
+                Photos of rooms and any damage help us quote faster.
+              </p>
+              <p class="mt-1 text-xs text-neutral-500" id="photo-upload-status"></p>
+            </div>
+
+            <!-- TURNSTILE (anti-bot) -->
+            <div
+              class="cf-turnstile"
+              data-sitekey={import.meta.env.PUBLIC_TURNSTILE_SITE}
+              data-callback="onTurnstileSuccess"
+              data-expired-callback="onTurnstileExpired"
+              data-error-callback="onTurnstileError"
+            ></div>
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+            <!-- SUBMIT -->
             <button
-              type="button"
-              class="room-remove-btn text-xs text-neutral-400 hover:text-red-500 flex items-center mt-1"
+              type="submit"
+              disabled
+              id="estimate-submit"
+              class="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-full px-6 py-4 font-semibold shadow-lg transition"
+              style="
+                background-color:#C48356 !important;
+                color:#ffffff !important;
+                -webkit-text-fill-color:#ffffff !important;
+                border: 1px solid #9a5f36 !important;
+                text-shadow: none !important;
+                opacity: 1 !important;
+              "
             >
-              Remove
+              <span style="color:#fff !important; -webkit-text-fill-color:#fff !important;">
+                Get my free estimate
+              </span>
+
+              <svg
+                style="color:#fff !important;"
+                class="h-4 w-4 shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5 12h14" />
+                <path d="M13 5l7 7-7 7" />
+              </svg>
             </button>
-          </div>
 
-          <div class="mt-3 grid grid-cols-3 gap-3">
-            <div>
-              <label class="block text-xs font-medium text-neutral-600 mb-1">Length (ft)</label>
-              <input
-                type="number" min="0" step="0.1"
-                name="rooms[${index}][lengthFt]"
-                placeholder="14"
-                class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 bg-white"
-              />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-neutral-600 mb-1">Width (ft)</label>
-              <input
-                type="number" min="0" step="0.1"
-                name="rooms[${index}][widthFt]"
-                placeholder="18"
-                class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 bg-white"
-              />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-neutral-600 mb-1">Ceiling height (ft)</label>
-              <input
-                type="number" min="0" step="0.1"
-                name="rooms[${index}][ceilingHtFt]"
-                placeholder="8"
-                class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 bg-white"
-              />
-            </div>
-          </div>
-
-          <div class="mt-3">
-            <label class="block text-xs font-medium text-neutral-600 mb-1">Notes for this room (optional)</label>
-            <textarea
-              name="rooms[${index}][notes]"
-              rows="2"
-              placeholder="Accent wall, vaulted ceiling, heavy repairs, cabinets in this room…"
-              class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm
-                     focus:outline-none focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 bg-white"
-            ></textarea>
-          </div>
+            <p class="text-xs text-neutral-500">
+              By submitting, you agree we may contact you about your project. We never share or sell your information.
+            </p>
+          </form>
         </div>
-      `;
-    };
 
-    const addRoom = () => {
-      if (!roomsList) return;
-      roomsList.insertAdjacentHTML("beforeend", createRoomBlock(roomIndex++));
-    };
+        <!-- Sidebar -->
+        <aside class="space-y-6 lg:sticky lg:top-16">
+          <div class="rounded-2xl bg-white/70 p-6 ring-1 ring-black/10 shadow-sm backdrop-blur">
+            <h3 class="text-lg font-semibold text-neutral-900">Prefer to talk first?</h3>
+            <ul class="mt-3 space-y-2 text-neutral-700 text-sm">
+              <li>📞 <a href="tel:+19526979987" class="underline decoration-[#C48356]/40 underline-offset-2">Call / Text (952) 697-9987</a></li>
+              <li>✉️ <a href="mailto:info@paintcraftmn.com" class="underline decoration-[#C48356]/40 underline-offset-2">info@paintcraftmn.com</a></li>
+              <li>🕘 Mon–Fri 8am–6pm • Sat by appointment</li>
+            </ul>
+          </div>
 
-    if (addRoomBtn && roomsList) {
-      addRoomBtn.addEventListener("click", addRoom);
+          <div class="rounded-2xl bg-white/70 p-6 ring-1 ring-black/10 shadow-sm backdrop-blur">
+            <h3 class="text-lg font-semibold text-neutral-900">Service area</h3>
+            <p class="mt-2 text-neutral-700 text-sm">
+              Minneapolis • St. Paul • Maple Grove • Plymouth • Minnetonka • surrounding suburbs
+            </p>
+            <div class="mt-4 overflow-hidden rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-black/10">
+              <div class="relative aspect-[16/9]">
+                <iframe
+                  class="absolute inset-0 h-full w-full border-0"
+                  loading="lazy"
+                  allowfullscreen
+                  referrerpolicy="no-referrer-when-downgrade"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d180609.80193113533!2d-93.40141012601988!3d44.98373916540674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x52b333909377bbbd%3A0x939fc9842f7aee07!2sMinneapolis%2C%20MN!5e0!3m2!1sen!2sus!4v1763750182803!5m2!1sen!2sus"
+                ></iframe>
+              </div>
+            </div>
+          </div>
 
-      roomsList.addEventListener("click", (event) => {
-        const target = event.target;
-        if (!target) return;
-        const removeBtn = target.closest(".room-remove-btn");
-        if (!removeBtn) return;
-        const block = removeBtn.closest(".room-block");
-        if (block) block.remove();
-      });
-    }
+          <div class="rounded-2xl bg-white/70 p-6 ring-1 ring-black/10 shadow-sm backdrop-blur">
+            <h3 class="text-lg font-semibold text-neutral-900">What to expect</h3>
+            <ol class="mt-3 list-decimal pl-5 text-neutral-700 text-sm space-y-1.5">
+              <li>We’ll review your details and reply within 1 business day.</li>
+              <li>We’ll schedule an on-site walkthrough if needed.</li>
+              <li>Clear written estimate &amp; scheduling options.</li>
+            </ol>
+          </div>
+        </aside>
+      </div>
+    </div>
 
-    // ---- Serialize rooms into JSON (roomsJson)
-    const serializeRooms = () => {
-      if (!roomsList) return [];
+    <!-- Dynamic rooms + Turnstile + Cloudinary -->
+    <script is:inline>
+      window.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("estimate-form");
+        const roomsList = document.getElementById("rooms-list");
+        const addRoomBtn = document.getElementById("add-room-btn");
+        const roomsHidden = document.getElementById("rooms-json");
 
-      const blocks = Array.from(roomsList.querySelectorAll(".room-block"));
+        const photosInput = document.getElementById("photos-input");
+        const photoUrlsHidden = document.getElementById("photo-urls");
+        const uploadStatus = document.getElementById("photo-upload-status");
 
-      const rooms = blocks
-        .map((block) => {
-          const idx = block.getAttribute("data-room-index");
+        const submitBtn = document.getElementById("estimate-submit");
+        const tsInput = document.getElementById("ts");
 
-          const getByExactName = (field) => {
-            const el = block.querySelector(`[name="rooms[${idx}][${field}]"]`);
-            return el && typeof el.value === "string" ? el.value.trim() : "";
-          };
+        if (tsInput) tsInput.value = String(Date.now());
+        if (submitBtn) submitBtn.disabled = true;
 
-          const getNum = (field) => {
-            const raw = getByExactName(field);
-            if (!raw) return null;
-            const n = Number(raw);
-            return Number.isFinite(n) ? n : null;
-          };
+        // Called by Cloudflare Turnstile
+        window.onTurnstileSuccess = () => {
+          if (submitBtn) submitBtn.disabled = false;
+        };
+        window.onTurnstileExpired = () => {
+          if (submitBtn) submitBtn.disabled = true;
+        };
+        window.onTurnstileError = () => {
+          if (submitBtn) submitBtn.disabled = true;
+        };
 
-          const room = {
-            name: getByExactName("name"),
-            lengthFt: getNum("lengthFt"),
-            widthFt: getNum("widthFt"),
-            ceilingHtFt: getNum("ceilingHtFt"),
-            notes: getByExactName("notes"),
-          };
+        // Track upload state so we don't submit early
+        let isUploadingPhotos = false;
 
-          const empty =
-            !room.name &&
-            !room.notes &&
-            room.lengthFt == null &&
-            room.widthFt == null &&
-            room.ceilingHtFt == null;
+        // ---- Rooms builder
+        let roomIndex = 0;
 
-          return empty ? null : room;
-        })
-        .filter(Boolean);
+        const createRoomBlock = (index) => {
+          return `
+            <div class="room-block rounded-xl border border-neutral-200 p-4 md:p-5 bg-white relative" data-room-index="${index}">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex-1">
+                  <label class="block text-xs font-semibold text-neutral-700 mb-1">Room name</label>
+                  <input
+                    name="rooms[${index}][name]"
+                    placeholder="Living room, Bedroom 1, Hallway…"
+                    class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm
+                           focus:outline-none focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 bg-white"
+                  />
+                </div>
 
-      return rooms;
-    };
+                <button
+                  type="button"
+                  class="room-remove-btn text-xs text-neutral-400 hover:text-red-500 flex items-center mt-1"
+                >
+                  Remove
+                </button>
+              </div>
 
-    // ---- Cloudinary uploads (optional)
-    
-    const uploadPhotosToCloudinary = async (files) => {
-  const cloud = photosInput?.dataset?.cloudName;
-  const preset = photosInput?.dataset?.uploadPreset;
+              <div class="mt-3 grid grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-xs font-medium text-neutral-600 mb-1">Length (ft)</label>
+                  <input type="number" min="0" step="0.1"
+                    name="rooms[${index}][lengthFt]"
+                    class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm
+                           focus:outline-none focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 bg-white" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-neutral-600 mb-1">Width (ft)</label>
+                  <input type="number" min="0" step="0.1"
+                    name="rooms[${index}][widthFt]"
+                    class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm
+                           focus:outline-none focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 bg-white" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-neutral-600 mb-1">Ceiling height (ft)</label>
+                  <input type="number" min="0" step="0.1"
+                    name="rooms[${index}][ceilingHtFt]"
+                    class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm
+                           focus:outline-none focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 bg-white" />
+                </div>
+              </div>
 
-  if (!cloud || !preset) {
-    uploadStatus && (uploadStatus.textContent = "Upload not configured.");
-    return [];
-  }
+              <div class="mt-3">
+                <label class="block text-xs font-medium text-neutral-600 mb-1">Notes</label>
+                <textarea
+                  name="rooms[${index}][notes]"
+                  rows="2"
+                  class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm
+                         focus:outline-none focus:ring-2 focus:ring-[#C48356]/30 focus:border-[#C48356]/50 bg-white"></textarea>
+              </div>
+            </div>
+          `;
+        };
 
-  if (!files || !files.length) {
-    uploadStatus && (uploadStatus.textContent = "");
-    return [];
-  }
+        const addRoom = () => {
+          if (!roomsList) return;
+          roomsList.insertAdjacentHTML("beforeend", createRoomBlock(roomIndex++));
+        };
 
-  const urls = [];
-  uploadStatus && (uploadStatus.textContent = `Uploading ${files.length} photo(s)…`);
+        addRoomBtn?.addEventListener("click", addRoom);
 
-  for (const file of files) {
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("upload_preset", preset);
-
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/image/upload`, {
-      method: "POST",
-      body: fd,
-    });
-
-    if (!res.ok) continue;
-
-    const data = await res.json();
-    if (data.secure_url) urls.push(data.secure_url);
-  }
-
-  uploadStatus && (uploadStatus.textContent = `Uploaded ${urls.length} photo(s).`);
-  return urls;
-};
-
-
-
-    photosInput?.addEventListener("change", async () => {
-      const files = Array.from(photosInput.files || []);
-      if (!files.length) {
-        if (photoUrlsHidden) photoUrlsHidden.value = "";
-        if (uploadStatus) uploadStatus.textContent = "";
-        return;
-      }
-
-      try {
-        isUploadingPhotos = true;
-        if (uploadStatus) uploadStatus.textContent = `Uploading ${files.length} photo(s)…`;
-
-        const urls = await uploadPhotosToCloudinary(files);
-
-        if (photoUrlsHidden) photoUrlsHidden.value = JSON.stringify(urls);
-        if (uploadStatus) uploadStatus.textContent = `Uploaded ${urls.length} photo(s).`;
-      } catch (err) {
-        console.error(err);
-        if (photoUrlsHidden) photoUrlsHidden.value = "";
-        if (uploadStatus) uploadStatus.textContent = "Photo upload failed. You can still submit without photos.";
-      } finally {
-        isUploadingPhotos = false;
-      }
-    });
-
-    // ---- Submit handler (clean payload to /api/estimate)
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      if (isUploadingPhotos) {
-        alert("Photos are still uploading. Please wait a moment and submit again.");
-        return;
-      }
-
-      // serialize rooms into hidden input
-      const rooms = serializeRooms();
-      if (roomsHidden) roomsHidden.value = JSON.stringify(rooms);
-
-      // Build FormData (DON'T send raw files, only URLs)
-      const fd = new FormData(form);
-
-      // Remove bracket fields so only roomsJson goes to server
-      Array.from(fd.keys()).forEach((key) => {
-        if (key.startsWith("rooms[")) fd.delete(key);
-      });
-
-      // Remove raw file input if present (we uploaded already)
-      fd.delete("photos");
-      fd.delete("photos[]");
-
-      // basic UX: disable submit button
-      const submitBtn = form.querySelector('button[type="submit"], button:not([type])');
-      if (submitBtn) submitBtn.disabled = true;
-
-      try {
-        const res = await fetch(form.getAttribute("action") || "/api/estimate", {
-          method: "POST",
-          body: fd,
+        roomsList?.addEventListener("click", (event) => {
+          const removeBtn = event.target.closest(".room-remove-btn");
+          if (!removeBtn) return;
+          const block = removeBtn.closest(".room-block");
+          block?.remove();
         });
 
-        if (!res.ok) {
-          let msg = "Something went wrong submitting the form.";
-          try {
-            const data = await res.json();
-            if (data && data.error) msg = data.error;
-          } catch {}
-          alert(msg);
-          return;
-        }
+        // ---- Serialize rooms
+        const serializeRooms = () => {
+          if (!roomsList) return [];
+          const blocks = Array.from(roomsList.querySelectorAll(".room-block"));
 
-        window.location.href = "/thanks";
-      } catch (err) {
-        alert("Network error. Please try again.");
-      } finally {
-        if (submitBtn) submitBtn.disabled = false;
-      }
-    });
-  });
-</script>
+          return blocks
+            .map((block) => {
+              const idx = block.getAttribute("data-room-index");
+              const getVal = (field) =>
+                block.querySelector(`[name="rooms[${idx}][${field}]"]`)?.value?.trim() || "";
+              const getNum = (field) => {
+                const raw = getVal(field);
+                if (!raw) return null;
+                const v = Number(raw);
+                return Number.isFinite(v) ? v : null;
+              };
+
+              const room = {
+                name: getVal("name"),
+                lengthFt: getNum("lengthFt"),
+                widthFt: getNum("widthFt"),
+                ceilingHtFt: getNum("ceilingHtFt"),
+                notes: getVal("notes"),
+              };
+
+              const empty =
+                !room.name &&
+                !room.notes &&
+                room.lengthFt == null &&
+                room.widthFt == null &&
+                room.ceilingHtFt == null;
+
+              return empty ? null : room;
+            })
+            .filter(Boolean);
+        };
+
+        // ---- Cloudinary uploads
+        const uploadPhotosToCloudinary = async (files) => {
+          const cloud = photosInput?.dataset?.cloudName;
+          const preset = photosInput?.dataset?.uploadPreset;
+
+          if (!cloud || !preset || !files.length) return [];
+
+          const urls = [];
+          if (uploadStatus) uploadStatus.textContent = `Uploading ${files.length} photo(s)…`;
+
+          for (const file of files) {
+            const fd = new FormData();
+            fd.append("file", file);
+            fd.append("upload_preset", preset);
+
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/image/upload`, {
+              method: "POST",
+              body: fd,
+            });
+
+            if (!res.ok) continue;
+            const data = await res.json().catch(() => null);
+            if (data?.secure_url) urls.push(data.secure_url);
+          }
+
+          if (uploadStatus) uploadStatus.textContent = `Uploaded ${urls.length} photo(s).`;
+          return urls;
+        };
+
+        photosInput?.addEventListener("change", async () => {
+          const files = Array.from(photosInput.files || []);
+          if (!files.length) return;
+
+          isUploadingPhotos = true;
+          const urls = await uploadPhotosToCloudinary(files);
+          if (photoUrlsHidden) photoUrlsHidden.value = JSON.stringify(urls);
+          isUploadingPhotos = false;
+        });
+
+        // ---- Submit handler
+        form?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          if (isUploadingPhotos) {
+            alert("Photos are still uploading. Please wait.");
+            return;
+          }
+
+          const rooms = serializeRooms();
+          if (roomsHidden) roomsHidden.value = JSON.stringify(rooms);
+
+          const fd = new FormData(form);
+
+          // remove dynamic room fields (we only submit roomsJson)
+          Array.from(fd.keys()).forEach((key) => {
+            if (key.startsWith("rooms[")) fd.delete(key);
+          });
+
+          if (submitBtn) submitBtn.disabled = true;
+
+          try {
+            const res = await fetch(form.action, { method: "POST", body: fd });
+
+            if (!res.ok) {
+              const data = await res.json().catch(() => null);
+              alert(data?.error || "Submission failed.");
+              if (submitBtn) submitBtn.disabled = false;
+              return;
+            }
+
+            window.location.href = "/thanks";
+          } catch {
+            alert("Network error");
+            if (submitBtn) submitBtn.disabled = false;
+          }
+        });
+      });
+    </script>
+  </section>
+</Base>

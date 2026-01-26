@@ -9,5 +9,8 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      allowedHosts: ["draft-then-flood-vote.trycloudflare.com"],
+    },
   },
 });
