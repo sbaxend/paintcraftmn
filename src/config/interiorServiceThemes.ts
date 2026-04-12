@@ -106,7 +106,7 @@ export const interiorServiceThemes: Record<
     img: "/walls_serviceTile.png",
     modalTitle: "Our Professional Wall Painting Process",
     modalBody: `
-We begin by taping and protecting all trim, then patching holes and imperfections for a smooth surface.Next, we apply two even coats of paint, delivering a clean, consistent finish every time.
+We begin by taping and protecting all trim, then patching holes and imperfections for a smooth surface. Next, we apply two even coats of paint, delivering a clean, consistent finish every time.
 `,
   },
   {
@@ -249,7 +249,7 @@ We repair trim edges, refresh caulk, prime problem areas, and apply clean, crisp
     img: "/brush-and-roll-package.jpg",
     modalTitle: "Brush & Roll Package",
     modalBody: `
-We start by protecting all floors and surrounding surfaces, then remove hardware and clean and sand each area for proper adhesion. Stained cabinets are primed, and we use a fine finish brush and roller to apply thin, even coats for a smooth, durable result. After everything dries, we reinstall hardware, inspect the finish, and complete any touch-ups, delivering refreshed cabinets at a budget-friendly price. most budget-friendly package. Cabinets are prepped, lightly sanded, and finished using a professional brush-and-roll method for a clean, refreshed look.
+Cabinets are prepped, lightly sanded, and finished using a professional brush-and-roll method for a clean, refreshed look. We start by protecting all floors and surrounding surfaces, then remove hardware and clean and sand each area for proper adhesion. Stained cabinets are primed, and we use a fine finish brush and roller to apply thin, even coats for a smooth, durable result. After everything dries, we reinstall hardware, inspect the finish, and complete any touch-ups, delivering refreshed cabinets at a budget-friendly price.
     `,
   },
 
@@ -260,7 +260,7 @@ We start by protecting all floors and surrounding surfaces, then remove hardware
     img: "/cabinet_serviceTile.png",
     modalTitle: "Standard Cabinet Painting Package",
     modalBody: `
-We start by protecting all surfaces, removing hardware, and thoroughly cleaning and sanding every piece for proper adhesion. Stained cabinets are primed with a high-quality bonding primer, then we use professional airless spray equipment to apply smooth, consistent coats for a smooth, durable finish. Once everything dries, we reinstall hardware, inspect every detail, and complete any final touch-ups, delivering cabinets that look modern, refined, and built to last.`,
+We start by protecting all surfaces, removing hardware, and thoroughly cleaning and sanding every surface for proper adhesion. Stained cabinets are primed with a high-quality stain blocking, then we use professional airless spray equipment to apply smooth, consistent coats for a smooth, durable finish. Once everything dries, we reinstall hardware, inspect every detail, and complete any final touch-ups, delivering cabinets that look modern, refined, and fresh.`,
   },
 
   {
@@ -270,7 +270,7 @@ We start by protecting all surfaces, removing hardware, and thoroughly cleaning 
     img: "/premium-cabinet-package-minnesota.jpeg",
     modalTitle: "Premium Cabinet Refinishing Package",
     modalBody: `
-We fully protect the workspace and remove all doors, drawers, and hardware. Surfaces are thoroughly cleaned, sanded, and prepped before applying a specialized industrial-grade 2K primer and finish for exceptional durability and adhesion. Using professional HVLP spray equipment, we deliver a smooth, factory-quality finish. After curing, all components are reinstalled, inspected, and detailed, resulting in a long-lasting, scratch-resistant, furniture-quality finish.
+We fully protect the workspace and remove all doors, drawers, and hardware. Surfaces are thoroughly cleaned, sanded, and prepped before applying a specialized 2K Poly for exceptional durability and adhesion. Using professional HVLP spray equipment, we deliver a smooth, factory-quality finish. After curing, all components are reinstalled, inspected, and detailed, resulting in a long-lasting, scratch-resistant, furniture-quality finish.
     `,
   },
 ]
