@@ -9,6 +9,9 @@ import TrustedPartners from "../components/TrustedPartners.astro";
 import ServiceGridSlide from "../components/ServiceGridSlide.astro";
 import ReviewsTwo from "../components/ReviewsTwo.astro";
 import BridgeBlurb from "../components/BridgeBlurb.astro";
+
+let reviewsData = null;
+let reviewsError = false;
 ---
 
 <Base title="PaintCraft MN | Professional Painting Services">
@@ -42,7 +45,11 @@ import BridgeBlurb from "../components/BridgeBlurb.astro";
 
   <CoveredBand />
   <!-- <WhyChooseVideo client:load /> -->
-  <ReviewsTwo/>
+  {!reviewsError && reviewsData ? (
+  <ReviewsTwo reviews={reviewsData} />
+) : (
+  <Reviews />
+)}
   <TrustedPartners />
 </Base>
 
