@@ -4,6 +4,11 @@ import WorkHero from "../components/our-work/WorkHero.astro";
 import WorkGallery from "../components/our-work/WorkGallery.astro";
 import WorkCTA from "../components/our-work/WorkCTA.astro";
 import AccoladesBanner from "../components/our-work/AccoladesBanner.astro";
+import Reviews from "../components/Reviews.astro";
+import ReviewsTwo from "../components/ReviewsTwo.astro";
+
+let reviewsData = null;
+let reviewsError = false;
 
 // enriched items so the modal has details
 const items = [
@@ -83,6 +88,12 @@ const items = [
 
   <!-- NEW: Filtered gallery with modal -->
   <WorkGallery items={items} />
+
+  {!reviewsError && reviewsData ? (
+  <ReviewsTwo reviews={reviewsData} />
+) : (
+  <Reviews />
+)}
 
   <WorkCTA />
 </Base>
