@@ -73,7 +73,7 @@ const alternatingItems = subFeatures.map((feat) => ({
       title={title}
       subtitle={subtitle}
       heroImage={heroImage}
-      backHref="/exterior"
+      backHref={`/exterior?slide=${slug}`}
       backLabel="Back to Exterior Services"
       ctaLabel="Get a Free Estimate"
     />
@@ -90,7 +90,7 @@ const alternatingItems = subFeatures.map((feat) => ({
     <ServiceDetailCTA
       title={`Ready to refresh your ${title.toLowerCase()}?`}
       description="Schedule a quick walk-through and same-day estimate."
-      backHref="/exterior"
+      backHref={`/exterior?slide=${slug}`}
       backLabel="Back to Exterior Services"
        bbbLink="https://www.bbb.org/us/mn/hopkins/profile/painting-contractors/paintcraft-llc-0704-1000075280/#sealclick"
     />

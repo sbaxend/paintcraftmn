@@ -97,7 +97,7 @@ const items = services.map((s) => ({
 
                   <div class="stagger flex flex-wrap gap-3 mt-4">
                     <a
-                      href={s.href}
+                      href={`${s.href}?from=exterior&slide=${s.id}`}
                       class="inline-flex items-center justify-center rounded-full bg-white px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base font-semibold text-neutral-900 hover:bg-neutral-100 transition-all hover:scale-105 shadow-lg"
                     >
                       Learn More
@@ -175,11 +175,27 @@ const items = services.map((s) => ({
   const next = document.getElementById("svc-next");
   const dots = Array.from(document.querySelectorAll("#svc-dots > button"));
   const autoBtn = document.getElementById("svc-auto");
+  const params = new URLSearchParams(window.location.search);
+  const slideFromUrl = params.get("slide");
+  const slideFromStorage = sessionStorage.getItem("exteriorSlideId");
+
+  const targetSlideId = slideFromUrl || slideFromStorage;
 
   if (!wrap || !track || !prev || !next || !autoBtn) return;
 
   // ----- Build infinite loop (clone first & last) -----
   const originalSlides = Array.from(track.children);
+  const idToIndex = {};
+
+  originalSlides.forEach((slide, i) => {
+    const link = slide.querySelector('a[href*="/exterior/"]');
+    if (!link) return;
+
+    const href = link.getAttribute("href");
+    const id = href.split("/").pop().split("?")[0];
+
+    idToIndex[id] = i + 1; // account for clone offset
+  });
   const count = originalSlides.length;
   if (!count) return;
 
@@ -196,8 +212,24 @@ const items = services.map((s) => ({
 
   const AUTO_MS = 5000;
   let index = 1;
+
+  if (targetSlideId && idToIndex[targetSlideId] !== undefined) {
+    index = idToIndex[targetSlideId];
+  }
   let autoTimer = null;
   let pausedByUser = false;
+    // Track which slide user clicked
+  originalSlides.forEach((slide) => {
+    const link = slide.querySelector('a[href*="/exterior/"]');
+    if (!link) return;
+
+    link.addEventListener("click", () => {
+      const href = link.getAttribute("href");
+      const id = href.split("/").pop().split("?")[0];
+
+      sessionStorage.setItem("exteriorSlideId", id);
+    });
+  });
 
   const setActive = (direction = "forward") => {
     const currentSlide = slides[index];
@@ -270,6 +302,18 @@ const items = services.map((s) => ({
   track.style.transform = `translateX(-${index * 100}%)`;
   setActive("forward");
   startAuto();
+
+  // Scroll into view ONLY when returning from a service page
+  if (targetSlideId) {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        wrap.scrollIntoView({ behavior: "auto", block: "nearest" });
+      }, 80);
+    });
+  }
+
+  // Clean up storage
+  sessionStorage.removeItem("exteriorSlideId");
 
   prev.addEventListener("click", () => { go(index - 1, "backward"); startAuto(); });
   next.addEventListener("click", () => { go(index + 1, "forward"); startAuto(); });
