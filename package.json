@@ -14,5 +14,8 @@
     "astro": "^5.15.1",
     "resend": "^6.6.0",
     "tailwindcss": "^4.1.16"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.1"
   }
 }
