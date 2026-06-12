@@ -1,0 +1,53 @@
+---
+export interface Props {
+  image?: string;
+  alt?: string;
+  title?: string;
+  subtitle?: string;
+}
+
+const {
+  image = "/footerbanner.png",
+  alt = "Beautifully lit home interior with fresh paint",
+  title = "Your Dream Space Is One Conversation Away",
+  subtitle = "Experience the transformation that comes from working with craftsmen who treat your home like their own. Let's bring your vision to life.",
+} = Astro.props;
+---
+
+<section
+  aria-label="PaintCraft showcase"
+  class="relative isolate overflow-hidden"
+>
+  <img
+    src={image}
+    alt={alt}
+    class="absolute inset-0 h-full w-full object-cover"
+    loading="lazy"
+    decoding="async"
+  />
+  <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/45 to-black/30"></div>
+
+  <div class="relative mx-auto max-w-5xl px-6 py-24 md:py-32 text-center">
+    <h2 class="text-3xl md:text-5xl lg:text-6xl font-sans font-semibold leading-tight text-white">
+      {title}
+    </h2>
+    <p class="mt-6 text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+      {subtitle}
+    </p>
+  </div>
+
+  <div class="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/25 to-transparent"></div>
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/20 to-transparent"></div>
+
+  <style is:inline>
+    @media (prefers-reduced-motion: no-preference) {
+      section[aria-label="PaintCraft showcase"] img {
+        transform: scale(1.03);
+        transition: transform 900ms ease;
+      }
+      section[aria-label="PaintCraft showcase"]:hover img {
+        transform: scale(1.06);
+      }
+    }
+  </style>
+</section>

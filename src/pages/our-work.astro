@@ -1,88 +1,44 @@
 ---
+import fs from "node:fs";
+import path from "node:path";
 import Base from "../layouts/Base.astro";
 import WorkHero from "../components/our-work/WorkHero.astro";
 import WorkGallery from "../components/our-work/WorkGallery.astro";
 import WorkCTA from "../components/our-work/WorkCTA.astro";
 import AccoladesBanner from "../components/our-work/AccoladesBanner.astro";
-import Reviews from "../components/Reviews.astro";
-import ReviewsTwo from "../components/ReviewsTwo.astro";
+import Reviews from "../components/reviews/Reviews.astro";
+import ReviewsTwo from "../components/reviews/ReviewsTwo.astro";
+
+const IMAGE_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
+const transformationsDir = path.join(process.cwd(), "public", "Website Transformations");
+
+const items = fs
+  .readdirSync(transformationsDir)
+  .sort()
+  .flatMap((folder) => {
+    const folderPath = path.join(transformationsDir, folder);
+    if (!fs.statSync(folderPath).isDirectory()) return [];
+    return fs
+      .readdirSync(folderPath)
+      .filter((file) => IMAGE_EXTS.has(path.extname(file).toLowerCase()))
+      .sort()
+      .map((file, idx) => ({
+        id: `${folder.toLowerCase().replace(/\W+/g, "-")}-${idx}`,
+        type: folder,
+        title: folder,
+        img: `/Website Transformations/${folder}/${file}`.replace(/ /g, "%20"),
+      }));
+  });
 
 let reviewsData = null;
 let reviewsError = false;
-
-// enriched items so the modal has details
-const items = [
-  {
-    id: "i1",
-    type: "interior",
-    title: "Modern Living Room Refresh",
-    img: "/work/interior-1.jpg",
-    description: "Ceiling repair and full-color refresh for a bright, modern living space.",
-    location: "Maple Grove, MN",
-    tags: ["Interior", "Living Room", "Neutral Palette"],
-  },
-  {
-    id: "i2",
-    type: "interior",
-    title: "Warm Bedroom Retreat",
-    img: "/work/interior-2.jpg",
-    description: "Soft, calming tones designed for better rest and a cozy feel.",
-    location: "Plymouth, MN",
-    tags: ["Interior", "Bedroom"],
-  },
-  {
-    id: "e1",
-    type: "exterior",
-    title: "Lake House Refresh",
-    img: "/work/exterior-1.jpg",
-    description: "Durable exterior repaint built to handle Minnesota seasons.",
-    location: "Brainerd Lakes, MN",
-    tags: ["Exterior", "Lake Home"],
-  },
-  {
-    id: "e2",
-    type: "exterior",
-    title: "Curb Appeal Boost",
-    img: "/work/exterior-2.jpg",
-    description: "Updated siding and trim colors for a clean, modern street presence.",
-    location: "Edina, MN",
-    tags: ["Exterior", "Siding", "Trim"],
-  },
-  {
-    id: "c1",
-    type: "cabinets",
-    title: "Navy Shaker Kitchen",
-    img: "/work/cabinets-1.jpg",
-    description: "Factory-smooth cabinet refinishing in a rich, navy finish.",
-    location: "St. Louis Park, MN",
-    tags: ["Cabinets", "Kitchen"],
-  },
-  {
-    id: "c2",
-    type: "cabinets",
-    title: "Matte White Update",
-    img: "/work/cabinets-2.jpg",
-    description: "Clean white cabinetry that makes the entire kitchen feel brand new.",
-    location: "Minnetonka, MN",
-    tags: ["Cabinets", "Kitchen", "Bright Whites"],
-  },
-  {
-    id: "b1",
-    type: "commercial",
-    title: "Retail Interior Refresh",
-    img: "/work/commercial-1.jpg",
-    description: "Professional interior repaint for a high-traffic retail space.",
-    location: "Downtown Minneapolis, MN",
-    tags: ["Commercial", "Interior"],
-  },
-];
 ---
 
 <Base title="Our Work | PaintCraft MN">
   <WorkHero
     kicker="Project Gallery"
     title="Beautiful results, crafted to last."
-    subtitle="A curated look at interiors, exteriors, cabinets, and commercial spaces we've recently completed."
+    subtitle="Browse our cabinet, wall, ceiling, trim, staining, and exterior work across the Twin Cities."
   />
   <AccoladesBanner />
 

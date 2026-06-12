@@ -1,0 +1,107 @@
+<section
+  id="meta-bridge"
+  class="relative bg-gradient-to-b from-white to-neutral-50 py-8 md:py-12 text-center overflow-hidden"
+>
+  <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.04)_0%,transparent_70%)]"></div>
+
+  <div class="relative z-10 px-6">
+    <p
+      class="mx-auto max-w-5xl text-[clamp(2.2rem,4.2vw,3.25rem)] leading-[1.1] font-sans font-semibold tracking-tight text-neutral-800 reveal-up mt-0 mb-1"
+    >
+      Transforming Spaces Into Experiences
+    </p>
+  </div>
+
+  <script is:inline>
+    {String.raw`
+      (() => {
+        const section = document.getElementById("meta-bridge");
+        if (!section) return;
+
+        const el = section.querySelector(".reveal-up");
+        if (!el) return;
+
+        const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (prefersReduced) return; // leave visible
+
+        let hasRun = false;
+
+        const reveal = () => {
+          if (hasRun) return;
+          hasRun = true;
+          el.classList.add("is-in");
+          el.classList.remove("pre");
+        };
+
+        // If we land mid-page (back button / anchor), don't hide it — just keep it visible.
+        const rect = el.getBoundingClientRect();
+        const vh = window.innerHeight || 0;
+        const alreadyNearMiddle = rect.top < vh * 0.75 && rect.bottom > vh * 0.25;
+        if (alreadyNearMiddle) return;
+
+        // ✅ Only hide AFTER JS is running (prevents blank/white gaps)
+        el.classList.add("pre");
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((e) => e.isIntersecting)) {
+              reveal();
+              io.disconnect();
+            }
+          },
+          {
+            // A middle-ish band trigger
+            root: null,
+            rootMargin: "-30% 0px -30% 0px",
+            threshold: 0.01,
+          }
+        );
+
+        io.observe(el);
+
+        // ✅ Safety net: never leave hidden
+        setTimeout(() => {
+          if (!hasRun) reveal();
+        }, 2500);
+      })();
+    `}
+  </script>
+
+  <style>
+    /* Default visible */
+    .reveal-up {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+
+    /* Hidden pre-state only when JS adds it */
+    .reveal-up.pre {
+      opacity: 0;
+      transform: translateY(18px);
+      filter: blur(6px);
+      will-change: opacity, transform, filter;
+    }
+
+    /* Reveal animation */
+    .reveal-up.is-in {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+      transition:
+        opacity 650ms ease,
+        transform 750ms cubic-bezier(.2,.8,.2,1),
+        filter 750ms ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal-up.pre,
+      .reveal-up.is-in {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</section>

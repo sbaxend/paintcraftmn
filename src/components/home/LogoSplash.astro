@@ -1,0 +1,188 @@
+---
+const {
+  logoSrc = "/paintcraftmn-logo.png",
+} = Astro.props;
+---
+
+<div id="splash-screen" class="splash-screen">
+  <div class="splash-logo-container">
+    <img src={logoSrc} alt="PaintCraft" class="splash-logo" />
+  </div>
+</div>
+
+<style is:global>
+  /* Splash overlay - pure black */
+  .splash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Hide immediately on load, then control with JS */
+  .splash-screen.hidden {
+    display: none;
+  }
+
+  /* Logo container */
+  .splash-logo-container {
+    position: relative;
+  }
+
+.splash-logo {
+  width: auto;
+  height: clamp(90px, 12vw, 160px);
+  opacity: 0;
+  transform: scale(0.92);
+  filter: brightness(1) drop-shadow(0 0 30px rgba(196, 131, 86, 0.35));
+}
+
+
+  /* Logo fade in */
+  .splash-logo.animate-in {
+    animation: logoIn 1000ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  /* Logo fade out */
+  .splash-logo.animate-out {
+    animation: logoOut 800ms cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+  }
+
+  @keyframes logoIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes logoOut {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.08);
+    }
+  }
+
+  /* Background fade out */
+  .splash-screen.fade-bg {
+    animation: bgFadeOut 900ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes bgFadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* Page content control */
+  body.splash-loading {
+    overflow: hidden;
+  }
+
+  body.splash-loading main,
+  body.splash-loading header,
+  body.splash-loading footer {
+    visibility: hidden;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .splash-logo.animate-in,
+    .splash-logo.animate-out {
+      animation-duration: 200ms;
+    }
+    .splash-screen.fade-bg {
+      animation-duration: 300ms;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    'use strict';
+    
+    const splash = document.getElementById('splash-screen');
+    const logo = splash?.querySelector('.splash-logo');
+    
+    if (!splash || !logo) return;
+
+    // Lock body scroll
+    document.body.classList.add('splash-loading');
+
+    // Ferrari timing (in milliseconds)
+    const LOGO_FADE_IN = 1000;   // Logo fade in duration
+    const LOGO_HOLD = 800;       // How long logo stays visible
+    const LOGO_FADE_OUT = 800;   // Logo fade out duration  
+    const BG_FADE = 900;         // Background fade duration (starts after logo gone)
+    const CLEANUP_DELAY = 100;   // Small buffer before cleanup
+
+    let timeline = 0;
+
+    // Step 1: Fade in logo (black background stays solid)
+    setTimeout(() => {
+      logo.classList.add('animate-in');
+    }, 50);
+
+    timeline += LOGO_FADE_IN;
+
+    // Step 2: Hold logo at full opacity (black still solid)
+    timeline += LOGO_HOLD;
+
+    // Step 3: Fade out logo (black STILL solid)
+    setTimeout(() => {
+      logo.classList.remove('animate-in');
+      logo.classList.add('animate-out');
+    }, timeline);
+
+    timeline += LOGO_FADE_OUT;
+
+    // Step 4: NOW fade out black background (revealing page)
+    setTimeout(() => {
+      splash.classList.add('fade-bg');
+    }, timeline);
+
+    timeline += BG_FADE;
+
+    // Step 5: Clean up and show page
+    setTimeout(() => {
+      document.body.classList.remove('splash-loading');
+      splash.classList.add('hidden');
+      splash.remove();
+    }, timeline + CLEANUP_DELAY);
+
+    // Failsafe - force cleanup after 5 seconds
+    setTimeout(() => {
+      if (document.body.classList.contains('splash-loading')) {
+        document.body.classList.remove('splash-loading');
+        if (splash.parentNode) {
+          splash.classList.add('hidden');
+          splash.remove();
+        }
+      }
+    }, 5000);
+
+  })();
+</script>
+
+<noscript>
+  <style>
+    .splash-screen { display: none !important; }
+    body.splash-loading { overflow: auto !important; }
+    body.splash-loading main,
+    body.splash-loading header,
+    body.splash-loading footer { visibility: visible !important; }
+  </style>
+</noscript>

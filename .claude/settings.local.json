@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p src/components/layout src/components/home src/components/reviews src/components/services)",
+      "Bash(mv src/components/Header.astro src/components/layout/)",
+      "Bash(mv src/components/Footer.astro src/components/layout/)",
+      "Bash(mv src/components/BannerFooter.astro src/components/layout/)",
+      "Bash(mv src/components/HeroVideo.astro src/components/home/)"
+    ]
+  }
+}

@@ -1,0 +1,426 @@
+---
+import { services } from "../../config/siteConfig.js";
+
+// services here don’t have id, so just keep href or default to "#"
+const items = services.map((s) => ({
+  ...s,
+  href: s.href ?? "#",
+}));
+---
+
+<section class="relative bg-neutral-50">
+  <div id="svc-wrap" class="relative w-full overflow-hidden">
+    <!-- Track -->
+    <div
+      id="svc-track"
+      class="flex transition-transform duration-700 ease-out"
+      style="will-change: transform;"
+    >
+      {items.map((s, i) => (
+        <article
+          class={`slide ${i === 0 ? "is-active" : ""} relative shrink-0 w-full`}
+        >
+          <!-- BUBBLE CONTAINER -->
+          <div class="mx-auto max-w-[1600px] px-4 md:px-6">
+            <div
+              class="relative min-h-[500px] md:min-h-[600px] lg:min-h-[700px] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-neutral-200/70"
+            >
+              <!-- Background image -->
+              <img
+                src={s.img}
+                alt={s.title}
+                class="absolute inset-0 h-full w-full object-cover rounded-3xl"
+                loading="eager"
+                decoding="async"
+                fetchpriority="high" 
+              />
+
+              <!-- Gradient overlay -->
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 rounded-3xl"
+              ></div>
+
+              <!-- CONTENT: centered text + buttons -->
+<div class="absolute inset-0 z-10 flex items-center justify-center">
+  <div
+    class="slide-content max-w-3xl mx-auto flex flex-col items-center justify-center text-center px-6 md:px-12 gap-4 md:gap-6"
+  >
+    <!-- text block -->
+    <div>
+      <h2
+        class="stagger text-white text-4xl md:text-6xl lg:text-7xl font-black font-sans font-semibold tracking-tight leading-[0.9] mb-4 md:mb-6"
+      >
+        {s.title}
+      </h2>
+
+      {s.description && (
+        <p
+          class="stagger text-white/90 text-sm md:text-lg max-w-2xl mx-auto mb-6 leading-relaxed"
+        >
+          {s.description}
+        </p>
+      )}
+    </div>
+
+    <!-- buttons centered under text -->
+    <div
+      class="stagger mt-4 md:mt-6 flex gap-3 flex-wrap justify-center"
+    >
+      <a
+        href={s.href}
+        class="inline-flex items-center justify-center rounded-full bg-white px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-semibold text-neutral-900 hover:bg-neutral-100 transition-all hover:scale-105 shadow-lg"
+      >
+        Learn More
+      </a>
+      <a
+        href="/contact"
+        class="inline-flex items-center justify-center rounded-full border-2 border-white bg-transparent px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-semibold text-white hover:bg-white hover:text-neutral-900 transition-all"
+      >
+        Get Free Estimate
+      </a>
+    </div>
+  </div>
+</div>
+
+              <!-- /content -->
+            </div>
+          </div>
+          <!-- /bubble -->
+        </article>
+      ))}
+    </div>
+
+    <!-- Arrows -->
+    <button
+      id="svc-prev"
+      class="hidden md:flex absolute left-4 md:left-8 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-30 shadow-xl"
+      aria-label="Previous slide"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+    </button>
+    <button
+      id="svc-next"
+      class="hidden md:flex absolute right-4 md:right-8 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-30 shadow-xl"
+      aria-label="Next slide"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M9 18l6-6-6-6" />
+      </svg>
+    </button>
+
+    <!-- Dots -->
+    <div
+      id="svc-dots"
+      class="absolute bottom-6 md:bottom-8 left-6 md:left-12 flex gap-2 md:gap-3 z-30"
+    >
+      {items.map((_, i) => (
+        <button
+          class="h-2 w-2 md:h-3 md:w-3 rounded-full bg-white/40 hover:bg-white/70 transition-all aria-[current=true]:bg-white aria-[current=true]:w-6 md:aria-[current=true]:w-8"
+          aria-current={i === 0 ? "true" : "false"}
+          aria-label={`Go to slide ${i + 1}`}
+        ></button>
+      ))}
+    </div>
+
+    <!-- Play/Pause -->
+    <button
+      id="svc-auto"
+      class="absolute bottom-6 md:bottom-8 right-6 md:right-12 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/30 transition-all z-30"
+      aria-label="Pause autoplay"
+      data-state="playing"
+      title="Pause/Play"
+    >
+      <svg
+        class="icon-pause h-4 w-4 md:h-5 md:w-5 text-white"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+      </svg>
+      <svg
+        class="icon-play h-4 w-4 md:h-5 md:w-5 text-white hidden"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path d="M8 5v14l11-7z" />
+      </svg>
+    </button>
+  </div>
+</section>
+
+<script is:inline>
+(() => {
+  const wrap = document.getElementById("svc-wrap");
+  const track = document.getElementById("svc-track");
+  const prev = document.getElementById("svc-prev");
+  const next = document.getElementById("svc-next");
+  const dots = Array.from(document.querySelectorAll("#svc-dots > button"));
+  const autoBtn = document.getElementById("svc-auto");
+  if (!wrap || !track) return;
+
+  /* CONFIG */
+  const AUTO_MS = 5000;
+  const DURATION = 720;
+  const EASING = "cubic-bezier(.22,.61,.36,1)";
+  const SWIPE_PX = 50;
+
+  /* STATE */
+  let index = 1;
+  let lastDir = 1;
+  let animating = false;
+  let paused = false;
+  let autoTimer = null;
+  let lastAnimatedReal = -1;
+  let suppressAnim = false;
+
+  /* CLONES */
+  const baseSlides = Array.from(track.children);
+  const count = baseSlides.length;
+  if (!count) return;
+
+  track.insertBefore(baseSlides[count - 1].cloneNode(true), baseSlides[0]);
+  track.appendChild(baseSlides[0].cloneNode(true));
+
+  const slides = Array.from(track.children);
+  slides.forEach(s => s.style.width = "100%");
+
+  /* HELPERS */
+  const setTransition = on =>
+    track.style.transition = on ? `transform ${DURATION}ms ${EASING}` : "none";
+
+  const setX = () =>
+    track.style.transform = `translate3d(-${index * 100}%,0,0)`;
+
+  const realIndex = i =>
+    i === 0 ? count - 1 : i === count + 1 ? 0 : i - 1;
+
+  const setDots = r =>
+    dots.forEach((d,i)=>d.setAttribute("aria-current", i === r));
+
+  const setActive = (i,dir) =>
+    slides.forEach((s,n)=>{
+      s.classList.toggle("is-active", n === i);
+      n === i ? s.dataset.dir = dir === 1 ? "next" : "prev" : delete s.dataset.dir;
+    });
+
+  /* CONTENT ANIMATION */
+  const animateContent = (real, dir) => {
+    if (suppressAnim || real === lastAnimatedReal) return;
+    lastAnimatedReal = real;
+
+    const slide = slides[index];
+    const content = slide?.querySelector(".slide-content");
+    const items = slide?.querySelectorAll(".stagger");
+    if (!content) return;
+
+    content.getAnimations?.().forEach(a=>a.cancel());
+    items?.forEach(el=>el.getAnimations?.().forEach(a=>a.cancel()));
+
+    const fromX = dir === 1 ? 44 : -44;
+
+    content.animate(
+      [
+        { opacity: 0, transform: `translate3d(${fromX}px,0,0)` },
+        { opacity: 1, transform: "translate3d(0,0,0)" }
+      ],
+      { duration: 520, easing: EASING, fill: "both" }
+    );
+
+    items?.forEach((el,i)=>{
+      el.animate(
+        [
+          { opacity: 0, transform: `translate3d(${fromX*0.6}px,0,0)` },
+          { opacity: 1, transform: "translate3d(0,0,0)" }
+        ],
+        { duration: 520, delay: 120 + i*90, easing: EASING, fill: "both" }
+      );
+    });
+  };
+
+  /* SNAP */
+  const snapIfNeeded = () => {
+    const suppress = () => {
+      suppressAnim = true;
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => suppressAnim = false)
+      );
+    };
+
+    if (index === count + 1) {
+      suppress();
+      setTransition(false);
+      index = 1;
+      setX();
+      track.getBoundingClientRect();
+      setTransition(true);
+      setActive(index,1);
+      setDots(0);
+      animating = false;
+      return true;
+    }
+
+    if (index === 0) {
+      suppress();
+      setTransition(false);
+      index = count;
+      setX();
+      track.getBoundingClientRect();
+      setTransition(true);
+      setActive(index,-1);
+      setDots(count - 1);
+      animating = false;
+      return true;
+    }
+    return false;
+  };
+
+  /* MOVE */
+  const go = delta => {
+    if (animating) return;
+    animating = true;
+
+    lastDir = delta >= 0 ? 1 : -1;
+    index += delta;
+
+    setActive(index,lastDir);
+    setX();
+
+    const r = realIndex(index);
+    setDots(r);
+
+    if (index > 0 && index < count + 1) {
+      animateContent(r,lastDir);
+    }
+
+    clearTimeout(go._t);
+    go._t = setTimeout(()=>{
+      if (!snapIfNeeded()) animating = false;
+    }, DURATION + 140);
+  };
+
+  /* INIT */
+  setTransition(false);
+  setX();
+  track.getBoundingClientRect();
+  setTransition(true);
+  setActive(index,1);
+  setDots(0);
+  animateContent(0,1);
+
+  track.addEventListener("transitionend", e => {
+    if (e.propertyName === "transform" && !snapIfNeeded()) animating = false;
+  });
+
+  /* AUTOPLAY */
+  const stopAuto = () => {
+    clearInterval(autoTimer);
+    autoTimer = null;
+  };
+
+  const startAuto = () => {
+    if (paused) return;
+    stopAuto();
+    autoTimer = setInterval(() => go(1), AUTO_MS);
+  };
+
+  /* CONTROLS */
+  prev?.addEventListener("click",()=>{ go(-1); startAuto(); });
+  next?.addEventListener("click",()=>{ go(1); startAuto(); });
+
+  dots.forEach((dot,i)=>{
+    dot.addEventListener("click",()=>{
+      if (animating) return;
+      const cur = realIndex(index);
+      if (i === cur) return;
+      go(i + 1 - index);
+      startAuto();
+    });
+  });
+
+  /* SWIPE */
+  let x0 = 0;
+  track.addEventListener("touchstart",e=>x0=e.changedTouches[0].screenX,{passive:true});
+  track.addEventListener("touchend",e=>{
+    const x1=e.changedTouches[0].screenX;
+    if(x1<x0-SWIPE_PX) go(1);
+    if(x1>x0+SWIPE_PX) go(-1);
+    startAuto();
+  },{passive:true});
+
+  /* HOVER */
+  if (matchMedia("(hover:hover)").matches) {
+    wrap.addEventListener("pointerenter",stopAuto);
+    wrap.addEventListener("pointerleave",startAuto);
+  }
+
+  /* PLAY / PAUSE */
+  autoBtn?.addEventListener("click",()=>{
+    paused = !paused;
+    autoBtn.dataset.state = paused ? "paused" : "playing";
+    autoBtn.querySelector(".icon-play")?.classList.toggle("hidden", !paused);
+    autoBtn.querySelector(".icon-pause")?.classList.toggle("hidden", paused);
+    paused ? stopAuto() : startAuto();
+  });
+
+  document.addEventListener("visibilitychange",()=>{
+    document.hidden ? stopAuto() : startAuto();
+  });
+
+  window.addEventListener("pageshow",e=>{
+    if(e.persisted) startAuto();
+  });
+
+  startAuto();
+})();
+</script>
+
+
+
+
+
+<style>
+  #svc-track { will-change: transform; transform: translate3d(0,0,0); backface-visibility: hidden; }
+  #svc-track > article { width: 100%; }
+
+  /* IMPORTANT: remove/override any old CSS animation rules */
+  .slide.is-active .slide-content,
+  .slide.is-active .slide-content .stagger,
+  .slide[data-dir="next"] .slide-content,
+  .slide[data-dir="next"] .slide-content .stagger,
+  .slide[data-dir="prev"] .slide-content,
+  .slide[data-dir="prev"] .slide-content .stagger {
+    animation: none !important;
+  }
+
+  /* Reduce Safari text shimmer */
+  .slide-content {
+    transform: translate3d(0,0,0);
+    -webkit-font-smoothing: antialiased;
+    will-change: transform, opacity;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #svc-track { transition: none !important; }
+  }
+</style>
+

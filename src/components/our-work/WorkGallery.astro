@@ -6,29 +6,17 @@ const { items = [] } = Astro.props as { items: WorkItem[] };
 
 const totalCount = items.length;
 
-const typeLabels: Record<WorkItem["type"], string> = {
-  interior: "Interior",
-  exterior: "Exterior",
-  cabinets: "Cabinets",
-  commercial: "Commercial",
-};
+const uniqueTypes = [...new Set(items.map((p: WorkItem) => p.type))].sort();
 
-const typeCounts = {
-  interior: items.filter((p: WorkItem) => p.type === "interior").length,
-  exterior: items.filter((p: WorkItem) => p.type === "exterior").length,
-  cabinets: items.filter((p: WorkItem) => p.type === "cabinets").length,
-  commercial: items.filter((p: WorkItem) => p.type === "commercial").length,
-};
+const typeCounts = Object.fromEntries(
+  uniqueTypes.map((t) => [t, items.filter((p: WorkItem) => p.type === t).length])
+) as Record<string, number>;
 
 const filters = [
   { id: "all", label: "All projects", count: totalCount },
-  ...Object.entries(typeLabels)
-    .filter(([type]) => typeCounts[type as keyof typeof typeCounts] > 0)
-    .map(([type, label]) => ({
-      id: type,
-      label,
-      count: typeCounts[type as keyof typeof typeCounts],
-    })),
+  ...uniqueTypes
+    .filter((t) => typeCounts[t] > 0)
+    .map((t) => ({ id: t, label: t, count: typeCounts[t] })),
 ];
 ---
 
@@ -36,134 +24,37 @@ const filters = [
   id="work-gallery-root"
   class="bg-gradient-to-b from-neutral-50 to-white py-14 md:py-20 lg:py-28"
 >
-<!-- Coming soon -->
-<div class="mx-auto max-w-3xl">
-  <div class="rounded-3xl border border-neutral-200 bg-white p-6 sm:p-10 shadow-[0_24px_80px_rgba(0,0,0,0.06)]">
-    <div class="flex flex-col items-center text-center gap-4">
-      <span class="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-4 py-2 text-xs font-semibold tracking-[0.16em] uppercase text-neutral-600">
-        Coming Soon
-      </span>
-
-      <h3 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
-        Project photos are on the way.
-      </h3>
-
-      <p class="text-neutral-600 text-base sm:text-lg max-w-xl">
-        We’re collecting fresh before & after photos from recent interior, exterior, cabinet, and commercial projects.
-        Check back soon.
-      </p>
-
-      <div class="mt-2 flex flex-col sm:flex-row gap-3">
-        <a
-          href="/contact"
-          class="inline-flex items-center justify-center rounded-full bg-[#C48356] px-6 py-3 font-semibold text-white shadow-md hover:shadow-lg hover:brightness-[0.98] transition"
-        >
-          Get a Free Estimate
-        </a>
-        <a
-          href="/"
-          class="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-6 py-3 font-semibold text-neutral-800 hover:border-[#C48356] hover:text-[#C48356] transition"
-        >
-          Back to Home
-        </a>
-      </div>
-            <!-- Social follow -->
-      <div class="mt-6 flex flex-col items-center gap-3">
-        <p class="text-sm font-medium text-neutral-600">
-          In the meantime, check out our work on social
-        </p>
-
-        <div class="flex gap-3">
-          <a
-            href="https://instagram.com/paintcraftmn"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2
-                   text-sm font-semibold text-neutral-800 shadow-sm
-                   hover:border-[#C48356] hover:text-[#C48356] transition"
-            aria-label="PaintCraft on Instagram"
-          >
-            <!-- Instagram icon -->
-            <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current">
-              <path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm10 2c1.65 0 3 1.35 3 3v10c0 1.65-1.35 3-3 3H7c-1.65 0-3-1.35-3-3V7c0-1.65 1.35-3 3-3h10zm-5 3a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6zm4.8-.9a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2z"/>
-            </svg>
-            Instagram
-          </a>
-
-          <a
-            href="https://www.facebook.com/people/PaintCraft/61555203220568/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2
-                   text-sm font-semibold text-neutral-800 shadow-sm
-                   hover:border-[#C48356] hover:text-[#C48356] transition"
-            aria-label="PaintCraft on Facebook"
-          >
-            <!-- Facebook icon -->
-            <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current">
-              <path d="M22 12a10 10 0 10-11.6 9.9v-7h-2v-2.9h2V9.6c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2v1.6h2.2l-.4 2.9h-1.8v7A10 10 0 0022 12z"/>
-            </svg>
-            Facebook
-          </a>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-  <!-- <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-8"> -->
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
     <!-- Section Header -->
-    <!-- <div class="text-center mb-8 md:mb-12">
+    <div class="text-center mb-8 md:mb-12">
       <h2
         class="font-sans font-semibold tracking-tight text-3xl sm:text-4xl md:text-5xl text-neutral-900 mb-3 md:mb-4"
       >
         Transformations
       </h2>
       <p class="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto">
-        Browse interiors, exteriors, cabinets, and commercial work.
+        Browse our work across cabinets, walls, ceilings, trim, staining, and more.
       </p>
-    </div> -->
+    </div>
 
-    <!-- MOBILE FILTER: Select -->
-    <!-- <div class="mb-6 md:hidden">
-      <label
-        for="work-filter-select"
-        class="block text-xs font-semibold tracking-[0.16em] uppercase text-neutral-500 mb-2"
-      >
-        Filter by project type
-      </label>
-      <div class="relative">
-        <select
-          id="work-filter-select"
-          class="w-full rounded-full border border-neutral-300 bg-white px-4 py-2.5 pr-9 text-sm font-medium text-neutral-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#C48356]/40 focus:border-[#C48356]"
-        >
-          {filters.map((f) => (
-            <option value={f.id}>
-              {f.label} ({f.count})
-            </option>
-          ))}
-        </select>
-        <span
-          class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-neutral-400"
-        >
-          <svg
-            class="h-4 w-4"
-            viewBox="0 0 20 20"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+    <!-- MOBILE FILTER: Scrollable pill strip -->
+    <div class="-mx-4 px-4 mb-6 md:hidden">
+      <div class="flex gap-2 overflow-x-auto pb-1 filters-scroll">
+        {filters.map((filter, idx) => (
+          <button
+            type="button"
+            class={`work-filter-btn flex-none px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${idx === 0 ? "is-active" : ""}`}
+            data-filter={filter.id}
           >
-            <path d="M6 8l4 4 4-4" />
-          </svg>
-        </span>
+            {filter.label}
+            <span class="ml-1 text-xs opacity-70">{filter.count}</span>
+          </button>
+        ))}
       </div>
-    </div> -->
+    </div>
 
     <!-- DESKTOP / TABLET FILTER: Pills -->
-    <!-- <div class="hidden md:flex flex-wrap justify-center gap-3 mb-10">
+    <div class="hidden md:flex flex-wrap justify-center gap-3 mb-10">
       {filters.map((filter, idx) => (
         <button
           type="button"
@@ -178,23 +69,23 @@ const filters = [
           </span>
         </button>
       ))}
-    </div> -->
+    </div>
 
     <!-- Gallery Grid -->
-    <!-- <div
+    <div
       id="work-gallery-grid"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8"
+      class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8"
     >
       {items.map((project) => (
         <WorkCard
           project={project}
-          typeLabel={typeLabels[project.type] ?? project.type}
+          typeLabel={project.type}
         />
       ))}
-    </div> -->
+    </div>
 
     <!-- Show more button -->
-    <!-- <div class="mt-8 md:mt-10 flex justify-center">
+    <div class="mt-8 md:mt-10 flex justify-center">
       <button
         id="work-show-more"
         type="button"
@@ -202,10 +93,10 @@ const filters = [
       >
         Show more projects
       </button>
-    </div> -->
+    </div>
 
     <!-- Empty state -->
-    <!-- <div id="work-empty-state" class="hidden text-center py-16 md:py-20">
+    <div id="work-empty-state" class="hidden text-center py-16 md:py-20">
       <div
         class="inline-flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-full bg-neutral-100 mb-4"
       >
@@ -227,10 +118,10 @@ const filters = [
         No projects found in this category yet.
       </p>
     </div>
-  </div> -->
+  </div>
 
   <!-- Lightbox Modal -->
-  <!-- <div
+  <div
     id="work-lightbox"
     class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/75 px-3 sm:px-4 md:px-6"
   >
@@ -243,9 +134,9 @@ const filters = [
 
     <div
       class="relative w-full max-w-lg md:max-w-5xl max-h-[90vh] mx-auto rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-[0_28px_90px_rgba(0,0,0,0.75)]"
-    > -->
+    >
       <!-- Close button -->
-      <!-- <button
+      <button
         type="button"
         id="work-lightbox-close"
         class="absolute top-3 right-3 md:top-4 md:right-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 hover:bg-black/80 transition"
@@ -263,10 +154,10 @@ const filters = [
           <path d="M18 6L6 18" />
           <path d="M6 6l12 12" />
         </svg>
-      </button> -->
+      </button>
 
       <!-- Image -->
-      <!-- <div class="relative aspect-[4/5] sm:aspect-[3/4] md:aspect-[16/9] bg-neutral-900">
+      <div class="relative aspect-[4/5] sm:aspect-[3/4] md:aspect-[16/9] bg-neutral-900">
         <img
           id="work-lightbox-img"
           src=""
@@ -275,10 +166,10 @@ const filters = [
         />
         <div
           class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"
-        ></div> -->
+        ></div>
 
         <!-- Prev / Next -->
-        <!-- <button
+        <button
           type="button"
           id="work-lightbox-prev"
           class="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 hover:bg-black/80 transition"
@@ -315,10 +206,10 @@ const filters = [
             <path d="M9 18l6-6-6-6" />
           </svg>
         </button>
-      </div> -->
+      </div>
 
       <!-- Details -->
-      <!-- <div class="px-5 sm:px-6 md:px-8 py-5 md:py-7 flex flex-col gap-2">
+      <div class="px-5 sm:px-6 md:px-8 py-5 md:py-7 flex flex-col gap-2">
         <p
           id="work-lightbox-type"
           class="text-[11px] sm:text-xs font-semibold tracking-[0.18em] uppercase text-white/60"
@@ -337,63 +228,7 @@ const filters = [
         ></p>
       </div>
     </div>
-  </div> -->
-
-  <!-- Mobile filter → trigger same JS as pills -->
-  <script is:inline>
-    (() => {
-      const select = document.getElementById("work-filter-select");
-      if (!select) return;
-
-      const buttons = Array.from(
-        document.querySelectorAll<HTMLButtonElement>(".work-filter-btn")
-      );
-
-      select.addEventListener("change", () => {
-  const value = select.value; // plain JS, no TypeScript
-  const target = buttons.find(
-    (btn) => btn.getAttribute("data-filter") === value
-  );
-  if (target) {
-    target.click(); // uses your existing filter logic
-  }
-      });
-    })();
-  </script>
-</section>
-
-<style>
-  /* hide mobile scrollbar but keep scrollability */
-  #work-gallery-root .filters-scroll {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  #work-gallery-root .filters-scroll::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* pill styling (keeps your JS .is-active toggle working) */
-  .work-filter-btn {
-    background: #ffffff;
-    color: #111827;
-    border: 1px solid rgba(148, 163, 184, 0.5);
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
-    white-space: nowrap;
-  }
-
-  .work-filter-btn:hover {
-    border-color: rgba(196, 131, 86, 0.7);
-    color: #c48356;
-  }
-
-  .work-filter-btn.is-active {
-    background: #c48356;
-    color: #ffffff;
-    border-color: #c48356;
-    box-shadow: 0 16px 40px rgba(196, 131, 86, 0.65);
-  }
-  
-</style>
+  </div>
 
   <script is:inline>
     window.addEventListener("DOMContentLoaded", () => {
@@ -423,14 +258,12 @@ const filters = [
       const layoutCards = () => {
         computeFilteredCards();
 
-        // hide all first
         cards.forEach((card) => {
           card.classList.add("hidden");
         });
 
         let visibleCount = 0;
 
-        // show up to visibleLimit
         filteredCards.forEach((card, idx) => {
           const show = idx < visibleLimit;
           if (show) {
@@ -439,23 +272,19 @@ const filters = [
           }
         });
 
-        // empty state
         if (emptyState) {
           emptyState.classList.toggle("hidden", visibleCount !== 0);
         }
 
-        // update visibleCards for lightbox (only what's currently shown)
         visibleCards = filteredCards.filter((_, idx) => idx < visibleLimit);
 
         if (currentIndex >= visibleCards.length) currentIndex = 0;
 
-        // handle show more / show less button visibility + label
         if (!showMoreBtn) return;
 
         const total = filteredCards.length;
 
         if (total <= PAGE_SIZE) {
-          // nothing to paginate
           showMoreBtn.classList.add("hidden");
           return;
         }
@@ -463,7 +292,6 @@ const filters = [
         showMoreBtn.classList.remove("hidden");
 
         if (visibleLimit >= total) {
-          // all visible -> offer "show less"
           showMoreBtn.textContent = "Show less";
         } else {
           showMoreBtn.textContent = "Show more projects";
@@ -474,7 +302,6 @@ const filters = [
         activeFilter = filterId;
         visibleLimit = PAGE_SIZE;
 
-        // button visual state
         filterButtons.forEach((btn) => {
           const isActive = btn.getAttribute("data-filter") === filterId;
           btn.classList.toggle("is-active", isActive);
@@ -496,14 +323,11 @@ const filters = [
           const total = filteredCards.length;
 
           if (visibleLimit >= total) {
-            // currently showing all -> collapse back to first page
             visibleLimit = PAGE_SIZE;
-            // optional: scroll back up to grid
             document
               .getElementById("work-gallery-grid")
               ?.scrollIntoView({ behavior: "smooth", block: "start" });
           } else {
-            // reveal one more page
             visibleLimit += PAGE_SIZE;
           }
 
@@ -511,10 +335,9 @@ const filters = [
         });
       }
 
-      // initial state
       applyFilter("all");
 
-      // ------- Lightbox logic --------
+      // Lightbox logic
       const lightbox = document.getElementById("work-lightbox");
       const backdrop = document.getElementById("work-lightbox-backdrop");
       const closeBtn = document.getElementById("work-lightbox-close");
@@ -542,13 +365,6 @@ const filters = [
         return;
       }
 
-      const typeLabelMap = {
-        interior: "Interior",
-        exterior: "Exterior",
-        cabinets: "Cabinets",
-        commercial: "Commercial",
-      };
-
       const renderFromCard = (card) => {
         if (!card) return;
         const dataset = card.dataset;
@@ -557,7 +373,7 @@ const filters = [
         imgEl.alt = dataset.title || "";
 
         titleEl.textContent = dataset.title || "";
-        typeEl.textContent = typeLabelMap[dataset.type] || dataset.type || "";
+        typeEl.textContent = dataset.type || "";
 
         if (dataset.description) {
           descEl.textContent = dataset.description;
@@ -579,7 +395,6 @@ const filters = [
       const openLightboxFromCard = (card) => {
         if (!card) return;
 
-        // ensure visibleCards is up to date with current filter + page
         layoutCards();
         currentIndex = visibleCards.indexOf(card);
         if (currentIndex < 0) currentIndex = 0;
@@ -639,17 +454,32 @@ const filters = [
   </script>
 
   <style>
+    #work-gallery-root .filters-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    #work-gallery-root .filters-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
     .work-filter-btn {
       background: #ffffff;
       color: #111827;
-      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+      white-space: nowrap;
+    }
+
+    .work-filter-btn:hover {
+      border-color: rgba(196, 131, 86, 0.7);
+      color: #c48356;
     }
 
     .work-filter-btn.is-active {
       background: #c48356;
       color: #ffffff;
-      box-shadow: 0 20px 50px rgba(196, 131, 86, 0.6);
-      transform: translateY(-1px);
+      border-color: #c48356;
+      box-shadow: 0 16px 40px rgba(196, 131, 86, 0.65);
     }
 
     .work-card {
