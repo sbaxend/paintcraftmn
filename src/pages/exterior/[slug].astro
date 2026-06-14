@@ -10,6 +10,8 @@ import ServiceDetailCTA from "../../components/service-detail/ServiceDetailCTA.a
 
 import { getServiceTheme, EXTERIOR_SLUGS } from "../../config/serviceThemes";
 
+export const prerender = true;
+
 // ------- Static paths for /exterior/[slug] -------
 
 export const getStaticPaths = () =>
@@ -49,8 +51,25 @@ const cssVars = [
   `--accent:${color.accent}`,
 ].join(";");
 
-// Basic SEO description (you can override per theme if you want)
-const description = `${title} in Minnesota — ${subtitle} Professional exterior ${title.toLowerCase()} by PaintCraft MN.`;
+const description = `${title} in the Twin Cities — ${subtitle} Professional exterior painting by PaintCraft MN. Licensed & insured, 3-year warranty.`;
+
+const serviceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": `${title} — Exterior Painting`,
+  "description": description,
+  "serviceType": "Exterior Painting",
+  "provider": {
+    "@type": "LocalBusiness",
+    "name": "PaintCraft MN",
+    "url": "https://paintcraftmn.com",
+    "telephone": "+1-952-697-9987"
+  },
+  "areaServed": [
+    "Minneapolis","St. Paul","Maple Grove","Plymouth","Minnetonka","Hopkins","Edina","Eden Prairie"
+  ],
+  "url": `https://paintcraftmn.com/exterior/${slug}`
+};
 
 // Map exterior subFeatures into the structure ServiceDetailAlternatingRows expects
 const alternatingItems = subFeatures.map((feat) => ({
@@ -64,9 +83,10 @@ const alternatingItems = subFeatures.map((feat) => ({
 ---
 
 <Base
-  title={`${title} | Exterior Painting | PaintCraft MN`}
+  title={`${title} | Exterior Painting | PaintCraft MN — Twin Cities`}
   description={description}
 >
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(serviceJsonLd)} />
   <div style={cssVars}>
     <!-- HERO (shared component from interior) -->
     <ServiceDetailHero
