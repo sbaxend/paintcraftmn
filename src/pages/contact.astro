@@ -544,6 +544,7 @@ import Base from "../layouts/Base.astro";
               return;
             }
 
+            if (typeof ndp !== 'undefined') ndp('track', 'lead');
             window.location.href = "/thanks";
           } catch {
             alert("Network error");
