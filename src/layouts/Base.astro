@@ -5,8 +5,69 @@ import LogoSplash from "../components/home/LogoSplash.astro";
 import "../styles/global.css";
 import BannerFooter from "../components/layout/BannerFooter.astro";
 
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  isHome?: boolean;
+  noindex?: boolean;
+}
 
-const { title = "PaintCraft MN" } = Astro.props;
+const {
+  title = "PaintCraft MN",
+  description = "Professional painting services in the Twin Cities — interior, exterior, cabinet refinishing, and more. Licensed & insured with a 3-year warranty.",
+  image = "/exterior-hero-minnesota.png",
+  isHome = false,
+  noindex = false,
+} = Astro.props;
+
+const siteOrigin = Astro.site?.href.replace(/\/$/, "") ?? "https://paintcraftmn.com";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = image.startsWith("http") ? image : `${siteOrigin}${image}`;
+
+const housePainterJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HousePainter",
+  "name": "PaintCraft MN",
+  "image": `${siteOrigin}/paintcraft_logo.webp`,
+  "@id": siteOrigin,
+  "url": siteOrigin,
+  "telephone": "+1-952-697-9987",
+  "priceRange": "$",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "3716 E 55th St",
+    "addressLocality": "Minneapolis",
+    "addressRegion": "MN",
+    "postalCode": "55417",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 44.8928,
+    "longitude": -93.2017
+  },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+    "opens": "08:00",
+    "closes": "18:00"
+  },
+  "sameAs": [
+    "https://instagram.com/paintcraftmn",
+    "https://www.facebook.com/people/PaintCraft/61555203220568/"
+  ],
+  "areaServed": [
+    "Minneapolis–Saint Paul metropolitan area",
+    "Minneapolis","St. Paul","Bloomington","Richfield","St. Louis Park",
+    "Edina","Minnetonka","Eden Prairie","Plymouth","Maple Grove"
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5.0",
+    "reviewCount": "23"
+  }
+};
 ---
 
 <!doctype html>
@@ -15,7 +76,34 @@ const { title = "PaintCraft MN" } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="icon" href="/paintcraft_logo.webp" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content="PaintCraft MN" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- HousePainter LocalBusiness JSON-LD (home page only) -->
+    {isHome && (
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={JSON.stringify(housePainterJsonLd)}
+      />
+    )}
 
     <!-- Nextdoor Pixel Code -->
     <script is:inline type="text/javascript">

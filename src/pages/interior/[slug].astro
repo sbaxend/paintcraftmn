@@ -13,6 +13,8 @@ import {
   INTERIOR_SLUGS,
 } from "../../config/interiorServiceThemes";
 
+export const prerender = true;
+
 // ------- Static paths for /interior/[slug] -------
 
 export const getStaticPaths = () =>
@@ -51,14 +53,34 @@ const cssVars = [
   `--accent:${color.accent}`,
 ].join(";");
 
-// Optional SEO description (tweak per service if you want)
-const description = `${title} in Minnesota — ${subtitle} Professional interior ${title.toLowerCase()} by PaintCraft MN.`;
+const description = `${title} in the Twin Cities — ${subtitle} Professional interior painting by PaintCraft MN. Licensed & insured, 3-year warranty.`;
+
+const serviceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": `${title} — Interior Painting`,
+  "description": description,
+  "serviceType": "Interior Painting",
+  "provider": {
+    "@type": "LocalBusiness",
+    "name": "PaintCraft MN",
+    "url": "https://paintcraftmn.com",
+    "telephone": "+1-952-697-9987"
+  },
+  "areaServed": [
+    "Minneapolis–Saint Paul metropolitan area",
+    "Minneapolis","St. Paul","Bloomington","Richfield","St. Louis Park",
+    "Edina","Minnetonka","Eden Prairie","Plymouth","Maple Grove"
+  ],
+  "url": `https://paintcraftmn.com/interior/${slug}`
+};
 ---
 
 <Base
-  title={`${title} | Interior Painting | PaintCraft MN`}
+  title={`${title} | Interior Painting | PaintCraft MN — Twin Cities`}
   description={description}
 >
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(serviceJsonLd)} />
   <div style={cssVars}>
     <!-- HERO: simple, Behr-style headline + CTA -->
     <ServiceDetailHero
