@@ -10,13 +10,15 @@ interface Props {
   description?: string;
   image?: string;
   isHome?: boolean;
+  noindex?: boolean;
 }
 
 const {
   title = "PaintCraft MN",
   description = "Professional painting services in the Twin Cities — interior, exterior, cabinet refinishing, and more. Licensed & insured with a 3-year warranty.",
-  image = "/paintcraft_logo.webp",
+  image = "/exterior-hero-minnesota.png",
   isHome = false,
+  noindex = false,
 } = Astro.props;
 
 const siteOrigin = Astro.site?.href.replace(/\/$/, "") ?? "https://paintcraftmn.com";
@@ -34,26 +36,31 @@ const housePainterJsonLd = {
   "priceRange": "$",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "1300 Landmark Trail S",
-    "addressLocality": "Hopkins",
+    "streetAddress": "3716 E 55th St",
+    "addressLocality": "Minneapolis",
     "addressRegion": "MN",
-    "postalCode": "55343",
+    "postalCode": "55417",
     "addressCountry": "US"
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": 44.9778,
-    "longitude": -93.2650
+    "latitude": 44.8928,
+    "longitude": -93.2017
   },
   "openingHoursSpecification": {
     "@type": "OpeningHoursSpecification",
     "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
     "opens": "08:00",
-    "closes": "17:00"
+    "closes": "18:00"
   },
-  "sameAs": ["https://instagram.com/paintcraftmn"],
+  "sameAs": [
+    "https://instagram.com/paintcraftmn",
+    "https://www.facebook.com/people/PaintCraft/61555203220568/"
+  ],
   "areaServed": [
-    "Minneapolis","St. Paul","Maple Grove","Plymouth","Minnetonka","Hopkins","Edina","Eden Prairie"
+    "Minneapolis–Saint Paul metropolitan area",
+    "Minneapolis","St. Paul","Bloomington","Richfield","St. Louis Park",
+    "Edina","Minnetonka","Eden Prairie","Plymouth","Maple Grove"
   ],
   "aggregateRating": {
     "@type": "AggregateRating",
@@ -71,6 +78,7 @@ const housePainterJsonLd = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="icon" href="/paintcraft_logo.webp" />
 
     <!-- Open Graph -->
