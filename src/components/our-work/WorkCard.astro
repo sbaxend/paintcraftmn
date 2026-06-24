@@ -15,6 +15,7 @@ export interface Props {
 }
 
 const { project, typeLabel } = Astro.props as Props;
+const showTitle = !!(project.title && project.title.toLowerCase() !== typeLabel.toLowerCase());
 ---
 
 <article
@@ -46,11 +47,13 @@ const { project, typeLabel } = Astro.props as Props;
 
     <!-- Desktop content: title + arrow on hover -->
     <div class="hidden sm:flex absolute inset-0 p-6 flex-col justify-end">
-      <h3
-        class="text-xl md:text-2xl font-bold text-white mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-500"
-      >
-        {project.title}
-      </h3>
+      {showTitle && (
+        <h3
+          class="text-xl md:text-2xl font-bold text-white mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-500"
+        >
+          {project.title}
+        </h3>
+      )}
     </div>
 
     <!-- Desktop badge -->
