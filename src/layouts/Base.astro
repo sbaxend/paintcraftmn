@@ -105,6 +105,9 @@ const housePainterJsonLd = {
       />
     )}
 
+    <!-- Apply html.js guard as early as possible so reveal CSS hides elements before paint -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
+
     <!-- Nextdoor Pixel Code -->
     <script is:inline type="text/javascript">
       !function(e,n){var t,p;e.ndp||((t=e.ndp=function(){
@@ -136,5 +139,35 @@ const housePainterJsonLd = {
     </main>
     <Footer />
     <BannerFooter />
+
+    <!-- Shared [data-reveal] IntersectionObserver — activates any element with data-reveal attribute -->
+    <script is:inline>
+      (() => {
+        const pref = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const els = Array.from(document.querySelectorAll('[data-reveal]'));
+        if (!els.length) return;
+
+        const activate = (el) => {
+          const delay = pref ? 0 : Number(el.dataset.revealDelay || 0);
+          if (delay <= 0) {
+            el.classList.add('is-in');
+          } else {
+            setTimeout(() => el.classList.add('is-in'), delay);
+          }
+        };
+
+        if (pref) { els.forEach(activate); return; }
+
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            activate(e.target);
+            io.unobserve(e.target);
+          });
+        }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
+
+        els.forEach((el) => io.observe(el));
+      })();
+    </script>
   </body>
 </html>
