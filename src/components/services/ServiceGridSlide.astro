@@ -8,7 +8,7 @@ const items = services.map((s) => ({
 }));
 ---
 
-<section class="relative bg-neutral-50">
+<section data-reveal class="relative bg-neutral-50">
   <div id="svc-wrap" class="relative w-full overflow-hidden">
     <!-- Track -->
     <div
@@ -23,16 +23,16 @@ const items = services.map((s) => ({
           <!-- BUBBLE CONTAINER -->
           <div class="mx-auto max-w-[1600px] px-4 md:px-6">
             <div
-              class="relative min-h-[500px] md:min-h-[600px] lg:min-h-[700px] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-neutral-200/70"
+              class="group relative min-h-[500px] md:min-h-[600px] lg:min-h-[700px] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-neutral-200/70"
             >
               <!-- Background image -->
               <img
                 src={s.img}
                 alt={s.title}
-                class="absolute inset-0 h-full w-full object-cover rounded-3xl"
+                class="absolute inset-0 h-full w-full object-cover rounded-3xl transition-transform duration-700 group-hover:scale-[1.04]"
                 loading="eager"
                 decoding="async"
-                fetchpriority="high" 
+                fetchpriority="high"
               />
 
               <!-- Gradient overlay -->
