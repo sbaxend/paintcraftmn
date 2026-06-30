@@ -29,12 +29,13 @@ const {
 
   <div class="relative z-10 mx-auto flex h-full max-w-7xl items-center justify-center px-4 text-center text-white">
     <div class="max-w-3xl">
-      <h1 class="font-sans font-semibold animate-fade-in-up text-4xl tracking-tight sm:text-5xl lg:text-6xl">
+      <h1 id="hero-headline" class="font-sans font-semibold text-4xl tracking-tight sm:text-5xl lg:text-6xl">
         {title}
       </h1>
 
       {cta?.href && (
         <a
+          id="hero-cta"
           href={cta.href}
           class="mt-8 inline-flex rounded-full border-2 border-[#C48356]/80
                  bg-[#C48356]/10 px-6 py-3 text-sm font-semibold text-white
@@ -85,6 +86,57 @@ const {
 
   tryPlay();
 })();
+
+// Hero text entrance — staggers headline then CTA after splash clears (or immediately)
+(function heroEntrance() {
+  const headline = document.getElementById('hero-headline');
+  const cta = document.getElementById('hero-cta');
+  const pref = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (pref) return; // reduced-motion CSS keeps both at full opacity
+
+  const fadeUp = (el, delay) => {
+    if (!el || typeof el.animate !== 'function') return;
+    el.animate(
+      [
+        { opacity: 0, transform: 'translateY(20px)' },
+        { opacity: 1, transform: 'translateY(0)' }
+      ],
+      { duration: 600, delay: delay, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'both' }
+    );
+  };
+
+  const run = () => {
+    fadeUp(headline, 0);
+    fadeUp(cta, 200);
+  };
+
+  // Wait for LogoSplash to remove itself from DOM, then fire
+  const splash = document.getElementById('splash-screen');
+  if (!splash) { run(); return; }
+
+  const mo = new MutationObserver(() => {
+    if (!document.getElementById('splash-screen')) {
+      mo.disconnect();
+      run();
+    }
+  });
+  mo.observe(document.body, { childList: true });
+}());
 </script>
+
+<style>
+  /* Hide hero text until JS entrance fires; restored immediately under reduced-motion */
+  html.js #hero-headline,
+  html.js #hero-cta {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html.js #hero-headline,
+    html.js #hero-cta {
+      opacity: 1 !important;
+    }
+  }
+</style>
 
 </section>
