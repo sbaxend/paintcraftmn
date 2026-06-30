@@ -25,7 +25,7 @@ const summary = [
 <section class="relative bg-gradient-to-b from-neutral-50 to-white pt-12 md:pt-16 pb-14 md:pb-20">
   <div class="mx-auto max-w-7xl px-6">
     <!-- Header with Schema.org markup for SEO -->
-    <div class="mb-8 text-center">
+    <div data-reveal class="mb-8 text-center">
       <h2 class="text-4xl md:text-5xl font-bold text-neutral-900 tracking-tight">
         Trusted by MN Homeowners
       </h2>
@@ -92,8 +92,8 @@ const summary = [
 
         <div class="flex gap-6 md:gap-8">
           <!-- Summary card with brand color accent -->
-          <article 
-            class="group w-80 md:w-96 shrink-0 rounded-3xl bg-gradient-to-br from-[#C48356]/5 to-white p-8 shadow-lg ring-1 ring-[#C48356]/20 hover:shadow-2xl hover:ring-[#C48356]/40 transition-all duration-300 hover:-translate-y-1"
+          <article
+            class="review-card group w-80 md:w-96 shrink-0 rounded-3xl bg-gradient-to-br from-[#C48356]/5 to-white p-8 shadow-lg ring-1 ring-[#C48356]/20 hover:shadow-2xl hover:ring-[#C48356]/40 transition-all duration-300 hover:-translate-y-1"
             aria-label="Review summary"
           >
             <div class="mb-6 flex items-center gap-4">
@@ -119,9 +119,9 @@ const summary = [
 
           <!-- Review cards with Schema.org markup -->
           {reviews.map((r) => (
-            <article 
-              class="group w-80 md:w-96 shrink-0 rounded-3xl bg-white p-8 shadow-lg ring-1 ring-neutral-200/70 hover:shadow-2xl hover:ring-[#C48356]/30 transition-all duration-300 hover:-translate-y-1"
-              itemscope 
+            <article
+              class="review-card group w-80 md:w-96 shrink-0 rounded-3xl bg-white p-8 shadow-lg ring-1 ring-neutral-200/70 hover:shadow-2xl hover:ring-[#C48356]/30 transition-all duration-300 hover:-translate-y-1"
+              itemscope
               itemtype="https://schema.org/Review"
             >
               <div class="flex items-center gap-4 mb-4">
@@ -183,6 +183,46 @@ const summary = [
     </p>
   </div>
 </section>
+
+<script is:inline>
+  // Staggered card entrance when the reviews rail scrolls into view
+  (() => {
+    const rail = document.getElementById('reviews-rail');
+    if (!rail) return;
+
+    const cards = Array.from(rail.querySelectorAll('.review-card'));
+    if (!cards.length) return;
+
+    const pref = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (pref) return; // cards already visible (no html.js guard on them)
+
+    // Set initial hidden state
+    cards.forEach(c => {
+      c.style.opacity = '0';
+      c.style.transform = 'translateY(20px)';
+    });
+
+    const animateIn = (el, delay) =>
+      el.animate(
+        [
+          { opacity: 0, transform: 'translateY(20px)' },
+          { opacity: 1, transform: 'translateY(0)' }
+        ],
+        { duration: 500, delay, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'both' }
+      );
+
+    let hasRun = false;
+    const io = new IntersectionObserver((entries) => {
+      if (hasRun || !entries.some(e => e.isIntersecting)) return;
+      hasRun = true;
+      io.disconnect();
+      cards.forEach((card, i) => animateIn(card, i * 80));
+    }, { threshold: 0.1 });
+
+    io.observe(rail);
+  })();
+</script>
 
 <script is:inline>
   (function () {
