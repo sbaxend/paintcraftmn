@@ -28,12 +28,14 @@ const {
   <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/45 to-black/30"></div>
 
   <div class="relative mx-auto max-w-5xl px-6 py-24 md:py-32 text-center">
-    <h2 class="text-3xl md:text-5xl lg:text-6xl font-sans font-semibold leading-tight text-white">
-      {title}
-    </h2>
-    <p class="mt-6 text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-      {subtitle}
-    </p>
+    <div data-reveal>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-sans font-semibold leading-tight text-white">
+        {title}
+      </h2>
+      <p class="mt-6 text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+        {subtitle}
+      </p>
+    </div>
   </div>
 
   <div class="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/25 to-transparent"></div>
